@@ -11,6 +11,7 @@ import abc
 
 import sh
 
+from .EnumLogLevel import *
 from .AbstractLogger import *
 
 
@@ -23,14 +24,41 @@ from .AbstractLogger import *
 class NullLogger(AbstractLogger):
 
 
+	def __init__(self, idCounter = None):
+		super().__init__(idCounter)
+	#
 
-	def _log(self, timeStamp, logLevel, textOrException):
+
+
+	@staticmethod
+	def create():
+		return _INSTANCE
+	#
+
+
+
+	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
 		pass
+	#
 
 
 
-	def descend(self, text):
+	def _descend(self, logEntryStruct):
 		return self
+	#
+
+
+
+#
+
+
+
+_INSTANCE = NullLogger()
+
+
+
+
+
 
 
 

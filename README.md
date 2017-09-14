@@ -14,47 +14,18 @@ Information about this module can be found here:
 How to use this module
 ----------------------
 
-### Import
 
-To import this module use the following statement:
 
-```python
-import jk_logging
-```
 
-### Logging Classes
 
-This module provides the following classes:
-
-* `AbstractLogger` : This is the abstract base class for all loggers.
-* `BufferLogger` : This logger writes all log messages to an internal buffer. Later on you can work with the collected log messages.
-* `ConsoleLogger` : This logger writes all log messages to STDOUT.
-* `DetectionLogger` : This logger creates a protocol about what log levels used during logging. Later on you can work with this information.
-* `FilterLogger` : A filter logger will allow only certain log messages to pass through.
-* `MulticastLogger` : A multicast logger will forward all log messages to other loggers.
-* `NamedMulticastLogger` : A named multicast logger will forward all log messages to other loggers.
-* `NullLogger` : This logger will swallow all log messages without doing anything.
-* `SimpleFileLogger` : A simple logger that writes to a text file.
-
-All logging works synchroneously.
-
-All logging is (currently) intendet for a single threaded environment.
-
-### Log Levels
-
-Through the class `EnumLogLevel` the following log levels are supported (in increasing order):
-
-* `DEBUG`: Use this log level for debugging purposes.
-* `NOTICE`: Use this log level if your log messages aren't very imporant.
-* `INFO`: This log level is intendet for normal log messages. This is the log level you might use most.
-* `STDOUT`: This log level is used if STDOUT data is sent to this logger.
-* `WARNING`: Use this log level to write out warning messages.
-* `ERROR`: Use this log level to write out error messages.
-* `STDERR`: This log level is used if STDERR data is sent to this logger.
-* `EXCEPTION`: Use this log level to write out exceptions. Consider this as being even more cricital than `ERROR`.
+Basic Architecture
+------------------
 
 Documentation of Log Objects
 ----------------------------
+
+In order to use loggers you need to know which classes there are end what kind of methods they offer for use. The next subchapters
+will provide you with that information.
 
 ### Common Methods
 
@@ -190,6 +161,32 @@ def getBufferDataAsStr(self)
 def forwardTo(self, logger, bClear = False)
 ```
 
+Instantiation Based on Configuration Information Provided
+---------------------------------------------------------
+
+Often it is convenient for applications to provide some detailed way of specifying how data should be logged. For exactly that reason
+this logging framework provides a function that is capable of creating loggers from some kind of description. Example:
+
+```python
+import jk_logging
+
+logger = jk_logging.instantiate({
+	"type": "MulticastLogger",
+	"nested": [
+		{
+			"type": "ConsoleLogger"
+		},
+		{
+			"type": "FileLogger",
+			"filePath": "mylogfile-%Y-%m-%d.log",
+			"rollOver": "day"
+		}
+	]
+})
+```
+
+(more description comeing soon)
+
 Examples
 --------
 
@@ -291,15 +288,7 @@ filelog.close()
 Things to do
 ------------
 
-There are a few things I'm not yet happy with:
-
-* The logging framework is not (yet) thread safe. This should be changed at some point in the future.
-* The logger `NamedMulticastLogger` is not a very good name: Not the logger itself is named, but the loggers it references are named. Feel free to suggest a better name for this class.
-* Currently all log messages are styled the same way. No configuration is possible. This should be changed at some point in the future.
-* Provide logger with log file rotation.
-* Improve documentation.
-
-Any help in implementing additional log classes and improving on the existing ones is appreciated. Feel free to contact me if you are interested in colabrating.
+Any help in implementing additional log classes and improving on the existing ones is appreciated. Feel free to contact me if you are interested in colaborating.
 
 Contact Information
 -------------------

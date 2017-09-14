@@ -8,32 +8,14 @@ import time
 import traceback
 import sys
 import abc
-from enum import Enum
 import datetime
 import re
 
 import sh
 
+from .EnumLogLevel import *
+from .IDCounter import IDCounter
 
-
-class EnumLogLevel(Enum):
-	DEBUG = 10, 'DEBUG'
-	NOTICE = 20, 'NOTICE'
-	INFO = 30, 'INFO'
-	STDOUT = 31, 'STDOUT'
-	WARNING = 40, 'WARNING'
-	ERROR = 50, 'ERROR'
-	STDERR = 51, 'STDERR'
-	EXCEPTION = 60, 'EXCEPTION'
-
-	def __new__(cls, value, name):
-		member = object.__new__(cls)
-		member._value_ = value
-		member.fullname = name
-		return member
-
-	def __int__(self):
-		return self.value
 
 
 
@@ -82,6 +64,7 @@ def _parseExceptionLine(line):
 	module = match.group("module")
 
 	return (path, sLineNo, module)
+#
 
 
 
@@ -99,50 +82,94 @@ class AbstractLogger(object):
 
 
 
-	@abc.abstractmethod
-	def _log(self, timeStamp, logLevel, textOrException):
-		raise NotImplementedError('subclasses must override log()!')
-
-
-
-	def _logAll(self, logEntryList):
-		for (timeStamp, logLevel, textOrException) in logEntryList:
-			self._log(timeStamp, logLevel, textOrException)
+	def __init__(self, idCounter):
+		if idCounter is None:
+			idCounter = IDCounter()
+		else:
+			assert isinstance(idCounter, IDCounter)
+		self._idCounter = idCounter
+		self._indentationLevel = 0
+		self._parentLogEntryID = None
+	#
 
 
 
 	#
-	# Converts the specified log data to a single string or a list of strings.
+	# Create a log entry data record.
 	#
-	def _logEntryToStringOrStringList(self, timeStamp, logLevel, textOrException):
-		sTimeStamp = datetime.datetime.fromtimestamp(timeStamp).strftime('%Y-%m-%d %H:%M:%S')
-		sTimeStamp = "[" + sTimeStamp + "] "
+	# @param		int logEntryID			The ID of this log entry or <c>None</c> if not applicable.
+	# @param		int indentation			The current indentation level. Top level entries will have a value of zero here.
+	#										This value is always zero if the feature is not supported.
+	# @param		int parentLogEntryID	A log entry ID of the parent of this log entry or <c>None</c> if not applicable (or not supported).
+	# @param		EnumLogLevel logLevel	A singleton that represents the log level.
+	# @param		str text				A text to associate with this log entry.
+	# @param		list newList			Typically specify an empty list here that will hold child log entries in the future.
+	#
+	def _createDescendLogEntryStruct(self, logEntryID, indentation, parentLogEntryID, logLevel, text, newList):
+		timeStamp = time.time()
 
-		logLevelStr = self._logLevelToStrDict[logLevel]
+		return ("desc", logEntryID, indentation, parentLogEntryID, timeStamp, logLevel, text, newList)
+	#
 
-		if isinstance(textOrException, str):
-			textOrException = textOrException.rstrip('\n')
-			return sTimeStamp + logLevelStr + ":  " + textOrException
+
+
+	@staticmethod
+	def exceptionToJSON(ex):
+		exceptionClassName = ex.__class__.__name__
+		exceptionLines = []
+		for line in str(ex).splitlines():
+			line = line.strip()
+			if len(line) > 0:
+				exceptionLines.append(line)
+
+		stackTrace = []
+		tempLine = ""
+		exceptionText = traceback.format_exc()
+		for line in exceptionText.splitlines():
+			line = line.strip()
+			if line.startswith("Traceback "):
+				continue
+			if len(tempLine) > 0:
+				(filePath, sLineNo, moduleName) = _parseExceptionLine(tempLine)
+				stackTrace.append([ filePath, int(sLineNo), moduleName, line ])
+				tempLine = ""
+			else:
+				if line.startswith("File "):
+					tempLine = line
+				else:
+					break
+
+		return {
+			"exClass": exceptionClassName,
+			"exText": " ".join(exceptionLines),
+			"exStack": stackTrace,
+		}
+	#
+
+
+
+	#
+	# Creates a log entry data records.
+	#
+	# @param		int logEntryID			The ID of this log entry or <c>None</c> if not applicable.
+	# @param		int indentation			The current indentation level. Top level entries will have a value of zero here.
+	#										This value is always zero if the feature is not supported.
+	# @param		int parentLogEntryID	A log entry ID of the parent of this log entry or <c>None</c> if not applicable (or not supported).
+	# @param		EnumLogLevel logLevel	A singleton that represents the log level.
+	# @param		obj textOrException		Either an exception object or a text
+	#
+	def _createNormalLogEntryStruct(self, logEntryID, indentation, parentLogEntryID, logLevel, textOrException):
+		timeStamp = time.time()
 
 		if isinstance(textOrException, Exception):
-			outputLines = []
-
+			exceptionClassName = textOrException.__class__.__name__
 			exceptionLines = []
 			for line in str(textOrException).splitlines():
 				line = line.strip()
 				if len(line) > 0:
 					exceptionLines.append(line)
-			bFirstLine = True
-			for line in exceptionLines:
-				if bFirstLine:
-					outputLines.append(sTimeStamp + logLevelStr + ":  " + textOrException.__class__.__name__ + ": " + line)
-					bFirstLine = False
-				else:
-					outputLines.append(sTimeStamp + logLevelStr + ":  " + line)
 
-			exceptionLines1 = []
-			exceptionLines2 = []
-			maxExceptionLineLength = 0
+			stackTrace = []
 			tempLine = ""
 			exceptionText = traceback.format_exc()
 			for line in exceptionText.splitlines():
@@ -151,27 +178,36 @@ class AbstractLogger(object):
 					continue
 				if len(tempLine) > 0:
 					(filePath, sLineNo, moduleName) = _parseExceptionLine(tempLine)
-					exceptionLines1.append(filePath + ":" + sLineNo + " " + moduleName)
-					if len(tempLine) > maxExceptionLineLength:
-						maxExceptionLineLength = len(tempLine)
+					stackTrace.append([ filePath, int(sLineNo), moduleName, line ])
 					tempLine = ""
-					exceptionLines2.append("   # " + line)
 				else:
 					if line.startswith("File "):
 						tempLine = line
 					else:
 						break
 
-			for i in range(0, len(exceptionLines1)):
-				s = exceptionLines1[i]
-				while len(s) < maxExceptionLineLength:
-					s += " "
-				outputLines.append(sTimeStamp + "STACKTRACE:  " + s + exceptionLines2[i])
+			return (
+				"ex",
+				logEntryID,
+				indentation,
+				parentLogEntryID,
+				timeStamp,
+				logLevel,
+				exceptionClassName,
+				" ".join(exceptionLines),
+				stackTrace
+			)
 
-			return outputLines
-
-		s = str(textOrException).rstrip('\n')
-		return sTimeStamp + logLevelStr + ":  " + s
+		return (
+			"txt",
+			logEntryID,
+			indentation,
+			parentLogEntryID,
+			timeStamp,
+			logLevel,
+			textOrException.rstrip('\n')
+		)
+	#
 
 
 
@@ -181,7 +217,10 @@ class AbstractLogger(object):
 	# @param	string text		The text to write to this logger.
 	#
 	def error(self, text):
-		self._log(time.time(), EnumLogLevel.ERROR, text)
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.ERROR, text), False)
+	#
+
+
 
 	#
 	# Perform logging with log level EXCEPTION.
@@ -189,7 +228,8 @@ class AbstractLogger(object):
 	# @param	Exception exception		The exception to write to this logger.
 	#
 	def exception(self, exception):
-		self._log(time.time(), EnumLogLevel.EXCEPTION, exception)
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.EXCEPTION, exception), False)
+	#
 
 	#
 	# Perform logging with log level ERROR.
@@ -199,7 +239,8 @@ class AbstractLogger(object):
 	#
 	def stderr(self, text):
 		text = text.rstrip('\n')
-		self._log(time.time(), EnumLogLevel.STDERR, text)
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.STDERR, text), False)
+	#
 
 	#
 	# Perform logging with log level STDOUT.
@@ -209,15 +250,38 @@ class AbstractLogger(object):
 	#
 	def stdout(self, text):
 		text = text.rstrip('\n')
-		self._log(time.time(), EnumLogLevel.STDOUT, text)
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.STDOUT, text), False)
+	#
 
 	#
-	# Perform logging with log level WARNING.
+	# Perform logging with log level SUCCESS.
+	#
+	# @param	string text		The text to write to this logger.
+	#
+	def success(self, text):
+		text = text.rstrip('\n')
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.SUCCESS, text), False)
+	#
+
+	#
+	# Perform logging with log level WARNING. This method is provided for convenience and is identical with <c>warn()</c>.
 	#
 	# @param	string text		The text to write to this logger.
 	#
 	def warning(self, text):
-		self._log(time.time(), EnumLogLevel.WARNING, text)
+		text = text.rstrip('\n')
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.WARNING, text), False)
+	#
+
+	#
+	# Perform logging with log level WARNING. This method is provided for convenience and is identical with <c>warning()</c>.
+	#
+	# @param	string text		The text to write to this logger.
+	#
+	def warn(self, text):
+		text = text.rstrip('\n')
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.WARNING, text), False)
+	#
 
 	#
 	# Perform logging with log level INFO.
@@ -225,7 +289,9 @@ class AbstractLogger(object):
 	# @param	string text		The text to write to this logger.
 	#
 	def info(self, text):
-		self._log(time.time(), EnumLogLevel.INFO, text)
+		text = text.rstrip('\n')
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.INFO, text), False)
+	#
 
 	#
 	# Perform logging with log level NOTICE.
@@ -233,7 +299,9 @@ class AbstractLogger(object):
 	# @param	string text		The text to write to this logger.
 	#
 	def notice(self, text):
-		self._log(time.time(), EnumLogLevel.NOTICE, text)
+		text = text.rstrip('\n')
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.NOTICE, text), False)
+	#
 
 	#
 	# Perform logging with log level DEBUG.
@@ -241,16 +309,33 @@ class AbstractLogger(object):
 	# @param	string text		The text to write to this logger.
 	#
 	def debug(self, text):
-		self._log(time.time(), EnumLogLevel.DEBUG, text)
+		text = text.rstrip('\n')
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.DEBUG, text), False)
+	#
 
 
 
 	#
-	# (Work in progress. Do not use this method yet.)
+	# Perform logging with log level TRACE.
 	#
-	@abc.abstractmethod
+	# @param	string text		The text to write to this logger.
+	#
+	def trace(self, text):
+		text = text.rstrip('\n')
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.TRACE, text), False)
+	#
+
+
+
+	#
+	# Create a nested logger. This new logger can than be used like the current logger, but all log messages will be delivered
+	# to an subordinate log structure (if supported by this logger).
+	#
 	def descend(self, text):
-		return None
+		logEntryStruct = self._createDescendLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.INFO, text, [])
+		self._logi(logEntryStruct, False)
+		return self._descend(logEntryStruct)
+	#
 
 
 
@@ -261,6 +346,93 @@ class AbstractLogger(object):
 	#
 	def clear(self):
 		pass
+	#
+
+
+
+	#
+	# Close this logger. Some logger make use of additional resources (such as files) which will be (permanently) closed by invoking this method.
+	# By default this method does nothing. Some loggers may overwrite this method in order to make use of that functionality. After closing
+	# a logger you should not invoke any more logging methods of that logger. Loggers that make use of <c>close()</c> should reject any logging
+	# request after a <c>close()</c> has been invoked. <c>close()</c> must always be implemented as an indempotent operation: Redundant calls to <c>close()</c>
+	# should cause no problems.
+	#
+	def close(self):
+		pass
+	#
+
+
+
+	#
+	# Perform a descending operation. Overwrite this method in subclasses.
+	#
+	# @param		list logEntryStruct			A log entry structure. See <c>_logi()</c> for a detailed description.
+	# @return		AbstractLogger			Return a logger instance representing the logger for a descended level.
+	#
+	@abc.abstractmethod
+	def _descend(self, logEntryStruct):
+		raise NotImplementedError('subclasses must override _descend()!')
+	#
+
+
+
+	#
+	# Perform the log operation. This is the heart of each logger. Overwrite this method in subclasses.
+	#
+	# @param		list logEntryStruct						A log entry structure. Each entry consists of the following elements:
+	#														0) <c>str</c> ---- The type of the log entry: "txt", "ex", "desc"
+	#														1) <c>str</c> ---- The ID of the log entry or <c>None</c> if unused
+	#														2) <c>int</c> ---- The indentation level
+	#														3) <c>str</c> ---- The ID of the parent log entry or <c>None</c> if unused
+	#														4) <c>float</c> ---- The time stamp in seconds since epoch
+	#														5) <c>EnumLogLevel</c> ---- The type of the log entry
+	#														If the log entry is a text entry:
+	#														6) <c>str</c> ---- The text of the log message
+	#														If the log entry is a descending entry:
+	#														6) <c>str</c> ---- The text of the log message
+	#														7) <c>list</c> ---- A list containing nested log items
+	#														If the log entry is an exception:
+	#														6) <c>str</c> ---- The exception class name
+	#														7) <c>str</c> ---- The exception text
+	#														8) <c>list</c> ---- A list of stack trace elements or <c>None</c>
+	#														Each stack trace element has the following structure:
+	#														0) <c>str</c> ---- The source code file path
+	#														1) <c>int</c> ---- The source code line number
+	#														2) <c>str</c> ---- The source code module name
+	#														3) <c>str</c> ---- The source code line in plain text where the error occurred
+	# @param		bool bNeedsIndentationLevelAdaption		If <c>True</c> is specified the log entry record still needs adaption at the
+	#														indentation level field. This is because it was generated somewhere else and
+	#														therefor has been provided by a different logger in a maybe different indentation
+	#														context.
+	#
+	@abc.abstractmethod
+	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
+		raise NotImplementedError('subclasses must override _logi()!')
+	#
+
+
+
+	#
+	# This method is invoked in order to log a list of log entries. After adapting the indentation level to the indentation level
+	# currently used by this logger either <c>_logi()</c> is called or <c>_descend()</c> in order to perform the logging.
+	#
+	# The default implementation provided here will perform indentation level adaption as needed. In order to do so a copy of the
+	# raw log entry is created.
+	#
+	# @param		list logEntryStruct						A log entry structure. See <c>_logi()</c> for a detailed description.
+	# @param		bool bNeedsIndentationLevelAdaption		If <c>True</c> is specified the log entry records still needs adaption at the
+	#														indentation level field. This is because it was generated somewhere else and
+	#														therefor has been provided by a different logger in a maybe different indentation
+	#														context.
+	#
+	def _logiAll(self, logEntryStructList, bNeedsIndentationLevelAdaption):
+		for logEntryStruct in logEntryStructList:
+			#logEntryStruct = list(logEntryStruct)
+			#logEntryStruct[2] = self._indentationLevel
+			self._logi(logEntryStruct, bNeedsIndentationLevelAdaption)
+			if logEntryStruct[0] == "desc":
+				self._descend(logEntryStruct)._logiAll(logEntryStruct[7], bNeedsIndentationLevelAdaption)
+	#
 
 
 

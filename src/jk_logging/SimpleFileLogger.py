@@ -11,37 +11,66 @@ import abc
 
 import sh
 
+from .EnumLogLevel import *
 from .AbstractLogger import *
+from .LogMessageFormatter import *
 
 
 
 
 
 #
-# This logger just consumes all loggin output without doing anyting with it.
+# This logger writes log data to a log file.
 #
 class SimpleFileLogger(AbstractLogger):
 
 
 
-	def __init__(self, filePath, bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = 0o0500):
+	def __init__(self, filePath, idCounter = None, parentID = None, indentationLevel = 0,
+		bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = 0o0600, logMsgFormatter = None):
+		super().__init__(idCounter)
+		self._indentationLevel = indentationLevel
+		if parentID is None:
+			parentID = self._idCounter.next()
+		self._parentLogEntryID = parentID
+		self.__logMsgFormatter = DEFAULT_LOG_MESSAGE_FORMATTER if logMsgFormatter is None else logMsgFormatter
+		assert isinstance(self.__logMsgFormatter, AbstractLogMessageFormatter)
+
 		self.__filePath = filePath
 		self.__bAppendToExistingFile = bAppendToExistingFile
 		self.__bFlushAfterEveryLogMessage = bFlushAfterEveryLogMessage
 		if not bAppendToExistingFile:
 			if os.path.isfile(filePath):
 				os.unlink(filePath)
-		self.__f = open(filePath, "a+")
+		self.__f = open(filePath, "a")
 		if fileMode is not None:
 			os.chmod(filePath, fileMode)
+		self.__fileMode = fileMode
+	#
 
 
 
-	def _log(self, timeStamp, logLevel, textOrException):
-		if self.__f == None:
+	@staticmethod
+	def create(filePath, bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = 0o0600, logMsgFormatter = None):
+		assert isinstance(filePath, str)
+		assert isinstance(bAppendToExistingFile, bool)
+		assert isinstance(bFlushAfterEveryLogMessage, bool)
+		assert isinstance(fileMode, int)
+		if logMsgFormatter != None:
+			assert isinstance(logMsgFormatter, AbstractLogMessageFormatter)
+		return SimpleFileLogger(filePath, None, None, 0, bAppendToExistingFile, bFlushAfterEveryLogMessage, fileMode, logMsgFormatter)
+	#
+
+
+
+	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
+		if self.__f.closed:
 			raise Exception("Logger already closed.")
 
-		lineOrLines = self._logEntryToStringOrStringList(timeStamp, logLevel, textOrException)
+		if bNeedsIndentationLevelAdaption:
+			logEntryStruct = list(logEntryStruct)
+			logEntryStruct[2] = self._indentationLevel
+		lineOrLines = self.__logMsgFormatter.format(logEntryStruct)
 		if isinstance(lineOrLines, str):
 			self.__f.write(lineOrLines + "\n")
 		else:
@@ -49,35 +78,44 @@ class SimpleFileLogger(AbstractLogger):
 				self.__f.write(line + "\n")
 		if self.__bFlushAfterEveryLogMessage:
 			self.__f.flush()
+	#
 
 
 
-	def _logAll(self, logEntryList):
-		if self.__f == None:
+	# TODO: provide a more efficient implementation. currently <c>_logi()</c> will be called through <c>_logiAll()</c> so that not single but multiple tests are performed if the logger is already closed and multiple flushes are performed.
+	def _logiAll(self, logEntryStructList, bNeedsIndentationLevelAdaption):
+		if self.__f.closed:
 			raise Exception("Logger already closed.")
 
-		for (timeStamp, logLevel, textOrException) in logEntryList:
-			lineOrLines = self._logEntryToStringOrStringList(timeStamp, logLevel, textOrException)
-			if isinstance(lineOrLines, str):
-				self.__f.write(lineOrLines + "\n")
-			else:
-				for line in lineOrLines:
-					self.__f.write(line + "\n")
-		if self.__bFlushAfterEveryLogMessage:
-			self.__f.flush()
+		#for logEntryStruct in logEntryStructList:
+		#	lineOrLines = self.__logMsgFormatter.format(logEntryStruct)
+		#	if isinstance(lineOrLines, str):
+		#		self.__f.write(lineOrLines + "\n")
+		#	else:
+		#		for line in lineOrLines:
+		#			self.__f.write(line + "\n")
+
+		super()._logiAll(logEntryStructList, bNeedsIndentationLevelAdaption)
+
+		#if self.__bFlushAfterEveryLogMessage:
+		#	self.__f.flush()
+	#
 
 
 
-	def descend(self, text):
-		return self
+	def _descend(self, logEntryStruct):
+		nextID = logEntryStruct[1]
+		return SimpleFileLogger(self.__filePath, self._idCounter, nextID, self._indentationLevel + 1,
+			self.__bAppendToExistingFile, self.__bFlushAfterEveryLogMessage, self.__fileMode, self.__logMsgFormatter)
+	#
 
 
 
 	def close(self):
-		if self.__f is not None:
+		if not self.__f.closed:
+			self.__f.flush()
 			self.__f.close()
-			self.__f = None
-
+	#
 
 
 

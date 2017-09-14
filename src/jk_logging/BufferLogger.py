@@ -11,6 +11,7 @@ import abc
 
 import sh
 
+from .EnumLogLevel import *
 from .AbstractLogger import *
 
 
@@ -18,99 +19,163 @@ from .AbstractLogger import *
 
 
 #
-# This logger will buffer log messages in an array.
+# This logger will buffer log messages in an internal array. Later this data can be forwarded to
+# other loggers, f.e. in order to store them on disk.
 #
 class BufferLogger(AbstractLogger):
 
 
 
-	def __init__(self, indentLevel = 0, prefix = "", logItemList = []):
-		self.__level = indentLevel
-		self.__prefix = prefix
-		self.__list = logItemList
+	def __init__(self, idCounter = None, parentID = None, indentLevel = 0, logItemList = None):
+		super().__init__(idCounter)
+		self._indentationLevel = indentLevel
+		if logItemList is None:
+			self.__list = []
+		else:
+			self.__list = logItemList
+		if parentID is None:
+			parentID = self._idCounter.next()
+		self._parentLogEntryID = parentID
+	#
 
 
 
+	@staticmethod
+	def __convertRawLogData(items):
+		ret = []
+		for item in items:
+			item = list(item)
+			item[5] = EnumLogLevel.parse(item[5])
+			if item[0] == "txt":
+				pass
+			elif item[0] == "ex":
+				pass
+			elif item[0] == "desc":
+				item[7] = BufferLogger.__convertRawLogData(item[7])
+			else:
+				raise Exception("Implementation Error!")
+			ret.append(item)
+		return ret
+
+
+
+	@staticmethod
+	def create(jsonRawData = None):
+		if jsonRawData != None:
+			jsonRawData = BufferLogger.__convertRawLogData(jsonRawData)
+			return BufferLogger(None, None, 0, jsonRawData)
+		return BufferLogger()
+	#
+
+
+
+	"""
 	#
 	# Return a list of strings that contains the data stored in this logger.
-	# Standard formatting is used for output.
 	#
 	# @return		string[]		Returns an array of strings ready to be written to the console or a file.
 	#
 	def getBufferDataAsStrList(self):
 		ret = []
-		for (timeStamp, logLevel, textOrException) in self.__list:
-			lineOrLines = self._logEntryToStringOrStringList(timeStamp, logLevel, textOrException)
-			if isinstance(lineOrLines, str):
-				ret.append(self.__prefix + lineOrLines)
-			else:
-				for line in lineOrLines:
-					ret.append(self.__prefix + line)
+		for logEntryStruct in in self.__list:
+			...
 		return ret
+	"""
 
 
 
-	#
-	# Return a list of tuples that contains the data stored in this logger.
-	#
-	# @return		tuple[]		Returns an array of tuples. Each tuple will contain the following fields:
-	#							* int timeStamp : The time stamp since Epoch in seconds.
-	#							* EnumLogLevel logLevel : The log level of this log entry.
-	#							* string|Exception textOrException : A log message or an execption object.
-	#
-	def getBufferDataAsTupleList(self):
-		return self.__list
 
-
-
+	"""
 	#
 	# Return a single string that contains the data stored in this logger.
-	# Standard formatting is used for output.
 	#
 	# @return		string		Returns a single string ready to be written to the console or a file.
 	#
 	def getBufferDataAsStr(self):
 		s = ''
-		for (timeStamp, logLevel, textOrException) in self.__list:
-			lineOrLines = self._logEntryToStringOrStringList(timeStamp, logLevel, textOrException)
-			if isinstance(lineOrLines, str):
-				s += self.__prefix + lineOrLines + "\n"
-			else:
-				for line in lineOrLines:
-					s += self.__prefix + line + "\n"
+		for logEntryStruct in in self.__list:
+			...
 		return s
+	"""
 
 
 
-	def _log(self, timeStamp, logLevel, textOrException):
-		self.__list.append((timeStamp, logLevel, textOrException))
+	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
+		if bNeedsIndentationLevelAdaption:
+			logEntryStruct = list(logEntryStruct)
+			logEntryStruct[2] = self._indentationLevel
+		self.__list.append(logEntryStruct)
+	#
 
 
 
-	def descend(self, text):
-		self._log(EnumLogLevel.INFO, text)
-		return BufferLogger(self.__level + 1, self.__prefix + "\t", self.__list)
+	def _descend(self, logEntryStruct):
+		nextID = logEntryStruct[1]
+		newList = logEntryStruct[7]
+		return BufferLogger(self._idCounter, nextID, self._indentationLevel + 1, newList)
+	#
 
 
 
 	#
-	# Forward the log data stord in this logger to another logger.
+	# Forward the log data stored in this logger to another logger.
 	#
 	# @param		AbstractLogger logger			Another logger that will receive the log data.
+	# @param		bool bClear						Clear buffer after forwarding all log data.
 	#
 	def forwardTo(self, logger, bClear = False):
 		assert isinstance(logger, AbstractLogger)
-
-		logger._logAll(self.__list)
-
+		logger._logiAll(self.__list, True)
 		if bClear:
 			self.__list = []
+	#
 
 
 
 	def clear(self):
 		self.__list = []
+	#
 
+
+
+	def getDataAsJSON(self):
+		return self.__getJSONData(self.__list)
+	#
+
+
+
+	def __getJSONData(self, items):
+		ret = []
+		for item in items:
+			item2 = list(item)
+			item2[5] = int(item2[5])
+			if item2[0] == "txt":
+				pass
+			elif item2[0] == "ex":
+				pass
+			elif item2[0] == "desc":
+				item2[7] = self.__getJSONData(item2[7])
+			else:
+				raise Exception("Implementation Error!")
+			ret.append(item2)
+		return ret
+	#
+
+
+
+	def __str__(self):
+		return "<BufferLogger(" + hex(id(self)) + ", indent=" + str(self._indentationLevel) + ",parentID=" + str(self._parentLogEntryID) + ")>"
+	#
+
+
+
+	def __repr__(self):
+		return "<BufferLogger(" + hex(id(self)) + ", indent=" + str(self._indentationLevel) + ",parentID=" + str(self._parentLogEntryID) + ")>"
+	#
+
+
+
+#
 
 
 

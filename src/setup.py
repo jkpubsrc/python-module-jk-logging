@@ -7,20 +7,25 @@ def readme():
 
 
 setup(name='jk_logging',
-	version='0.2017.1.19',
-	description='This is a logging framework',
+	version='0.2017.8.31',
+	description='This is a logging framework.',
 	author='Jürgen Knauth',
 	author_email='pubsrc@binary-overflow.de',
 	license='Apache 2.0',
 	url='https://github.com/jkpubsrc/python-module-jk-logging',
-	download_url='https://github.com/jkpubsrc/python-module-jk-logging/tarball/0.2017.1.19',
-	keywords=['debugging', 'logging'],
-	packages=['jk_logging'],
+	download_url='https://github.com/jkpubsrc/python-module-jk-logging/tarball/0.2017.8.31',
+	keywords=[
+		'debugging',
+		'logging'
+		],
+	packages=[
+		'jk_logging'
+		],
 	install_requires=[
 	],
 	include_package_data=True,
 	classifiers=[
-		'Development Status :: 4 - Beta',
+		'Development Status :: 5 - Production/Stable',
 		'Programming Language :: Python :: 3.5',
 		'License :: OSI Approved :: Apache Software License'
 	],
