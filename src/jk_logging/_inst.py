@@ -71,7 +71,7 @@ def instantiate(cfg):
 	elif loggerType == "FileLogger":
 		return FileLogger.create(
 			cfg["filePath"],
-			cfg["rollOver"],
+			cfg.get("rollOver", None),
 			cfg.get("bAppendToExistingFile", True),
 			cfg.get("bFlushAfterEveryLogMessage", True),
 			cfg.get("fileMode", 0o600))

@@ -105,7 +105,9 @@ class FileLogger(AbstractLogger):
 		logMsgFormatter = None):
 		assert isinstance(filePath, str)
 		if rollOver is not None:
-			assert rollOver in ["second", "minute", "hour", "day", "month"]
+			assert rollOver in ["second", "minute", "hour", "day", "month", "none"]
+			if rollOver == "none":
+				rollOver = None
 		assert isinstance(bAppendToExistingFile, bool)
 		assert isinstance(bFlushAfterEveryLogMessage, bool)
 		assert isinstance(fileMode, int)

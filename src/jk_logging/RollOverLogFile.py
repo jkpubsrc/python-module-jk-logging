@@ -51,7 +51,9 @@ class RollOverLogFile(object):
 			assert isinstance(fileMode, int)
 		if rollOverMode is not None:
 			assert isinstance(rollOverMode, str)
-			assert rollOverMode in ["second", "minute", "hour", "day", "month"]
+			assert rollOverMode in ["second", "minute", "hour", "day", "month", "none"]
+			if rollOverMode == "none":
+				rollOverMode = None
 
 		self.__fileCreationTimeStamp = datetime.datetime.now()
 		self.__rollOverMode = rollOverMode
