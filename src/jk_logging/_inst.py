@@ -79,9 +79,9 @@ def instantiate(cfg):
 		mode = cfg.get("fileMode", None)
 		if mode != None:
 			if isinstance(mode, int):
-				pass
-			elif isinstance(mode, str):
-				if re.match("^[0-7]+$", mode):
+				mode = str(mode)
+			if isinstance(mode, str):
+				if re.match("^[0-7][0-7][0-7]$", mode):
 					mode = int(mode, 8)
 				else:
 					raise Exception("Invalid mode specified for file logger!")
