@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+
+import re
+
 from .IDCounter import IDCounter
 
 from .EnumLogLevel import EnumLogLevel
@@ -20,6 +26,7 @@ from .ColoredLogMessageFormatter import ColoredLogMessageFormatter, COLOR_LOG_ME
 
 
 
+
 def instantiateLogMsgFormatter(cfg):
 	if cfg == "default":
 		return DEFAULT_LOG_MESSAGE_FORMATTER
@@ -27,7 +34,7 @@ def instantiateLogMsgFormatter(cfg):
 		return COLOR_LOG_MESSAGE_FORMATTER
 	else:
 		raise Exception("Unknown log message formatter: " + str(cfg))
-
+#
 
 
 
@@ -69,19 +76,32 @@ def instantiate(cfg):
 		return NullLogger.create()
 
 	elif loggerType == "FileLogger":
+		mode = cfg.get("fileMode", None)
+		if mode != None:
+			if isinstance(mode, int):
+				pass
+			elif isinstance(mode, str):
+				if re.match("^[0-7]+$", mode):
+					mode = int(mode, 8)
+				else:
+					raise Exception("Invalid mode specified for file logger!")
+			else:
+				raise Exception("Invalid mode specified for file logger!")
+		else:
+			mode = 0x600
 		return FileLogger.create(
 			cfg["filePath"],
 			cfg.get("rollOver", None),
 			cfg.get("bAppendToExistingFile", True),
 			cfg.get("bFlushAfterEveryLogMessage", True),
-			cfg.get("fileMode", 0o600))
+			mode)
 
 	elif loggerType == "StringListLogger":
 		return StringListLogger.create()
 
 	else:
 		raise Exception("Unknown logger type: " + loggerType)
-
+#
 
 
 

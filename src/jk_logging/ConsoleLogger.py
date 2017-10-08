@@ -36,17 +36,20 @@ class ConsoleLogger(AbstractLogger):
 
 		self.__print = self.__eprint if printToStdErr else print
 		self.__printToStdErr = printToStdErr
+	#
 
 
 
 	@staticmethod
 	def create(printToStdErr = False, logMsgFormatter = None):
 		return ConsoleLogger(printToStdErr = printToStdErr, logMsgFormatter = logMsgFormatter)
+	#
 
 
 
 	def __eprint(self, *args, **kwargs):
 		print(*args, file=sys.stderr, **kwargs)
+	#
 
 
 
@@ -73,11 +76,17 @@ class ConsoleLogger(AbstractLogger):
 
 	def __str__(self):
 		return "<ConsoleLogger(" + hex(id(self)) + ", indent=" + str(self._indentationLevel) + ",parentID=" + str(self._parentLogEntryID) + ")>"
+	#
 
 
 
 	def __repr__(self):
 		return "<ConsoleLogger(" + hex(id(self)) + ", indent=" + str(self._indentationLevel) + ",parentID=" + str(self._parentLogEntryID) + ")>"
+	#
+
+
+
+#
 
 
 
