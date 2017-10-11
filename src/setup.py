@@ -7,7 +7,7 @@ def readme():
 
 
 setup(name='jk_logging',
-	version='0.2017.10.8.3',
+	version='0.2017.10.11',
 	description='This is a logging framework.',
 	author='Jürgen Knauth',
 	author_email='pubsrc@binary-overflow.de',
