@@ -87,8 +87,6 @@ def instantiate(cfg):
 					raise Exception("Invalid mode specified for file logger!")
 			else:
 				raise Exception("Invalid mode specified for file logger!")
-		else:
-			mode = 0x600
 		return FileLogger.create(
 			cfg["filePath"],
 			cfg.get("rollOver", None),

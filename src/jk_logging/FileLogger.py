@@ -101,7 +101,7 @@ class FileLogger(AbstractLogger):
 	# @param		AbstractLogMessageFormatter logMsgFormatter		A log message formatter. If <c>None</c> is specified the default one is used.
 	#
 	@staticmethod
-	def create(filePath, rollOver, bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = 0o600,
+	def create(filePath, rollOver, bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = None,
 		logMsgFormatter = None):
 		assert isinstance(filePath, str)
 		if rollOver is not None:
@@ -110,7 +110,7 @@ class FileLogger(AbstractLogger):
 				rollOver = None
 		assert isinstance(bAppendToExistingFile, bool)
 		assert isinstance(bFlushAfterEveryLogMessage, bool)
-		assert isinstance(fileMode, int)
+		assert isinstance(fileMode, (type(None), int))
 
 		logFile = RollOverLogFile(filePath, rollOver, bAppendToExistingFile, bFlushAfterEveryLogMessage, fileMode)
 		return FileLogger(None, None, 0, logFile, None, logMsgFormatter)
