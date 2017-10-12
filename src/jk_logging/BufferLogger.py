@@ -56,6 +56,7 @@ class BufferLogger(AbstractLogger):
 				raise Exception("Implementation Error!")
 			ret.append(item)
 		return ret
+	#
 
 
 

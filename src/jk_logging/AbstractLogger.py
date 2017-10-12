@@ -431,7 +431,17 @@ class AbstractLogger(object):
 			#logEntryStruct[2] = self._indentationLevel
 			self._logi(logEntryStruct, bNeedsIndentationLevelAdaption)
 			if logEntryStruct[0] == "desc":
-				self._descend(logEntryStruct)._logiAll(logEntryStruct[7], bNeedsIndentationLevelAdaption)
+				logEntryStructClone = (
+					logEntryStruct[0],
+					logEntryStruct[1],
+					logEntryStruct[2],
+					logEntryStruct[3],
+					logEntryStruct[4],
+					logEntryStruct[5],
+					logEntryStruct[6],
+					[]
+				)
+				self._descend(logEntryStructClone)._logiAll(logEntryStruct[7], bNeedsIndentationLevelAdaption)
 	#
 
 
