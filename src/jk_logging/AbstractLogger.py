@@ -51,17 +51,29 @@ def _getLogLevelStr(logLevel):
 
 
 
-_PATTERN = re.compile("^File\\s\"" + "(?P<path>.+?)" + "\",\\sline\\s" + "(?P<line>[0-9]+?)" + ",\\sin " + "(?P<module>.+?)" + "$")
+_PATTERN1 = re.compile("^File\\s\"" + "(?P<path>.+?)" + "\",\\sline\\s" + "(?P<line>[0-9]+?)" + ",\\sin " + "(?P<module>.+?)" + "$")
+_PATTERN2 = re.compile("^File\\s\"" + "(?P<path>.+?)" + "\",\\sline\\s" + "(?P<line>[0-9]+?)$")
+
 
 #
 # Parse an exception line such as: "File \"./test.py\", line 33, in <module>"
 #
 def _parseExceptionLine(line):
-	match = _PATTERN.match(line)
-
-	path = match.group("path")
-	sLineNo = match.group("line")
-	module = match.group("module")
+	match = _PATTERN1.match(line)
+	if match:
+		path = match.group("path")
+		sLineNo = match.group("line")
+		module = match.group("module")
+	else:
+		match = _PATTERN2.match(line)
+		if match:
+			path = match.group("path")
+			sLineNo = match.group("line")
+			module = "(unknown)"
+		else:
+			path = "(unknown)"
+			sLineNo = "-1"
+			module = "(unknown)"
 
 	return (path, sLineNo, module)
 #

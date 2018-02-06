@@ -80,7 +80,7 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 			ret.append(s + " "  + sLogType + ":  " + sExClass + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR)
 			if logEntryStruct[8] != None:
 				for (stPath, stLineNo, stModuleName, stLine) in logEntryStruct[8]:
-					ret.append(s + " STACKTRACE:  " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine)
+					ret.append(s + " STACKTRACE:  " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + ColoredLogMessageFormatter.RESET_COLOR)
 			return ret
 		elif logEntryStruct[0] == "desc":
 			sLogMsg = logEntryStruct[6]
