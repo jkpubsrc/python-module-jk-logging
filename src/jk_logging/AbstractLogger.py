@@ -73,9 +73,18 @@ def _parseExceptionLine(line):
 
 
 
+class _ExceptionInChildContextException(Exception):
+	pass
+#
+
+
+
 class AbstractLogger(object):
 	__metaclass__ = abc.ABCMeta
 
+
+
+	EINSTANCE = _ExceptionInChildContextException()
 
 
 	_logLevelToStrDict = _getLogLevelStrMap(True)
@@ -446,4 +455,23 @@ class AbstractLogger(object):
 
 
 
+	def __enter__(self):
+		return self
+	#
+
+
+
+	def __exit__(self, etype, value, traceback):
+		if etype != None:
+			if etype == _ExceptionInChildContextException:
+				raise AbstractLogger.EINSTANCE
+			e = etype(value)
+			self.exception(e)
+			raise AbstractLogger.EINSTANCE
+		return False
+	#
+
+
+
+#
 

@@ -1,0 +1,8 @@
+* Implement a registration facility for log formatters to enable JSON parsing making use of self implemented log message fomratting classes.
+* Implement a registration facility for loggers to enable JSON parsing making use of self implemented logging classes.
+* Check that all classes that do create textual output can have a log message formatter specified during construction.
+* Provide a text based documentation about each loggers (API)
+* The logger `NamedMulticastLogger` doesn't have a very good name. Is there a better name for that class?
+* Currently all log messages are styled the same way. No configuration is possible. This should be changed at some point in the future.
+
+
