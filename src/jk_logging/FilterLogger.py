@@ -45,29 +45,36 @@ class FilterLogger(AbstractLogger):
 	def _log(self, timeStamp, logLevel, textOrException):
 		if int(logLevel) >= self.__minLogLevel[0]:
 			self.__logger._log(timeStamp, logLevel, textOrException)
+	#
 
 
 
 	@property
 	def minLogLevel(self):
 		return self.__minLogLevel[0]
+	#
 
 
 
 	def setMinLogLevel(self, minLogLevel):
 		self.__minLogLevel[0] = minLogLevel
+	#
 
 
 
 	def _descend(self, logEntryStruct):
 		return FilterLogger(self.__logger._descend(logEntryStruct), self.__minLogLevel)
+	#
 
 
 
 	def clear(self):
 		self.__logger.clear()
+	#
 
 
+
+#
 
 
 

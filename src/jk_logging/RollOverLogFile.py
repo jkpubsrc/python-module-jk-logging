@@ -102,6 +102,7 @@ class RollOverLogFile(object):
 				return True
 
 		return False
+	#
 
 
 
@@ -110,6 +111,7 @@ class RollOverLogFile(object):
 		while len(s) < size:
 			s = "0" + s
 		return s
+	#
 
 
 
@@ -188,6 +190,9 @@ class RollOverLogFile(object):
 			self.__bIsDirty = False
 		else:
 			self.__bIsDirty = True
+	#
+
+
 
 	#
 	# Close the file.
@@ -196,6 +201,9 @@ class RollOverLogFile(object):
 		if not self.__f.closed:
 			self.__f.flush()
 			self.__f.close()
+	#
+
+
 
 	#
 	# Checks if the file is closed.
@@ -205,6 +213,9 @@ class RollOverLogFile(object):
 	@property
 	def isClosed(self):
 		return self.__f.closed
+	#
+
+
 
 	#
 	# Checks if the file is closed.
@@ -214,6 +225,9 @@ class RollOverLogFile(object):
 	@property
 	def closed(self):
 		return self.__f.closed
+	#
+
+
 
 #
 

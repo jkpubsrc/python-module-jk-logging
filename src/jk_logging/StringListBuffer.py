@@ -28,6 +28,7 @@ class StringListBuffer(object):
 	#
 	def __init__(self):
 		self.__list = []
+	#
 
 
 
@@ -53,6 +54,7 @@ class StringListBuffer(object):
 			else:
 				for line in lineOrLines:
 					self.__list.append(prefix + line)
+	#
 
 
 
@@ -61,6 +63,7 @@ class StringListBuffer(object):
 	#
 	def getDataAsList(self):
 		return self.__list
+	#
 
 
 
@@ -72,6 +75,7 @@ class StringListBuffer(object):
 		for line in self.__list:
 			ret += line + "\n"
 		return ret
+	#
 
 
 
@@ -80,6 +84,7 @@ class StringListBuffer(object):
 	#
 	def close(self):
 		self.__list = None
+	#
 
 
 
@@ -91,6 +96,9 @@ class StringListBuffer(object):
 	@property
 	def isClosed(self):
 		return self.__list is None
+	#
+
+
 
 	#
 	# Checks if the file is closed.
@@ -100,6 +108,9 @@ class StringListBuffer(object):
 	@property
 	def closed(self):
 		return self.__list is None
+	#
+
+
 
 	#
 	# Removes all data.
@@ -108,6 +119,9 @@ class StringListBuffer(object):
 		if self.__list is None:
 			return
 		self.__list = []
+	#
+
+
 
 #
 

@@ -24,6 +24,7 @@ class LogMessageFormatter(AbstractLogMessageFormatter):
 		self.__fillChar = fillChar
 		self.__indentBuffer = fillChar
 		self.__includeIDs = bIncludeIDs
+	#
 
 
 
@@ -50,21 +51,27 @@ class LogMessageFormatter(AbstractLogMessageFormatter):
 
 		if logEntryStruct[0] == "txt":
 			sLogMsg = logEntryStruct[6]
-			return s + sLogType + ":  " + sLogMsg
+			return s + sLogType + ": " + sLogMsg
 		elif logEntryStruct[0] == "ex":
 			sExClass = logEntryStruct[6]
 			sLogMsg = logEntryStruct[7]
 			ret = []
-			ret.append(s + " "  + sLogType + ":  " + sExClass + ": " + sLogMsg)
+			ret.append(s + " "  + sLogType + ": " + sExClass + ": " + sLogMsg)
 			if logEntryStruct[8] != None:
 				for (stPath, stLineNo, stModuleName, stLine) in logEntryStruct[8]:
-					ret.append(s + " STACKTRACE:  " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine)
+					ret.append(s + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine)
 			return ret
 		elif logEntryStruct[0] == "desc":
 			sLogMsg = logEntryStruct[6]
-			return s + sLogType + ":  " + sLogMsg
+			return s + sLogType + ": " + sLogMsg
 		else:
 			raise Exception()
+	#
+
+
+
+#
+
 
 
 

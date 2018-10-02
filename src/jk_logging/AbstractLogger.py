@@ -170,7 +170,7 @@ class AbstractLogger(object):
 
 
 	#
-	# Creates a log entry data records.
+	# Creates a log entry data record.
 	#
 	# @param		int logEntryID			The ID of this log entry or <c>None</c> if not applicable.
 	# @param		int indentation			The current indentation level. Top level entries will have a value of zero here.
@@ -388,7 +388,7 @@ class AbstractLogger(object):
 	# Perform a descending operation. Overwrite this method in subclasses.
 	#
 	# @param		list logEntryStruct			A log entry structure. See <c>_logi()</c> for a detailed description.
-	# @return		AbstractLogger			Return a logger instance representing the logger for a descended level.
+	# @return		AbstractLogger				Return a logger instance representing the logger for a descended level.
 	#
 	@abc.abstractmethod
 	def _descend(self, logEntryStruct):

@@ -96,11 +96,12 @@ class NamedMulticastLogger(AbstractLogger):
 
 
 	def close(self):
-		for logger in self.__loggerList:
+		for logger in self.__loggerMap.values():
 			logger.close()
 	#
 
 
+#
 
 
 

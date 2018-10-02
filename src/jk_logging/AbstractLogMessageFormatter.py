@@ -19,14 +19,18 @@ def _getLogLevelStr(logLevel):
 	if pos >= 0:
 		s = s[pos+1:]
 	return s
+#
+
 
 
 def createLogMsgTypeStrMap(bPrefixWithSpacesToSameLength = False):
 	maxLogLevelLength = len("STACKTRACE")
 	for logLevel in EnumLogLevel:
 		s = _getLogLevelStr(logLevel)
-		if len(s) > maxLogLevelLength:
-			maxLogLevelLength = len(s)
+		logLevelLength = len(s)
+		if logLevelLength > maxLogLevelLength:
+			maxLogLevelLength = logLevelLength
+
 	logLevelToStrDict = {}
 	for logLevel in EnumLogLevel:
 		s = _getLogLevelStr(logLevel)
@@ -34,8 +38,9 @@ def createLogMsgTypeStrMap(bPrefixWithSpacesToSameLength = False):
 			while len(s) < maxLogLevelLength:
 				s = " " + s
 		logLevelToStrDict[logLevel] = s
-	return logLevelToStrDict
 
+	return logLevelToStrDict
+#
 
 
 
@@ -58,9 +63,9 @@ class AbstractLogMessageFormatter(object):
 	@abc.abstractmethod
 	def format(self, logEntryStruct):
 		pass
+	#
 
-
-
+#
 
 
 

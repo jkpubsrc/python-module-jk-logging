@@ -8,6 +8,7 @@ import time
 import traceback
 import sys
 import abc
+import datetime
 
 import sh
 
@@ -159,6 +160,61 @@ class BufferLogger(AbstractLogger):
 			else:
 				raise Exception("Implementation Error!")
 			ret.append(item2)
+		return ret
+	#
+
+
+
+	def getDataAsPrettyJSON(self):
+		return self.__getPrettyJSONData(self.__list)
+	#
+
+
+
+	def __stackTraceElementToPrettyJSONData(self, stackTraceItem):
+		return {
+			"file": stackTraceItem[0],
+			"line": stackTraceItem[1],
+			"module": stackTraceItem[2],
+			"sourcecode": stackTraceItem[3],
+		}
+	#
+
+	def __getPrettyJSONData(self, items):
+		ret = []
+		for item in items:
+			item2 = list(item)
+			t = datetime.datetime.fromtimestamp(item2[4])
+			jsonLogEntry = {
+				"type": item2[0],
+				"id": item2[1],
+				"indent": item2[2],
+				"timestamp": {
+					"t": item2[4],
+					"year": t.year,
+					"month": t.month,
+					"day": t.day,
+					"hour": t.hour,
+					"minute": t.minute,
+					"second": t.second,
+					"ms": t.microsecond // 1000,
+					"us": t.microsecond % 1000,
+				},
+				"loglevel": str(item2[5]),
+				"logleveln": int(item2[5]),
+			}
+			if item2[0] == "txt":
+				jsonLogEntry["text"] = item2[6]
+			elif item2[0] == "ex":
+				jsonLogEntry["exception"] = item2[6]
+				jsonLogEntry["text"] = item2[7]
+				jsonLogEntry["stacktrace"] = [ self.__stackTraceElementToPrettyJSONData(x) for x in item2[8] ] if item2[8] else None
+			elif item2[0] == "desc":
+				jsonLogEntry["text"] = item2[6]
+				jsonLogEntry["children"] = self.__getPrettyJSONData(item2[7])
+			else:
+				raise Exception("Implementation Error!")
+			ret.append(jsonLogEntry)
 		return ret
 	#
 

@@ -16,6 +16,7 @@ from .StringListLogger import StringListLogger
 from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 from .LogMessageFormatter import LogMessageFormatter, DEFAULT_LOG_MESSAGE_FORMATTER
 from .ColoredLogMessageFormatter import ColoredLogMessageFormatter, COLOR_LOG_MESSAGE_FORMATTER
+from .HTMLLogMessageFormatter import HTMLLogMessageFormatter, HTML_LOG_MESSAGE_FORMATTER
 
 from .LoggerInstanceManager import LoggerInstanceManager
 
