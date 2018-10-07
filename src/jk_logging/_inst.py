@@ -28,12 +28,41 @@ from .ColoredLogMessageFormatter import ColoredLogMessageFormatter, COLOR_LOG_ME
 
 
 def instantiateLogMsgFormatter(cfg):
-	if cfg == "default":
-		return DEFAULT_LOG_MESSAGE_FORMATTER
-	elif cfg == "color":
-		return COLOR_LOG_MESSAGE_FORMATTER
+	if isinstance(cfg, dict):
+		logMsgFormatterType = cfg["type"]
+		if logMsgFormatterType == "default":
+			if "extensitivity" in cfg:
+				extensitivity = cfg["extensitivity"]
+				if extensitivity == "full":
+					DEFAULT_LOG_MESSAGE_FORMATTER.setOutputMode(DEFAULT_LOG_MESSAGE_FORMATTER.EnumOutputMode.FULL
+				elif extensitivity in ( "short", "shorted", "shortened" ):
+					DEFAULT_LOG_MESSAGE_FORMATTER.setOutputMode(DEFAULT_LOG_MESSAGE_FORMATTER.EnumOutputMode.SHORTED)
+				elif extensitivity == "veryShort":
+					DEFAULT_LOG_MESSAGE_FORMATTER.setOutputMode(DEFAULT_LOG_MESSAGE_FORMATTER.EnumOutputMode.VERY_SHORT
+				else:
+					raise Exception("Unknown extensitivity: " + repr(extensitivity))
+			return DEFAULT_LOG_MESSAGE_FORMATTER
+		elif logMsgFormatterType == "color":
+			if "extensitivity" in cfg:
+				extensitivity = cfg["extensitivity"]
+				if extensitivity == "full":
+					COLOR_LOG_MESSAGE_FORMATTER.setOutputMode(COLOR_LOG_MESSAGE_FORMATTER.EnumOutputMode.FULL
+				elif extensitivity in ( "short", "shorted", "shortened" ):
+					COLOR_LOG_MESSAGE_FORMATTER.setOutputMode(COLOR_LOG_MESSAGE_FORMATTER.EnumOutputMode.SHORTED)
+				elif extensitivity == "veryShort":
+					COLOR_LOG_MESSAGE_FORMATTER.setOutputMode(COLOR_LOG_MESSAGE_FORMATTER.EnumOutputMode.VERY_SHORT
+				else:
+					raise Exception("Unknown extensitivity: " + repr(extensitivity))
+			return COLOR_LOG_MESSAGE_FORMATTER
+		else:
+			raise Exception("Unknown log message formatter: " + repr(cfg))
 	else:
-		raise Exception("Unknown log message formatter: " + str(cfg))
+		if cfg == "default":
+			return DEFAULT_LOG_MESSAGE_FORMATTER
+		elif cfg == "color":
+			return COLOR_LOG_MESSAGE_FORMATTER
+		else:
+			raise Exception("Unknown log message formatter: " + repr(cfg))
 #
 
 
