@@ -7,13 +7,13 @@ def readme():
 
 
 setup(name='jk_logging',
-	version='0.2018.10.7',
+	version='0.2018.12.28',
 	description='This is a logging framework.',
 	author='Jürgen Knauth',
 	author_email='pubsrc@binary-overflow.de',
 	license='Apache 2.0',
 	url='https://github.com/jkpubsrc/python-module-jk-logging',
-	download_url='https://github.com/jkpubsrc/python-module-jk-logging/tarball/0.2018.10.7',
+	download_url='https://github.com/jkpubsrc/python-module-jk-logging/tarball/0.2018.12.28',
 	keywords=[
 		'debugging',
 		'logging'
