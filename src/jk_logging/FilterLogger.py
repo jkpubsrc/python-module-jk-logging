@@ -1,5 +1,4 @@
 ﻿#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 
 
@@ -34,10 +33,18 @@ class FilterLogger(AbstractLogger):
 
 
 	@staticmethod
-	def create(logger, minLogLevel = EnumLogLevel.WARNING):
+	def create(logger:AbstractLogger, minLogLevel:EnumLogLevel = EnumLogLevel.WARNING):
 		assert isinstance(logger, AbstractLogger)
+		assert isinstance(minLogLevel, EnumLogLevel)
 
 		return FilterLogger(logger, [ int(minLogLevel) ])
+	#
+
+
+
+	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
+		if int(logEntryStruct[5]) >= self.__minLogLevel[0]:
+			self.__logger._logi(logEntryStruct, True)
 	#
 
 
@@ -56,8 +63,10 @@ class FilterLogger(AbstractLogger):
 
 
 
-	def setMinLogLevel(self, minLogLevel):
-		self.__minLogLevel[0] = minLogLevel
+	def setMinLogLevel(self, minLogLevel:EnumLogLevel):
+		assert isinstance(minLogLevel, EnumLogLevel)
+
+		self.__minLogLevel[0] = int(minLogLevel)
 	#
 
 

@@ -15,6 +15,8 @@ The raw log messages are represented as tuples in Python. There are three kinds 
 * An exception message (identifier: `ex`)
 * Descending to a nested level with text message (identifier: `desc`)
 
+#### Basic Fields
+
 All log entries will contain the following fields in raw format:
 
 * `str` : The type of the log entry: "txt", "ex", "desc"
@@ -23,6 +25,8 @@ All log entries will contain the following fields in raw format:
 * `str` : The ID of the parent log entry or `None` if unused
 * `float` : The time stamp in seconds since epoch
 * `EnumLogLevel` : The type of the log entry
+
+#+## Additonal Fields
 
 Additionally a text message entry will have the following field:
 

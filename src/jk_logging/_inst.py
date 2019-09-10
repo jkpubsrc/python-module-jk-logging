@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 
 import re
@@ -18,6 +17,7 @@ from .NullLogger import NullLogger
 #from .SimpleFileLogger import SimpleFileLogger
 from .FileLogger import FileLogger
 from .StringListLogger import StringListLogger
+from .JSONLogger import JSONLogger
 
 from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 from .LogMessageFormatter import LogMessageFormatter, DEFAULT_LOG_MESSAGE_FORMATTER
@@ -125,6 +125,9 @@ def instantiate(cfg):
 
 	elif loggerType == "StringListLogger":
 		return StringListLogger.create()
+
+	elif loggerType == "JSONLogger":
+		return JSONLogger.create(cfg["filePath"])
 
 	else:
 		raise Exception("Unknown logger type: " + loggerType)

@@ -1,5 +1,4 @@
 ﻿#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 
 
@@ -26,7 +25,7 @@ class ConsoleLogger(AbstractLogger):
 
 
 
-	def __init__(self, idCounter = None, parentID = None, indentationLevel = 0, printToStdErr = False, logMsgFormatter = None):
+	def __init__(self, idCounter = None, parentID = None, indentationLevel = 0, printToStdErr = False, logMsgFormatter = None, printFunction = None):
 		super().__init__(idCounter)
 		self._indentationLevel = indentationLevel
 		if parentID is None:
@@ -34,6 +33,7 @@ class ConsoleLogger(AbstractLogger):
 		self._parentLogEntryID = parentID
 		self.__logMsgFormatter = DEFAULT_LOG_MESSAGE_FORMATTER if logMsgFormatter is None else logMsgFormatter
 
+		self.__printFunction = printFunction
 		self.__print = self.__eprint if printToStdErr else print
 		self.__printToStdErr = printToStdErr
 	#
@@ -41,8 +41,8 @@ class ConsoleLogger(AbstractLogger):
 
 
 	@staticmethod
-	def create(printToStdErr = False, logMsgFormatter = None):
-		return ConsoleLogger(printToStdErr = printToStdErr, logMsgFormatter = logMsgFormatter)
+	def create(printToStdErr = False, logMsgFormatter = None, printFunction = None):
+		return ConsoleLogger(printToStdErr = printToStdErr, logMsgFormatter = logMsgFormatter, printFunction = printFunction)
 	#
 
 
@@ -69,7 +69,7 @@ class ConsoleLogger(AbstractLogger):
 
 	def _descend(self, logEntryStruct):
 		nextID = logEntryStruct[1]
-		return ConsoleLogger(self._idCounter, nextID, self._indentationLevel + 1, self.__printToStdErr, self.__logMsgFormatter)
+		return ConsoleLogger(self._idCounter, nextID, self._indentationLevel + 1, self.__printToStdErr, self.__logMsgFormatter, self.__printFunction)
 	#
 
 

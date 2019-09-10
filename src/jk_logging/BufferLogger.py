@@ -1,5 +1,4 @@
 ﻿#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 
 
@@ -71,6 +70,12 @@ class BufferLogger(AbstractLogger):
 
 
 
+	def hasData(self):
+		return len(self.__list) > 0
+	#
+
+
+
 	"""
 	#
 	# Return a list of strings that contains the data stored in this logger.
@@ -107,6 +112,7 @@ class BufferLogger(AbstractLogger):
 			logEntryStruct = list(logEntryStruct)
 			logEntryStruct[2] = self._indentationLevel
 		self.__list.append(logEntryStruct)
+		return logEntryStruct
 	#
 
 

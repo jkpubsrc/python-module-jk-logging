@@ -1,5 +1,4 @@
 ﻿#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 
 
@@ -54,6 +53,12 @@ class StringListBuffer(object):
 			else:
 				for line in lineOrLines:
 					self.__list.append(prefix + line)
+	#
+
+
+
+	def hasData(self):
+		return len(self.__list) > 0
 	#
 
 

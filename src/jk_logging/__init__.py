@@ -12,6 +12,7 @@ from .NullLogger import NullLogger
 #from .SimpleFileLogger import SimpleFileLogger
 from .FileLogger import FileLogger
 from .StringListLogger import StringListLogger
+from .JSONLogger import JSONLogger
 
 from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 from .LogMessageFormatter import LogMessageFormatter, DEFAULT_LOG_MESSAGE_FORMATTER
@@ -27,7 +28,7 @@ from ._inst import instantiateLogMsgFormatter, instantiate
 
 
 
-__version__ = "0.2018.12.28"
+__version__ = "0.2019.8.22"
 
 
 

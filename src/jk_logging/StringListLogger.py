@@ -1,5 +1,4 @@
 ﻿#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 
 
@@ -43,6 +42,12 @@ class StringListLogger(AbstractLogger):
 		self.__f = f
 		self._indentationLevel = indentationLevel
 		self.__prefix = prefix
+	#
+
+
+
+	def hasData(self):
+		return self.__f.hasData()
 	#
 
 
