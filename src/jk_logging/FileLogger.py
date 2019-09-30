@@ -1,14 +1,10 @@
-﻿#!/usr/bin/env python3
-
-
+﻿
 
 import os
 import time
 import traceback
 import sys
 import abc
-
-import sh
 
 from .EnumLogLevel import *
 from .AbstractLogger import *

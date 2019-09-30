@@ -47,14 +47,14 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 		self.__fillChar = fillChar
 		self.__indentBuffer = fillChar
 		self.__includeIDs = bIncludeIDs
-		self.__outputMode = ColoredLogMessageFormatter.EnumOutputMode.SHORTED
+		self.__outputMode = ColoredLogMessageFormatter.EnumOutputMode.FULL
 	#
 
 
 
 	def setOutputMode(self, outputMode:EnumOutputMode):
 		if outputMode is None:
-			outputMode = ColoredLogMessageFormatter.EnumOutputMode.SHORTED
+			outputMode = ColoredLogMessageFormatter.EnumOutputMode.FULL
 		self.__outputMode = outputMode
 	#
 

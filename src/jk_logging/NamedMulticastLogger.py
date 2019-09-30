@@ -31,6 +31,9 @@ class NamedMulticastLogger(AbstractLogger):
 
 		if loggerMap is not None:
 			assert isinstance(loggerMap, dict)
+			for k, v in loggerMap.items():
+				assert isinstance(k, str)
+				assert isinstance(v, AbstractLogger)
 			self.__loggerMap = loggerMap
 		else:
 			self.__loggerMap = {}
@@ -45,7 +48,7 @@ class NamedMulticastLogger(AbstractLogger):
 
 
 
-	def addLogger(self, loggerName, logger):
+	def addLogger(self, loggerName:str, logger):
 		assert isinstance(loggerName, str)
 		assert isinstance(logger, AbstractLogger)
 		if self.__loggerMap.get(loggerName, None) is not None:
@@ -55,7 +58,7 @@ class NamedMulticastLogger(AbstractLogger):
 
 
 
-	def removeLogger(self, loggerName):
+	def removeLogger(self, loggerName:str):
 		assert isinstance(loggerName, str)
 		if self.__loggerMap.get(loggerName, None) is not None:
 			del self.__loggerMap[loggerName]
@@ -79,7 +82,7 @@ class NamedMulticastLogger(AbstractLogger):
 	def _descend(self, logEntryStruct):
 		nextID = logEntryStruct[1]
 		newMap = {}
-		for loggerName in self.__loggerMap:
+		for loggerName in self.__loggerMap.keys():
 			logger = self.__loggerMap[loggerName]
 			newMap[loggerName] = logger._descend(logEntryStruct)
 		return NamedMulticastLogger(newMap, self._idCounter, self._indentationLevel + 1, nextID)

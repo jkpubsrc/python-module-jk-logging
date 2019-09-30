@@ -45,7 +45,7 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 		self.__fillChar = fillChar
 		self.__indentBuffer = fillChar
 		self.__includeIDs = bIncludeIDs
-		self.__outputMode = HTMLLogMessageFormatter.EnumOutputMode.SHORTED
+		self.__outputMode = HTMLLogMessageFormatter.EnumOutputMode.FULL
 		self.__bLinesWithBRTag = bLinesWithBRTag
 	#
 
@@ -53,7 +53,7 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 
 	def setOutputMode(self, outputMode:EnumOutputMode):
 		if outputMode is None:
-			outputMode = HTMLLogMessageFormatter.EnumOutputMode.SHORTED
+			outputMode = HTMLLogMessageFormatter.EnumOutputMode.FULL
 		self.__outputMode = outputMode
 	#
 

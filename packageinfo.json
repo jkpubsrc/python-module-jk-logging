@@ -1,0 +1,51 @@
+{
+	"language": "python3",
+	"name": "jk_logging",
+	"version": "0.2019.9.30",
+	"meta": {
+		"description": "This is a logging framework.",
+		"keywords": [
+			"debugging",
+			"logging"
+		],
+		"license": "Apache 2.0",
+		"development_status": "stable",
+		"authors": [
+			{
+				"name": "Jürgen Knauth",
+				"email": "pubsrc@binary-overflow.de"
+			}
+		],
+		"wiki": {
+			"page": "DevDocs:jk_logging"
+		}
+	},
+	"repositories": [
+		{
+			"type": "github",
+			"user": "jkpubsrc",
+			"project": "python-module-jk-logging",
+			"devon_publish": false
+		},
+		{
+			"type": "pypy",
+			"project": "jk_logging",
+			"devon_publish": false
+		}
+	],
+	"source": {
+		"packages": [
+			"jk_logging"
+		],
+		"extra_data_files": [
+		]
+	},
+	"requirements": {
+		"python_packages": [
+			"jk_exceptionhelper"
+		],
+		"python_packages_dev": [
+		]
+	}
+}
+

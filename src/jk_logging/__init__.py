@@ -1,4 +1,7 @@
+﻿
+
 from .IDCounter import IDCounter
+from .RollOverLogFile import RollOverLogFile
 
 from .EnumLogLevel import EnumLogLevel
 from .AbstractLogger import AbstractLogger
@@ -28,9 +31,6 @@ from ._inst import instantiateLogMsgFormatter, instantiate
 
 
 
-__version__ = "0.2019.9.10"
-
-
-
+__version__ = "0.2019.9.30"
 
 

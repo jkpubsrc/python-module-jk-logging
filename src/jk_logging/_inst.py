@@ -93,13 +93,13 @@ def instantiate(cfg):
 		loggers = []
 		for item in cfg["nested"]:
 			loggers.append(instantiate(item))
-		return MulticastLogger.create(* loggers)
+		return MulticastLogger.create(*loggers)
 
 	elif loggerType == "NamedMulticastLogger":
 		loggers = {}
 		for itemKey in cfg["nested"]:
 			loggers[itemKey] = instantiate(cfg["nested"][itemKey])
-		return NamedMulticastLogger.create(kwargs = loggers)
+		return NamedMulticastLogger.create(**loggers)
 
 	elif loggerType == "NullLogger":
 		return NullLogger.create()

@@ -31,6 +31,7 @@ def doLogTest(log):
 
 	log2 = log.descend("Frequent log messages ...")
 	log2.info("Some more log data.")
+#
 
 
 

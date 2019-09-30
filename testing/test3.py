@@ -28,7 +28,7 @@ def logException(blog, text):
 
 blog = BufferLogger.create()
 clog = ConsoleLogger.create()
-flog = FileLogger.create("/home/jknauth/DevOS/PythonModules/jk_logging/examples/test-output-%Y-%m-%d-%H-%M.log.txt", "minute")
+flog = FileLogger.create("test-output-%Y-%m-%d-%H-%M.log.txt", "minute")
 
 log = MulticastLogger.create(clog, blog, flog)
 

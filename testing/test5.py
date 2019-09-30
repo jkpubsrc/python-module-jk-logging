@@ -14,17 +14,6 @@ import jk_logging
 
 
 
-
-
-if os.path.isfile("test6-log.json"):
-	os.unlink("test6-log.json")
-
-
-
-
-
-
-
 def doLogTest(log):
 	log.trace("This is a test for TRACE.")
 	log.debug("This is a test for DEBUG.")
@@ -42,27 +31,30 @@ def doLogTest(log):
 
 	log2 = log.descend("Frequent log messages ...")
 	log2.info("Some more log data.")
+#
 
 
 
 print()
-print("-- JSONLogger --")
+print("-- BufferLogger --")
 
-jlog = jk_logging.JSONLogger.create("test6-log.json")
-doLogTest(jlog.descend("TEST"))
+blog = jk_logging.BufferLogger.create()
+doLogTest(blog.descend("TEST"))
 
 print()
 print("-- forwarding to ConsoleLogger --")
 
 clog = jk_logging.ConsoleLogger.create()
-jlog.forwardTo(clog)
+
+blog.forwardTo(clog)
 
 print()
 print("-- reconstructing and forwarding to ConsoleLogger --")
 
 clog = jk_logging.ConsoleLogger.create()
-jlog2 = jk_logging.JSONLogger.create("test6-log.json")
-jlog2.forwardTo(clog)
+
+blog2 = jk_logging.BufferLogger.create(blog.getDataAsJSON())
+blog2.forwardTo(clog)
 
 
 

@@ -18,7 +18,7 @@ print()
 print("-- FileLogger --")
 print("(writing output to various files ...)")
 
-flog = FileLogger("testoutput-%Y-%m-%d-%H-%M-%S.log", "second")
+flog = FileLogger.create("testoutput-%Y-%m-%d-%H-%M-%S.log", "second")
 
 flog.debug("This is a test for DEBUG.")
 flog.notice("This is a test for NOTICE.")

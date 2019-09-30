@@ -10,7 +10,7 @@ import abc
 import datetime
 import re
 
-import sh
+import jk_exceptionhelper
 
 from .EnumLogLevel import *
 from .IDCounter import IDCounter
@@ -34,6 +34,7 @@ def _getLogLevelStrMap(bPrefixWithSpacesToSameLength = False):
 				s = " " + s
 		logLevelToStrDict[logLevel] = s
 	return logLevelToStrDict
+#
 
 
 
@@ -45,37 +46,9 @@ def _getLogLevelStr(logLevel):
 	if pos >= 0:
 		s = s[pos+1:]
 	return s
-
-
-
-
-
-_PATTERN1 = re.compile("^File\\s\"" + "(?P<path>.+?)" + "\",\\sline\\s" + "(?P<line>[0-9]+?)" + ",\\sin " + "(?P<module>.+?)" + "$")
-_PATTERN2 = re.compile("^File\\s\"" + "(?P<path>.+?)" + "\",\\sline\\s" + "(?P<line>[0-9]+?)$")
-
-
 #
-# Parse an exception line such as: "File \"./test.py\", line 33, in <module>"
-#
-def _parseExceptionLine(line):
-	match = _PATTERN1.match(line)
-	if match:
-		path = match.group("path")
-		sLineNo = match.group("line")
-		module = match.group("module")
-	else:
-		match = _PATTERN2.match(line)
-		if match:
-			path = match.group("path")
-			sLineNo = match.group("line")
-			module = "(unknown)"
-		else:
-			path = "(unknown)"
-			sLineNo = "-1"
-			module = "(unknown)"
 
-	return (path, sLineNo, module)
-#
+
 
 
 
@@ -95,8 +68,7 @@ class AbstractLogger(object):
 
 
 
-	EINSTANCE = _ExceptionInChildContextException()
-
+	_EINSTANCE = _ExceptionInChildContextException()
 
 	_logLevelToStrDict = _getLogLevelStrMap(True)
 
@@ -135,34 +107,12 @@ class AbstractLogger(object):
 
 	@staticmethod
 	def exceptionToJSON(ex):
-		exceptionClassName = ex.__class__.__name__
-		exceptionLines = []
-		for line in str(ex).splitlines():
-			line = line.strip()
-			if len(line) > 0:
-				exceptionLines.append(line)
-
-		stackTrace = []
-		tempLine = ""
-		exceptionText = traceback.format_exc()
-		for line in exceptionText.splitlines():
-			line = line.strip()
-			if line.startswith("Traceback "):
-				continue
-			if len(tempLine) > 0:
-				(filePath, sLineNo, moduleName) = _parseExceptionLine(tempLine)
-				stackTrace.append([ filePath, int(sLineNo), moduleName, line ])
-				tempLine = ""
-			else:
-				if line.startswith("File "):
-					tempLine = line
-				else:
-					break
+		exceptionObject = jk_exceptionhelper.analyseException(ex)
 
 		return {
-			"exClass": exceptionClassName,
-			"exText": " ".join(exceptionLines),
-			"exStack": stackTrace,
+			"exClass": exceptionObject.exceptionClassName,
+			"exText": exceptionObject.exceptionTextHR,
+			"exStack": [ [x.filePath, x.lineNo, x.lineNo, x.sourceCodeLine] for x in exceptionObject.stackTrace ],
 		}
 	#
 
@@ -182,30 +132,7 @@ class AbstractLogger(object):
 		timeStamp = time.time()
 
 		if isinstance(textOrException, Exception):
-			exceptionClassName = textOrException.__class__.__name__
-			exceptionLines = []
-			for line in str(textOrException).splitlines():
-				line = line.strip()
-				if len(line) > 0:
-					exceptionLines.append(line)
-
-			stackTrace = []
-			tempLine = ""
-			exceptionText = traceback.format_exc()
-			for line in exceptionText.splitlines():
-				line = line.strip()
-				if line.startswith("Traceback "):
-					continue
-				if len(tempLine) > 0:
-					(filePath, sLineNo, moduleName) = _parseExceptionLine(tempLine)
-					stackTrace.append([ filePath, int(sLineNo), moduleName, line ])
-					tempLine = ""
-				else:
-					if line.startswith("File "):
-						tempLine = line
-					else:
-						break
-
+			exceptionObject = jk_exceptionhelper.analyseException(textOrException)
 			return (
 				"ex",
 				logEntryID,
@@ -213,9 +140,9 @@ class AbstractLogger(object):
 				parentLogEntryID,
 				timeStamp,
 				logLevel,
-				exceptionClassName,
-				" ".join(exceptionLines),
-				stackTrace
+				exceptionObject.exceptionClassName,
+				exceptionObject.exceptionTextHR,
+				[ (x.filePath, x.lineNo, x.lineNo, x.sourceCodeLine) for x in exceptionObject.stackTrace ]
 			)
 
 		return (
@@ -475,10 +402,10 @@ class AbstractLogger(object):
 	def __exit__(self, etype, value, traceback):
 		if etype != None:
 			if etype == _ExceptionInChildContextException:
-				raise AbstractLogger.EINSTANCE
+				raise AbstractLogger._EINSTANCE
 			e = etype(value)
 			self.exception(e)
-			raise AbstractLogger.EINSTANCE
+			raise AbstractLogger._EINSTANCE
 		return False
 	#
 
