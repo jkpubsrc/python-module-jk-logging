@@ -1,7 +1,7 @@
 {
 	"language": "python3",
 	"name": "jk_logging",
-	"version": "0.2019.9.30",
+	"version": "0.2019.10.4",
 	"meta": {
 		"description": "This is a logging framework.",
 		"keywords": [

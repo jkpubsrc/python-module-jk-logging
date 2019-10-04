@@ -140,6 +140,12 @@ class BufferLogger(AbstractLogger):
 
 
 
+	def forwardToDescended(self, logger, text:str, bClear = False):
+		self.forwardTo(logger.descend(text), bClear)
+	#
+
+
+
 	def clear(self):
 		self.__list = []
 	#
