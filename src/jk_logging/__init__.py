@@ -31,5 +31,4 @@ from ._inst import instantiateLogMsgFormatter, instantiate
 
 
 
-__version__ = "0.2019.10.4"
-
+__version__ = "0.2020.1.16"

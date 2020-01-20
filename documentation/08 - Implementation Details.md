@@ -26,7 +26,7 @@ All log entries will contain the following fields in raw format:
 * `float` : The time stamp in seconds since epoch
 * `EnumLogLevel` : The type of the log entry
 
-#+## Additonal Fields
+#### Additonal Fields
 
 Additionally a text message entry will have the following field:
 

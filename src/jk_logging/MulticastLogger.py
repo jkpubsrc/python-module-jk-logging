@@ -41,7 +41,13 @@ class MulticastLogger(AbstractLogger):
 						raise Exception("Invalid object found in logger list: " + str(type(item)))
 			else:
 				raise Exception("Invalid logger list: " + str(type(loggerList)))
+	#
 
+
+
+	@property
+	def loggers(self) -> tuple:
+		return tuple(self.__loggerList)
 	#
 
 
@@ -49,7 +55,6 @@ class MulticastLogger(AbstractLogger):
 	@staticmethod
 	def create(*argv):
 		return MulticastLogger(loggerList = argv)
-
 	#
 
 
@@ -57,7 +62,6 @@ class MulticastLogger(AbstractLogger):
 	def addLogger(self, logger):
 		assert isinstance(logger, AbstractLogger)
 		self.__loggerList.append(logger)
-
 	#
 
 
@@ -65,14 +69,12 @@ class MulticastLogger(AbstractLogger):
 	def removeLogger(self, logger):
 		assert isinstance(logger, AbstractLogger)
 		self.__loggerList.remove(logger)
-
 	#
 
 
 
 	def removeAllLoggers(self):
 		self.__loggerList = []
-
 	#
 
 
@@ -80,7 +82,6 @@ class MulticastLogger(AbstractLogger):
 	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
 		for logger in self.__loggerList:
 			logger._logi(logEntryStruct, True)
-
 	#
 
 
@@ -91,7 +92,6 @@ class MulticastLogger(AbstractLogger):
 		for logger in self.__loggerList:
 			newList.append(logger._descend(logEntryStruct))
 		return MulticastLogger(self._idCounter, newList, self._indentationLevel + 1, nextID)
-
 	#
 
 
@@ -99,21 +99,18 @@ class MulticastLogger(AbstractLogger):
 	def clear(self):
 		for logger in self.__loggerList:
 			logger.clear()
-
 	#
 
 
 
 	def __str__(self):
 		return "<MulticastLogger(" + hex(id(self)) + ", " + str(self.__loggerList) + ")>"
-
 	#
 
 
 
 	def __repr__(self):
 		return "<MulticastLogger(" + hex(id(self)) + ", " + str(self.__loggerList) + ")>"
-
 	#
 
 
@@ -121,7 +118,6 @@ class MulticastLogger(AbstractLogger):
 	def close(self):
 		for logger in self.__loggerList:
 			logger.close()
-
 	#
 
 

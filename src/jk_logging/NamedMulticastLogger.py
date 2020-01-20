@@ -41,6 +41,19 @@ class NamedMulticastLogger(AbstractLogger):
 
 
 
+	@property
+	def loggers(self) -> dict:
+		return dict(self.__loggerMap)
+	#
+
+
+
+	def getLogger(self, loggerName) -> AbstractLogger:
+		return self.__loggerMap.get(loggerName)
+	#
+
+
+
 	@staticmethod
 	def create(**kwargs):
 		return NamedMulticastLogger(loggerMap = kwargs)

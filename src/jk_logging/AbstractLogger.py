@@ -112,7 +112,7 @@ class AbstractLogger(object):
 		return {
 			"exClass": exceptionObject.exceptionClassName,
 			"exText": exceptionObject.exceptionTextHR,
-			"exStack": [ [x.filePath, x.lineNo, x.lineNo, x.sourceCodeLine] for x in exceptionObject.stackTrace ],
+			"exStack": [ [x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine] for x in exceptionObject.stackTrace ],
 		}
 	#
 
@@ -142,7 +142,7 @@ class AbstractLogger(object):
 				logLevel,
 				exceptionObject.exceptionClassName,
 				exceptionObject.exceptionTextHR,
-				[ (x.filePath, x.lineNo, x.lineNo, x.sourceCodeLine) for x in exceptionObject.stackTrace ]
+				[ (x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine) for x in exceptionObject.stackTrace ]
 			)
 
 		return (

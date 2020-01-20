@@ -25,7 +25,7 @@ setup(
 		"Topic :: System :: Logging",
 	],
 	description = "This is a logging framework.",
-	download_url = "https://github.com/jkpubsrc/python-module-jk-logging/tarball/0.2019.9.30",
+	download_url = "https://github.com/jkpubsrc/python-module-jk-logging/tarball/0.2020.1.16",
 	include_package_data = False,
 	install_requires = [
 		"jk_exceptionhelper",
@@ -40,7 +40,7 @@ setup(
 		"jk_logging",
 	],
 	url = "https://github.com/jkpubsrc/python-module-jk-logging",
-	version = "0.2019.9.30",
+	version = "0.2020.1.16",
 	zip_safe = False,
 	long_description = readme(),
 	long_description_content_type="text/markdown",
