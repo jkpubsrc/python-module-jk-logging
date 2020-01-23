@@ -19,6 +19,11 @@ class IntContainer(object):
 
 	def __init__(self, initialValue = 0):
 		self.value = initialValue
+	#
+
+#
+
+
 
 
 
@@ -30,16 +35,21 @@ class DetectionLogger(AbstractLogger):
 
 
 
-	def __init__(self, logger, protocol = None, maxLogLevelSeen = None):
+	def __init__(self, logger, logLevelCounterMap:dict = None, maxLogLevelSeen:IntContainer = None):
 		super().__init__(None)
+
 		self.__logger = logger
-		if protocol is None:
-			self.__protocol = {}
+		if logLevelCounterMap is None:
+			self.__logLevelCounterMap = {}
 		else:
-			self.__protocol = protocol
+			assert isinstance(logLevelCounterMap, dict)
+			self.__logLevelCounterMap = logLevelCounterMap
+
 		if maxLogLevelSeen is None:
-			maxLogLevelSeen = IntContainer()
-		self.__maxLogLevelSeen = maxLogLevelSeen
+			self.__maxLogLevelSeen = IntContainer()
+		else:
+			assert isinstance(maxLogLevelSeen, IntContainer)
+			self.__maxLogLevelSeen = maxLogLevelSeen
 	#
 
 
@@ -52,9 +62,16 @@ class DetectionLogger(AbstractLogger):
 
 
 
+	def _descend(self, logEntryStruct):
+		descendedLogger = self.__logger._descend(logEntryStruct)
+		return DetectionLogger(descendedLogger, self.__logLevelCounterMap, self.__maxLogLevelSeen)
+	#
+
+
+
 	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
 		nLogLevel = int(logEntryStruct[5])
-		self.__protocol[nLogLevel] = self.__protocol.get(nLogLevel, 0) + 1
+		self.__logLevelCounterMap[nLogLevel] = self.__logLevelCounterMap.get(nLogLevel, 0) + 1
 		if nLogLevel > self.__maxLogLevelSeen.value:
 			self.__maxLogLevelSeen.value = nLogLevel
 		self.__logger._logi(logEntryStruct, bNeedsIndentationLevelAdaption)
@@ -66,7 +83,7 @@ class DetectionLogger(AbstractLogger):
 	# Returns the number of log messages issued.
 	#
 	def getLogMsgCount(self, logLevel):
-		return self.__protocol.get(int(logLevel), 0)
+		return self.__logLevelCounterMap.get(int(logLevel), 0)
 	#
 
 
@@ -76,14 +93,16 @@ class DetectionLogger(AbstractLogger):
 	#
 	def getLogMsgCountsIntMap(self):
 		return {
-			int(EnumLogLevel.DEBUG) : self.__protocol.get(int(EnumLogLevel.DEBUG), 0),
-			int(EnumLogLevel.NOTICE) : self.__protocol.get(int(EnumLogLevel.NOTICE), 0),
-			int(EnumLogLevel.INFO) : self.__protocol.get(int(EnumLogLevel.INFO), 0),
-			int(EnumLogLevel.STDOUT) : self.__protocol.get(int(EnumLogLevel.STDOUT), 0),
-			int(EnumLogLevel.WARNING) : self.__protocol.get(int(EnumLogLevel.WARNING), 0),
-			int(EnumLogLevel.ERROR) : self.__protocol.get(int(EnumLogLevel.ERROR), 0),
-			int(EnumLogLevel.STDERR) : self.__protocol.get(int(EnumLogLevel.STDERR), 0),
-			int(EnumLogLevel.EXCEPTION) : self.__protocol.get(int(EnumLogLevel.EXCEPTION), 0),
+			int(EnumLogLevel.TRACE) : self.__logLevelCounterMap.get(int(EnumLogLevel.TRACE), 0),
+			int(EnumLogLevel.DEBUG) : self.__logLevelCounterMap.get(int(EnumLogLevel.DEBUG), 0),
+			int(EnumLogLevel.NOTICE) : self.__logLevelCounterMap.get(int(EnumLogLevel.NOTICE), 0),
+			int(EnumLogLevel.INFO) : self.__logLevelCounterMap.get(int(EnumLogLevel.INFO), 0),
+			int(EnumLogLevel.STDOUT) : self.__logLevelCounterMap.get(int(EnumLogLevel.STDOUT), 0),
+			int(EnumLogLevel.SUCCESS) : self.__logLevelCounterMap.get(int(EnumLogLevel.SUCCESS), 0),
+			int(EnumLogLevel.WARNING) : self.__logLevelCounterMap.get(int(EnumLogLevel.WARNING), 0),
+			int(EnumLogLevel.ERROR) : self.__logLevelCounterMap.get(int(EnumLogLevel.ERROR), 0),
+			int(EnumLogLevel.STDERR) : self.__logLevelCounterMap.get(int(EnumLogLevel.STDERR), 0),
+			int(EnumLogLevel.EXCEPTION) : self.__logLevelCounterMap.get(int(EnumLogLevel.EXCEPTION), 0),
 		}
 	#
 
@@ -94,14 +113,16 @@ class DetectionLogger(AbstractLogger):
 	#
 	def getLogMsgCountsStrMap(self):
 		return {
-			str(EnumLogLevel.DEBUG) : self.__protocol.get(int(EnumLogLevel.DEBUG), 0),
-			str(EnumLogLevel.NOTICE) : self.__protocol.get(int(EnumLogLevel.NOTICE), 0),
-			str(EnumLogLevel.INFO) : self.__protocol.get(int(EnumLogLevel.INFO), 0),
-			str(EnumLogLevel.STDOUT) : self.__protocol.get(int(EnumLogLevel.STDOUT), 0),
-			str(EnumLogLevel.WARNING) : self.__protocol.get(int(EnumLogLevel.WARNING), 0),
-			str(EnumLogLevel.ERROR) : self.__protocol.get(int(EnumLogLevel.ERROR), 0),
-			str(EnumLogLevel.STDERR) : self.__protocol.get(int(EnumLogLevel.STDERR), 0),
-			str(EnumLogLevel.EXCEPTION) : self.__protocol.get(int(EnumLogLevel.EXCEPTION), 0),
+			str(EnumLogLevel.TRACE) : self.__logLevelCounterMap.get(int(EnumLogLevel.TRACE), 0),
+			str(EnumLogLevel.DEBUG) : self.__logLevelCounterMap.get(int(EnumLogLevel.DEBUG), 0),
+			str(EnumLogLevel.NOTICE) : self.__logLevelCounterMap.get(int(EnumLogLevel.NOTICE), 0),
+			str(EnumLogLevel.INFO) : self.__logLevelCounterMap.get(int(EnumLogLevel.INFO), 0),
+			str(EnumLogLevel.STDOUT) : self.__logLevelCounterMap.get(int(EnumLogLevel.STDOUT), 0),
+			str(EnumLogLevel.SUCCESS) : self.__logLevelCounterMap.get(int(EnumLogLevel.SUCCESS), 0),
+			str(EnumLogLevel.WARNING) : self.__logLevelCounterMap.get(int(EnumLogLevel.WARNING), 0),
+			str(EnumLogLevel.ERROR) : self.__logLevelCounterMap.get(int(EnumLogLevel.ERROR), 0),
+			str(EnumLogLevel.STDERR) : self.__logLevelCounterMap.get(int(EnumLogLevel.STDERR), 0),
+			str(EnumLogLevel.EXCEPTION) : self.__logLevelCounterMap.get(int(EnumLogLevel.EXCEPTION), 0),
 		}
 	#
 
@@ -111,7 +132,7 @@ class DetectionLogger(AbstractLogger):
 	# Indicates if this logger has seen such a log message.
 	#
 	def hasLogMsg(self, logLevel):
-		return self.__protocol.get(int(logLevel), 0) > 0
+		return self.__logLevelCounterMap.get(int(logLevel), 0) > 0
 	#
 
 
@@ -163,13 +184,13 @@ class DetectionLogger(AbstractLogger):
 
 
 	def descend(self, text):
-		return DetectionLogger(self.__logger.descend(text), self.__protocol, self.__maxLogLevelSeen)
+		return DetectionLogger(self.__logger.descend(text), self.__logLevelCounterMap, self.__maxLogLevelSeen)
 	#
 
 
 
 	def clear(self):
-		self.__protocol = {}
+		self.__logLevelCounterMap = {}
 		self.__maxLogLevelSeen.value = 0
 		self.__logger.clear()
 	#
