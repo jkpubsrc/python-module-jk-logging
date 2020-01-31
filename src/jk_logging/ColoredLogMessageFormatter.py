@@ -24,6 +24,40 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	#
 
 
+	#
+	# Color codes:
+	#
+	# * dark foregrounds
+	#	* 30 = black
+	#	* 31 = dark red
+	#	* 32 = dark green
+	#	* 33 = brown
+	# 	* 34 = dark blue
+	# 	* 35 = dark pink
+	# 	* 36 = dark cyan
+	#	* 37 = dark grey
+	#
+	# * normal foregrounds
+	# 	* 90 = dark grey
+	# 	* 91 = bright red
+	# 	* 92 = green
+	# 	* 93 = yellow
+	# 	* 94 = blue
+	# 	* 95 = pink
+	# 	* 96 = cyan
+	# 	* 97 = white
+	#
+	# * backgrounds:
+	# 	* 100 = grey
+	# 	* 101 = orange
+	# 	* 102 = light green
+	# 	* 103 = yellow
+	# 	* 104 = light blue
+	# 	* 105 = light pink
+	# 	* 106 = light cyan
+	# 	* 107 = white
+	# 
+
 
 	LOG_LEVEL_TO_COLOR_MAP = {
 		EnumLogLevel.TRACE: '\033[90m',
@@ -38,7 +72,8 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 		EnumLogLevel.SUCCESS: '\033[92m',
 	}
 	#STACKTRACE_COLOR = "\033[38;2;204;102;0m"
-	STACKTRACE_COLOR = "\033[93m"
+	#STACKTRACE_COLOR = "\033[93m"
+	STACKTRACE_COLOR = "\033[31m"
 	RESET_COLOR = '\033[0m'
 
 
@@ -90,7 +125,6 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 			sExClass = logEntryStruct[6]
 			sLogMsg = logEntryStruct[7]
 			ret = []
-			ret.append(s1 + sLogType + ": " + sExClass + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR)
 			if logEntryStruct[8] != None:
 				if self.__outputMode == ColoredLogMessageFormatter.EnumOutputMode.FULL:
 					for (stPath, stLineNo, stModuleName, stLine) in logEntryStruct[8]:
@@ -98,6 +132,7 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 				elif self.__outputMode == ColoredLogMessageFormatter.EnumOutputMode.SHORTED:
 					stPath, stLineNo, stModuleName, stLine = logEntryStruct[8][-1]
 					ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + ColoredLogMessageFormatter.RESET_COLOR)
+			ret.append(s1 + sLogType + ": " + sExClass + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR)
 			return ret
 		elif logEntryStruct[0] == "desc":
 			sLogMsg = logEntryStruct[6]

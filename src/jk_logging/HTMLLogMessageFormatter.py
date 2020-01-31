@@ -32,12 +32,13 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 		EnumLogLevel.INFO: "#404040",
 		EnumLogLevel.WARNING: "#804040",
 		EnumLogLevel.ERROR: "#800000",
-		EnumLogLevel.STDERR: "#800000",
-		EnumLogLevel.EXCEPTION: "#800000",
-		EnumLogLevel.SUCCESS: "#008000",
+		EnumLogLevel.STDERR: "#900000",
+		EnumLogLevel.EXCEPTION: "#900000",
+		EnumLogLevel.SUCCESS: "#009000",
 	}
 	#STACKTRACE_COLOR = "\033[38;2;204;102;0m"
-	STACKTRACE_COLOR = "#800000"
+	#STACKTRACE_COLOR = "#800000"
+	STACKTRACE_COLOR = "#700000"
 
 
 
@@ -93,7 +94,6 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 			sExClass = logEntryStruct[6]
 			sLogMsg = logEntryStruct[7]
 			ret = []
-			ret.append(s1 + sLogType + ": " + sExClass + ": " + sLogMsg + term)
 			if logEntryStruct[8] != None:
 				if self.__outputMode == HTMLLogMessageFormatter.EnumOutputMode.FULL:
 					for (stPath, stLineNo, stModuleName, stLine) in logEntryStruct[8]:
@@ -101,6 +101,7 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 				elif self.__outputMode == HTMLLogMessageFormatter.EnumOutputMode.SHORTED:
 					stPath, stLineNo, stModuleName, stLine = logEntryStruct[8][-1]
 					ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + term)
+			ret.append(s1 + sLogType + ": " + sExClass + ": " + sLogMsg + term)
 			return ret
 		elif logEntryStruct[0] == "desc":
 			sLogMsg = logEntryStruct[6]
