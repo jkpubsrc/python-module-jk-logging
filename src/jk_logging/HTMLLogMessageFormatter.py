@@ -89,6 +89,8 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 
 		if logEntryStruct[0] == "txt":
 			sLogMsg = logEntryStruct[6]
+			if sLogMsg is None:
+				sLogMsg = ""
 			return s1 + sLogType + ": " + sLogMsg + term
 		elif logEntryStruct[0] == "ex":
 			sExClass = logEntryStruct[6]
@@ -101,10 +103,14 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 				elif self.__outputMode == HTMLLogMessageFormatter.EnumOutputMode.SHORTED:
 					stPath, stLineNo, stModuleName, stLine = logEntryStruct[8][-1]
 					ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + term)
+			if sLogMsg is None:
+				sLogMsg = ""
 			ret.append(s1 + sLogType + ": " + sExClass + ": " + sLogMsg + term)
 			return ret
 		elif logEntryStruct[0] == "desc":
 			sLogMsg = logEntryStruct[6]
+			if sLogMsg is None:
+				sLogMsg = ""
 			return s1 + sLogType + ": " + sLogMsg + term
 		else:
 			raise Exception()

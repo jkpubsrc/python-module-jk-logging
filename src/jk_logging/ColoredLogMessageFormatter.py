@@ -120,6 +120,8 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 
 		if logEntryStruct[0] == "txt":
 			sLogMsg = logEntryStruct[6]
+			if sLogMsg is None:
+				sLogMsg = ""
 			return s1 + sLogType + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR
 		elif logEntryStruct[0] == "ex":
 			sExClass = logEntryStruct[6]
@@ -132,10 +134,14 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 				elif self.__outputMode == ColoredLogMessageFormatter.EnumOutputMode.SHORTED:
 					stPath, stLineNo, stModuleName, stLine = logEntryStruct[8][-1]
 					ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + ColoredLogMessageFormatter.RESET_COLOR)
+			if sLogMsg is None:
+				sLogMsg = ""
 			ret.append(s1 + sLogType + ": " + sExClass + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR)
 			return ret
 		elif logEntryStruct[0] == "desc":
 			sLogMsg = logEntryStruct[6]
+			if sLogMsg is None:
+				sLogMsg = ""
 			return s1 + sLogType + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR
 		else:
 			raise Exception()

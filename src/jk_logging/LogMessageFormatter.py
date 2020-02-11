@@ -50,6 +50,8 @@ class LogMessageFormatter(AbstractLogMessageFormatter):
 
 		if logEntryStruct[0] == "txt":
 			sLogMsg = logEntryStruct[6]
+			if sLogMsg is None:
+				sLogMsg = ""
 			return s + sLogType + ": " + sLogMsg
 		elif logEntryStruct[0] == "ex":
 			sExClass = logEntryStruct[6]
@@ -58,10 +60,14 @@ class LogMessageFormatter(AbstractLogMessageFormatter):
 			if logEntryStruct[8] != None:
 				for (stPath, stLineNo, stModuleName, stLine) in logEntryStruct[8]:
 					ret.append(s + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine)
+			if sLogMsg is None:
+				sLogMsg = ""
 			ret.append(s + " "  + sLogType + ": " + sExClass + ": " + sLogMsg)
 			return ret
 		elif logEntryStruct[0] == "desc":
 			sLogMsg = logEntryStruct[6]
+			if sLogMsg is None:
+				sLogMsg = ""
 			return s + sLogType + ": " + sLogMsg
 		else:
 			raise Exception()
