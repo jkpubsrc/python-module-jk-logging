@@ -12,9 +12,9 @@ import re
 
 import jk_exceptionhelper
 
+from .ExceptionInChildContextException import ExceptionInChildContextException
 from .EnumLogLevel import *
 from .IDCounter import IDCounter
-
 
 
 
@@ -57,7 +57,7 @@ def _getLogLevelStr(logLevel):
 
 
 
-class _ExceptionInChildContextException(Exception):
+class _ExceptionInChildContextException(ExceptionInChildContextException):
 	pass
 #
 
@@ -402,9 +402,11 @@ class AbstractLogger(object):
 	def __exit__(self, etype, value, traceback):
 		if etype != None:
 			if etype == _ExceptionInChildContextException:
-				raise AbstractLogger._EINSTANCE
-			e = etype(value)
-			self.exception(e)
+				#raise AbstractLogger._EINSTANCE
+				return False
+			#e = etype(value)
+			#self.exception(e)
+			self.exception(value)
 			raise AbstractLogger._EINSTANCE
 		return False
 	#

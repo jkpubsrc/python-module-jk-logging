@@ -1,8 +1,14 @@
 ﻿
 
+
+__version__ = "0.2020.7.7"
+
+
+
 from .IDCounter import IDCounter
 from .RollOverLogFile import RollOverLogFile
 
+from .ExceptionInChildContextException import ExceptionInChildContextException
 from .EnumLogLevel import EnumLogLevel
 from .AbstractLogger import AbstractLogger
 from .BufferLogger import BufferLogger
@@ -27,8 +33,3 @@ from .LoggerInstanceManager import LoggerInstanceManager
 
 from ._inst import instantiateLogMsgFormatter, instantiate
 
-
-
-
-
-__version__ = "0.2020.2.11"
