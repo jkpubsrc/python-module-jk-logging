@@ -47,7 +47,7 @@ try:
 		produceError()	# produce an error; the log context will log it automatically though the exception still get's raised
 	clog.notice("We would like to do something else here but that's not possible because of the exception raised.")
 
-except:
+except ExceptionInChildContextException as ee:
 	# as the exception is already logged we don't need to do anything more here
 	pass
 
@@ -66,7 +66,7 @@ try:
 			produceError()	# produce an error; the log context will log it automatically though a replacement exception still get's raised
 		log.notice("We would like to do something else here but that's not possible because of the exception raised.")
 
-except:
+except ExceptionInChildContextException as ee:
 	# as the exception is already logged we don't need to do anything more here;
 	# anyway a replacement exception has been raised instead; we can't access the original exception anymore here;
 	pass

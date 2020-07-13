@@ -57,9 +57,6 @@ def _getLogLevelStr(logLevel):
 
 
 
-class _ExceptionInChildContextException(ExceptionInChildContextException):
-	pass
-#
 
 
 
@@ -67,8 +64,6 @@ class AbstractLogger(object):
 	__metaclass__ = abc.ABCMeta
 
 
-
-	_EINSTANCE = _ExceptionInChildContextException()
 
 	_logLevelToStrDict = _getLogLevelStrMap(True)
 
@@ -401,13 +396,12 @@ class AbstractLogger(object):
 
 	def __exit__(self, etype, value, traceback):
 		if etype != None:
-			if etype == _ExceptionInChildContextException:
-				#raise AbstractLogger._EINSTANCE
+			if isinstance(value, ExceptionInChildContextException):
 				return False
 			#e = etype(value)
 			#self.exception(e)
 			self.exception(value)
-			raise AbstractLogger._EINSTANCE
+			raise ExceptionInChildContextException(value)
 		return False
 	#
 

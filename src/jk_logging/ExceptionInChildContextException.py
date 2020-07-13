@@ -2,7 +2,11 @@
 
 
 class ExceptionInChildContextException(Exception):
-	pass
+	
+	def __init__(self, originalExeption):
+		self.originalExeption = originalExeption
+	#
+
 #
 
 
