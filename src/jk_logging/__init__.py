@@ -1,7 +1,7 @@
 ﻿
 
 
-__version__ = "0.2020.7.13"
+__version__ = "0.2020.8.25"
 
 
 
@@ -32,7 +32,6 @@ from .LoggerInstanceManager import LoggerInstanceManager
 
 
 from ._inst import instantiateLogMsgFormatter, instantiate
-
 
 
 

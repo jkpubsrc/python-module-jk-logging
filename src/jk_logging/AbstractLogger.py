@@ -102,7 +102,7 @@ class AbstractLogger(object):
 
 	@staticmethod
 	def exceptionToJSON(ex):
-		exceptionObject = jk_exceptionhelper.analyseException(ex)
+		exceptionObject = jk_exceptionhelper.analyseException(ex, ignoreJKTypingCheckFunctionSignatureFrames=True)
 
 		return {
 			"exClass": exceptionObject.exceptionClassName,
@@ -127,7 +127,7 @@ class AbstractLogger(object):
 		timeStamp = time.time()
 
 		if isinstance(textOrException, Exception):
-			exceptionObject = jk_exceptionhelper.analyseException(textOrException)
+			exceptionObject = jk_exceptionhelper.analyseException(textOrException, ignoreJKTypingCheckFunctionSignatureFrames=True)
 			return (
 				"ex",
 				logEntryID,
