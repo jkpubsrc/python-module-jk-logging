@@ -40,7 +40,7 @@ setup(
 		"jk_logging",
 	],
 	url = "https://github.com/jkpubsrc/python-module-jk-logging",
-	version = "0.2020.8.25",
+	version = "0.2020.9.2",
 	zip_safe = False,
 	long_description = readme(),
 	long_description_content_type="text/markdown",
