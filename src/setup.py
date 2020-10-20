@@ -21,11 +21,11 @@ setup(
 	classifiers = [
 		"Development Status :: 5 - Production/Stable",
 		"License :: OSI Approved :: Apache Software License",
+		"Programming Language :: Python :: 3",
 		"Topic :: Software Development :: Testing",
 		"Topic :: System :: Logging",
 	],
 	description = "This is a logging framework.",
-	download_url = "https://github.com/jkpubsrc/python-module-jk-logging/tarball/0.2020.8.25",
 	include_package_data = False,
 	install_requires = [
 		"jk_exceptionhelper",
@@ -34,13 +34,12 @@ setup(
 		"debugging",
 		"logging",
 	],
-	license = "Apache 2.0",
+	license = "Apache2",
 	name = "jk_logging",
 	packages = [
 		"jk_logging",
 	],
-	url = "https://github.com/jkpubsrc/python-module-jk-logging",
-	version = "0.2020.9.3",
+	version = "0.2020.10.20",
 	zip_safe = False,
 	long_description = readme(),
 	long_description_content_type="text/markdown",

@@ -1,4 +1,4 @@
-﻿jk_logging
+jk_logging
 ==========
 
 Introduction

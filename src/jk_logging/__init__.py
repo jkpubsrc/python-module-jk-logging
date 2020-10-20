@@ -1,7 +1,7 @@
 ﻿
 
 
-__version__ = "0.2020.9.3"
+__version__ = "0.2020.10.20"
 
 
 
@@ -30,9 +30,9 @@ from .HTMLLogMessageFormatter import HTMLLogMessageFormatter, HTML_LOG_MESSAGE_F
 
 from .LoggerInstanceManager import LoggerInstanceManager
 
+from .annotation_logDescend import logDescend
 
 from ._inst import instantiateLogMsgFormatter, instantiate
-
 
 
 

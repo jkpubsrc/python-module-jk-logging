@@ -1,25 +1,34 @@
 {
-	"language": "python3",
-	"name": "jk_logging",
-	"version": "0.2020.9.3",
+	"magic": {
+		"magic": "packageinfo",
+		"version": 2,
+	},
 	"meta": {
-		"description": "This is a logging framework.",
+		"name": "jk_logging",
+		"version": "0.2020.10.20",
+		"packageClass": "python-module",
+		"language": "python3",
+		"development_status": "stable",
+		"license": "Apache2",
 		"keywords": [
 			"debugging",
 			"logging"
 		],
-		"license": "Apache 2.0",
-		"development_status": "stable",
+		"description": "This is a logging framework.",
 		"authors": [
 			{
 				"name": "Jürgen Knauth",
 				"email": "pubsrc@binary-overflow.de"
 			}
 		],
+	},
+	"documentation": [
+		/*
 		"wiki": {
 			"page": "DevDocs:jk_logging"
 		}
-	},
+		*/
+	],
 	"repositories": [
 		{
 			"type": "github",
