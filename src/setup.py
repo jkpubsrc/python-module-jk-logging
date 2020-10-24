@@ -39,7 +39,7 @@ setup(
 	packages = [
 		"jk_logging",
 	],
-	version = "0.2020.10.20",
+	version = "0.2020.10.24",
 	zip_safe = False,
 	long_description = readme(),
 	long_description_content_type="text/markdown",
