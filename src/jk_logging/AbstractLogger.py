@@ -394,14 +394,14 @@ class AbstractLogger(object):
 
 
 
-	def __exit__(self, etype, value, traceback):
-		if etype != None:
-			if isinstance(value, ExceptionInChildContextException):
+	def __exit__(self, ex_type, ex_value, ex_traceback):
+		if ex_type != None:
+			if isinstance(ex_value, ExceptionInChildContextException):
 				return False
-			#e = etype(value)
+			#e = ex_type(value)
 			#self.exception(e)
-			self.exception(value)
-			raise ExceptionInChildContextException(value)
+			self.exception(ex_value)
+			raise ExceptionInChildContextException(ex_value)
 		return False
 	#
 

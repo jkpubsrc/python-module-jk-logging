@@ -5,7 +5,7 @@
 	},
 	"meta": {
 		"name": "jk_logging",
-		"version": "0.2020.10.24",
+		"version": "0.2020.12.11",
 		"packageClass": "python-module",
 		"language": "python3",
 		"development_status": "stable",
