@@ -2,14 +2,6 @@
 
 
 
-import os
-import time
-import traceback
-import sys
-import abc
-
-import sh
-
 from .EnumLogLevel import *
 from .AbstractLogger import *
 
@@ -25,8 +17,12 @@ class StringListBuffer(object):
 	#
 	# Constructor method.
 	#
-	def __init__(self):
+	def __init__(self, existingLogLines:typing.List[str] = None):
 		self.__list = []
+		if existingLogLines:
+			for line in existingLogLines:
+				assert isinstance(line, str)
+			self.__list.extend(existingLogLines)
 	#
 
 

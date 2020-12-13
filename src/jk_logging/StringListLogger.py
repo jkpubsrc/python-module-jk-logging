@@ -2,13 +2,7 @@
 
 
 
-import os
-import time
-import traceback
-import sys
-import abc
-
-import sh
+import typing
 
 from .EnumLogLevel import *
 from .AbstractLogger import *
@@ -89,8 +83,8 @@ class StringListLogger(AbstractLogger):
 	# @param		AbstractLogMessageFormatter logMsgFormatter
 	#
 	@staticmethod
-	def create(logMsgFormatter = None):
-		logFile = StringListBuffer()
+	def create(logMsgFormatter = None, existingLogLines:typing.List[str] = None):
+		logFile = StringListBuffer(existingLogLines)
 		return StringListLogger(None, None, 0, logFile, None, logMsgFormatter)
 	#
 
@@ -132,7 +126,10 @@ class StringListLogger(AbstractLogger):
 
 
 
-	def toList(self):
+	#
+	# Returns the strings that are currently stored in the internal buffer
+	#
+	def toList(self) -> typing.List[str]:
 		return self.__f.getDataAsList()
 	#
 
