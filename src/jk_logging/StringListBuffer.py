@@ -2,6 +2,8 @@
 
 
 
+import typing
+
 from .EnumLogLevel import *
 from .AbstractLogger import *
 

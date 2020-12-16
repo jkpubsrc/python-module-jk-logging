@@ -153,6 +153,32 @@ class AbstractLogger(object):
 
 
 
+	def log(self, logLevel:EnumLogLevel, logData):
+		if logLevel == EnumLogLevel.TRACE:
+			self.trace(logData)
+		elif logLevel == EnumLogLevel.DEBUG:
+			self.debug(logData)
+		elif logLevel == EnumLogLevel.NOTICE:
+			self.notice(logData)
+		elif logLevel == EnumLogLevel.INFO:
+			self.info(logData)
+		elif logLevel == EnumLogLevel.STDOUT:
+			self.stdout(logData)
+		elif logLevel == EnumLogLevel.SUCCESS:
+			self.success(logData)
+		elif logLevel == EnumLogLevel.WARNING:
+			self.warn(logData)
+		elif logLevel == EnumLogLevel.ERROR:
+			self.error(logData)
+		elif logLevel == EnumLogLevel.STDERR:
+			self.stderr(logData)
+		elif logLevel == EnumLogLevel.EXCEPTION:
+			self.exception(logData)
+		else:
+			raise Exception("This log level is not supported: {}".format(logLevel))
+	#
+
+
 	#
 	# Perform logging with log level ERROR.
 	#
