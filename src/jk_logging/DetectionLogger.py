@@ -1,12 +1,11 @@
-﻿#!/usr/bin/env python3
-
+﻿
 
 
 import os
 import time
 import traceback
 import sys
-import abc
+import typing
 
 from .EnumLogLevel import *
 from .AbstractLogger import *
@@ -93,9 +92,9 @@ class DetectionLogger(AbstractLogger):
 
 
 	#
-	# Returns the number of log messages issued.
+	# Returns the number of log messages issued. The returned data dictionary uses integers as keys.
 	#
-	def getLogMsgCountsIntMap(self) -> dict:
+	def getLogMsgCountsIntMap(self) -> typing.Dict[int,int]:
 		return {
 			int(EnumLogLevel.TRACE) : self.__logLevelCounterMap.get(int(EnumLogLevel.TRACE), 0),
 			int(EnumLogLevel.DEBUG) : self.__logLevelCounterMap.get(int(EnumLogLevel.DEBUG), 0),
@@ -113,9 +112,9 @@ class DetectionLogger(AbstractLogger):
 
 
 	#
-	# Returns the number of log messages issued.
+	# Returns the number of log messages issued. The returned data dictionary uses strings as keys.
 	#
-	def getLogMsgCountsStrMap(self) -> dict:
+	def getLogMsgCountsIntMap(self) -> typing.Dict[str,int]:
 		return {
 			str(EnumLogLevel.TRACE) : self.__logLevelCounterMap.get(int(EnumLogLevel.TRACE), 0),
 			str(EnumLogLevel.DEBUG) : self.__logLevelCounterMap.get(int(EnumLogLevel.DEBUG), 0),
@@ -133,7 +132,7 @@ class DetectionLogger(AbstractLogger):
 
 
 	#
-	# Indicates if this logger has seen such a log message.
+	# Indicates whether this logger has ever seen such a log message.
 	#
 	def hasLogMsg(self, logLevel):
 		return self.__logLevelCounterMap.get(int(logLevel), 0) > 0
