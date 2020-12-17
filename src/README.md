@@ -197,7 +197,7 @@ print()
 print("-- ConsoleLogger --")
 print()
 
-clog = ConsoleLogger()
+clog = ConsoleLogger.create()
 
 clog.debug("This is a test for DEBUG.")
 clog.notice("This is a test for NOTICE.")
@@ -224,7 +224,7 @@ print()
 print("-- FilterLogger --")
 print()
 
-flog = FilterLogger(clog, EnumLogLevel.WARNING)
+flog = FilterLogger.create(clog, EnumLogLevel.WARNING)
 
 flog.notice("This message will not appear in the log output.")
 flog.error("This message will appear in the log output.")
@@ -233,7 +233,7 @@ print()
 print("-- DetectionLogger --")
 print()
 
-dlog = DetectionLogger(clog)
+dlog = DetectionLogger.create(clog)
 dlog.notice("A notice.")
 dlog.debug("A debug message.")
 dlog.info("An informational message.")
@@ -246,7 +246,7 @@ print()
 print("-- BufferLogger --")
 print()
 
-blog = BufferLogger()
+blog = BufferLogger.create()
 blog.info("First we write something to a buffer.")
 blog.info("And something more.")
 blog.notice("And more.")
@@ -258,31 +258,19 @@ print()
 print("-- MulticastLogger --")
 print()
 
-mlog = MulticastLogger([ clog, clog ])
+mlog = MulticastLogger.create(clog, clog)
 mlog.info("This message gets written twice.")
 
 print()
 print("-- NamedMulticastLogger --")
 print()
 
-nmlog = NamedMulticastLogger()
+nmlog = NamedMulticastLogger.create()
 nmlog.addLogger("log1", clog)
 nmlog.addLogger("log2", clog)
 nmlog.info("This message gets written twice.")
 nmlog.removeLogger("log1")
 nmlog.info("This message gets written once.")
-
-print()
-print("-- SimpleFileLogger --")
-print()
-
-filelog = SimpleFileLogger("test.log")
-filelog.info("Perform log output to this file logger.")
-filelog.close()
-
-filelog = SimpleFileLogger("test.log")
-filelog.info("Perform more log output to this file logger.")
-filelog.close()
 ```
 
 Things to do

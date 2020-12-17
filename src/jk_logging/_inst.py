@@ -11,6 +11,7 @@ from .AbstractLogger import AbstractLogger
 from .BufferLogger import BufferLogger
 from .ConsoleLogger import ConsoleLogger
 from .DetectionLogger_v0 import DetectionLogger_v0
+from .DetectionLogger import DetectionLogger
 from .FilterLogger import FilterLogger
 from .MulticastLogger import MulticastLogger
 from .NamedMulticastLogger import NamedMulticastLogger
@@ -82,6 +83,9 @@ def instantiate(cfg):
 
 	elif loggerType == "DetectionLogger_v0":
 		return DetectionLogger_v0.create(instantiate(cfg["nested"]))
+
+	elif loggerType == "DetectionLogger":
+		return DetectionLogger.create(instantiate(cfg["nested"]))
 
 	elif loggerType == "FilterLogger":
 		if "minLogLevel" in cfg:

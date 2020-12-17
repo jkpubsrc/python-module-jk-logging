@@ -20,7 +20,9 @@ from .AbstractLogger import *
 #
 class MulticastLogger(AbstractLogger):
 
-
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
 
 	def __init__(self, idCounter = None, loggerList = None, indentationLevel = 0, parentLogEntryID = 0):
 		super().__init__(idCounter)
@@ -41,48 +43,23 @@ class MulticastLogger(AbstractLogger):
 				raise Exception("Invalid logger list: " + str(type(loggerList)))
 	#
 
-
+	################################################################################################################################
+	## Public Properties
+	################################################################################################################################
 
 	@property
 	def loggers(self) -> tuple:
 		return tuple(self.__loggerList)
 	#
 
-
-
-	@staticmethod
-	def create(*argv):
-		return MulticastLogger(loggerList = argv)
-	#
-
-
-
-	def addLogger(self, logger):
-		assert isinstance(logger, AbstractLogger)
-		self.__loggerList.append(logger)
-	#
-
-
-
-	def removeLogger(self, logger):
-		assert isinstance(logger, AbstractLogger)
-		self.__loggerList.remove(logger)
-	#
-
-
-
-	def removeAllLoggers(self):
-		self.__loggerList = []
-	#
-
-
+	################################################################################################################################
+	## Protected Methods
+	################################################################################################################################
 
 	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
 		for logger in self.__loggerList:
 			logger._logi(logEntryStruct, True)
 	#
-
-
 
 	def _descend(self, logEntryStruct):
 		nextID = logEntryStruct[1]
@@ -92,33 +69,50 @@ class MulticastLogger(AbstractLogger):
 		return MulticastLogger(self._idCounter, newList, self._indentationLevel + 1, nextID)
 	#
 
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
 
+	def addLogger(self, logger):
+		assert isinstance(logger, AbstractLogger)
+		self.__loggerList.append(logger)
+	#
+
+	def removeLogger(self, logger):
+		assert isinstance(logger, AbstractLogger)
+		self.__loggerList.remove(logger)
+	#
+
+	def removeAllLoggers(self):
+		self.__loggerList = []
+	#
 
 	def clear(self):
 		for logger in self.__loggerList:
 			logger.clear()
 	#
 
-
-
 	def __str__(self):
 		return "<MulticastLogger(" + hex(id(self)) + ", " + str(self.__loggerList) + ")>"
 	#
 
-
-
 	def __repr__(self):
 		return "<MulticastLogger(" + hex(id(self)) + ", " + str(self.__loggerList) + ")>"
 	#
-
-
 
 	def close(self):
 		for logger in self.__loggerList:
 			logger.close()
 	#
 
+	################################################################################################################################
+	## Static Methods
+	################################################################################################################################
 
+	@staticmethod
+	def create(*argv):
+		return MulticastLogger(loggerList = argv)
+	#
 
 #
 

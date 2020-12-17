@@ -1,7 +1,7 @@
 ﻿
 
 
-__version__ = "0.2020.12.16"
+__version__ = "0.2020.12.17"
 
 
 
@@ -10,10 +10,13 @@ from .RollOverLogFile import RollOverLogFile
 
 from .ExceptionInChildContextException import ExceptionInChildContextException
 from .EnumLogLevel import EnumLogLevel
+from .LogStats import LogStats
+
 from .AbstractLogger import AbstractLogger
 from .BufferLogger import BufferLogger
 from .ConsoleLogger import ConsoleLogger
 from .DetectionLogger_v0 import DetectionLogger_v0
+from .DetectionLogger import DetectionLogger
 from .FilterLogger import FilterLogger
 from .MulticastLogger import MulticastLogger
 from .NamedMulticastLogger import NamedMulticastLogger
@@ -34,7 +37,6 @@ from .annotation_logDescend import logDescend
 
 from ._inst import instantiateLogMsgFormatter, instantiate
 from ._wrapMain import wrapMain
-
 
 
 

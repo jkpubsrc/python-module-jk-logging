@@ -30,7 +30,7 @@ The logging framework consists of a variety of log classes that perform logging.
 * `AbstractLogger` : This is the abstract base class for all loggers.
 * `BufferLogger` : This logger writes all log messages to an internal buffer. Later on you can work with the collected log messages.
 * `ConsoleLogger` : This logger writes all log messages to STDOUT.
-* `DetectionLogger` : This logger creates a protocol about what log levels used during logging. Later on you can work with this information.
+* `DetectionLogger` : This logger creates a protocol about what log levels were used during logging and how often. Later on you can retrieve and work with this information.
 * `FileLogger` : A logger that writes to a text file. A new text file will automatically be generated every month/day/hour.
 * `FilterLogger` : A filter logger will allow only certain log messages to pass through. Please note that `FileLogger` is replacing `SimpleFileLogger`.
 * `MulticastLogger` : A multicast logger will forward all log messages to other loggers.
@@ -82,10 +82,9 @@ The loggers provide the following create methods:
 * `FilterLogger.create(logger, minLogLevel = EnumLogLevel.WARNING)`
 * `MulticastLogger.create(*argv)`
 * `NamedMulticastLogger.create(**kwargs)`
-* `SimpleFileLogger.create(filePath, bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = 0o0600, logMsgFormatter = None)`
 * `StringListLogger.create(logMsgFormatter = None)`
 
-### Configuration based Instantiation
+### Configuration Based Instantiation
 
 To let the logging framework instantiate a logger in response to some configuration provided you need to invoke `jk_logging.instantiate(...)`. This configuration must be a dictionary object and must - at least - contain the following keys:
 

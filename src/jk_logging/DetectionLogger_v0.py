@@ -32,7 +32,7 @@ class IntContainer(object):
 #
 # This logger keeps track of how many log messages of what type have been issued.
 #
-# NOTE: Be aware that nested detection loggers will share (!!) the same (!!) objects that count log messages.
+# NOTE: Be aware that nested detection loggers will share the same (!!) objects that count log messages.
 #
 class DetectionLogger_v0(AbstractLogger):
 
@@ -114,7 +114,7 @@ class DetectionLogger_v0(AbstractLogger):
 	#
 	# Returns the number of log messages issued. The returned data dictionary uses strings as keys.
 	#
-	def getLogMsgCountsIntMap(self) -> typing.Dict[str,int]:
+	def getLogMsgCountsStrMap(self) -> typing.Dict[str,int]:
 		return {
 			str(EnumLogLevel.TRACE) : self.__logLevelCounterMap.get(int(EnumLogLevel.TRACE), 0),
 			str(EnumLogLevel.DEBUG) : self.__logLevelCounterMap.get(int(EnumLogLevel.DEBUG), 0),
@@ -195,7 +195,7 @@ class DetectionLogger_v0(AbstractLogger):
 	#
 	# Clear the log message counters.
 	#
-	# NOTE: Please be aware that nested detection loggers will share (!!) the same (!!) objects that count log messages.
+	# NOTE: Please be aware that nested detection loggers will share the same (!!) objects that count log messages.
 	# Invoking this method will therefore affect all log instances of the same tree!
 	#
 	def clear(self):
