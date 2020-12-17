@@ -7,7 +7,7 @@ from jk_logging import *
 
 
 
-dl = DetectionLogger.create(NullLogger.create())
+dl = DetectionLogger_v0.create(NullLogger.create())
 
 myLog = BufferLogger.create()
 myLog2 = myLog.descend("Subsection")

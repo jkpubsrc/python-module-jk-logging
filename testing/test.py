@@ -49,10 +49,10 @@ flog.notice("This message will not appear in the log output.")
 flog.error("This message will appear in the log output.")
 
 print()
-print("-- DetectionLogger --")
+print("-- DetectionLogger_v0 --")
 print()
 
-dlog = DetectionLogger(clog)
+dlog = DetectionLogger_v0(clog)
 dlog.notice("A notice.")
 dlog.debug("A debug message.")
 dlog.info("An informational message.")

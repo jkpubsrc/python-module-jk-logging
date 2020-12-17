@@ -13,7 +13,7 @@ from .EnumLogLevel import EnumLogLevel
 from .AbstractLogger import AbstractLogger
 from .BufferLogger import BufferLogger
 from .ConsoleLogger import ConsoleLogger
-from .DetectionLogger import DetectionLogger
+from .DetectionLogger_v0 import DetectionLogger_v0
 from .FilterLogger import FilterLogger
 from .MulticastLogger import MulticastLogger
 from .NamedMulticastLogger import NamedMulticastLogger
