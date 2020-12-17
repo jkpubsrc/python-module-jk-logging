@@ -9,8 +9,6 @@ import sys
 import json
 import abc
 
-import sh
-
 from jk_logging import *
 
 

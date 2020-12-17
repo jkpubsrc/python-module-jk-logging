@@ -10,8 +10,6 @@ import sys
 import abc
 import datetime
 
-import sh
-
 from .EnumLogLevel import *
 from .AbstractLogger import *
 from .BufferLogger import BufferLogger

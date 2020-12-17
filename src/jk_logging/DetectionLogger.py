@@ -8,10 +8,12 @@ import traceback
 import sys
 import abc
 
-import sh
-
 from .EnumLogLevel import *
 from .AbstractLogger import *
+
+
+
+
 
 
 
@@ -30,6 +32,8 @@ class IntContainer(object):
 
 #
 # This logger keeps track of how many log messages of what type have been issued.
+#
+# NOTE: Be aware that nested detection loggers will share (!!) the same (!!) objects that count log messages.
 #
 class DetectionLogger(AbstractLogger):
 
@@ -55,7 +59,7 @@ class DetectionLogger(AbstractLogger):
 
 
 	@staticmethod
-	def create(logger):
+	def create(logger:AbstractLogger):
 		assert isinstance(logger, AbstractLogger)
 		return DetectionLogger(logger)
 	#
@@ -69,7 +73,7 @@ class DetectionLogger(AbstractLogger):
 
 
 
-	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
+	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption:bool):
 		nLogLevel = int(logEntryStruct[5])
 		self.__logLevelCounterMap[nLogLevel] = self.__logLevelCounterMap.get(nLogLevel, 0) + 1
 		if nLogLevel > self.__maxLogLevelSeen.value:
@@ -91,7 +95,7 @@ class DetectionLogger(AbstractLogger):
 	#
 	# Returns the number of log messages issued.
 	#
-	def getLogMsgCountsIntMap(self):
+	def getLogMsgCountsIntMap(self) -> dict:
 		return {
 			int(EnumLogLevel.TRACE) : self.__logLevelCounterMap.get(int(EnumLogLevel.TRACE), 0),
 			int(EnumLogLevel.DEBUG) : self.__logLevelCounterMap.get(int(EnumLogLevel.DEBUG), 0),
@@ -111,7 +115,7 @@ class DetectionLogger(AbstractLogger):
 	#
 	# Returns the number of log messages issued.
 	#
-	def getLogMsgCountsStrMap(self):
+	def getLogMsgCountsStrMap(self) -> dict:
 		return {
 			str(EnumLogLevel.TRACE) : self.__logLevelCounterMap.get(int(EnumLogLevel.TRACE), 0),
 			str(EnumLogLevel.DEBUG) : self.__logLevelCounterMap.get(int(EnumLogLevel.DEBUG), 0),
@@ -189,6 +193,12 @@ class DetectionLogger(AbstractLogger):
 
 
 
+	#
+	# Clear the log message counters.
+	#
+	# NOTE: Please be aware that nested detection loggers will share (!!) the same (!!) objects that count log messages.
+	# Invoking this method will therefore affect all log instances of the same tree!
+	#
 	def clear(self):
 		self.__logLevelCounterMap = {}
 		self.__maxLogLevelSeen.value = 0

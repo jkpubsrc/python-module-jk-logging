@@ -8,8 +8,6 @@ import traceback
 import sys
 import abc
 
-import sh
-
 from .EnumLogLevel import *
 from .AbstractLogger import *
 from .LogMessageFormatter import *
