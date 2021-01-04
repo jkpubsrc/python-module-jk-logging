@@ -6,7 +6,7 @@ This file contains the approximate history of the changes this module has experi
 * 2020-12-17: renaming the existing `DetectionLogger` to `DetectionLogger_v0`;
 * 2020-12-17: providing a completely new implementation of `DetectionLogger` with a much better architecture and API;
 * 2020-12-17: added a variety of bugfixes to test cases as the test cases unfortunately had errors (not the implementation);
-
+* 2021-01-04: improved `wrapMain()` to exit gracefully as expected if `sys.exit()` is invoked.
 
 
 

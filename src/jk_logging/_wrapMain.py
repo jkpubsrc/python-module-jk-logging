@@ -29,11 +29,13 @@ def wrapMain(log:AbstractLogger = None):
 
 		def __exit__(self, ex_type, ex_value, ex_traceback):
 			if ex_type != None:
+				if ex_type == SystemExit:
+					return False
 				if not isinstance(ex_value, ExceptionInChildContextException):
 					self.log.error(ex_value)
 				sys.exit(1)
 	
-			return False
+			return True
 		#
 
 	#
