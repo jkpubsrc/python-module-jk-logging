@@ -117,7 +117,7 @@ class AbstractLogger(object):
 	def _createNormalLogEntryStruct(self, logEntryID, indentation, parentLogEntryID, logLevel, textOrException):
 		timeStamp = time.time()
 
-		if isinstance(textOrException, Exception):
+		if isinstance(textOrException, BaseException):
 			exceptionObject = jk_exceptionhelper.analyseException(textOrException, ignoreJKTypingCheckFunctionSignatureFrames=True, ignoreJKTestingAssertFrames=True)
 			return (
 				"ex",

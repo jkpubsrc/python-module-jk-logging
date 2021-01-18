@@ -60,21 +60,21 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 
 
 	LOG_LEVEL_TO_COLOR_MAP = {
-		EnumLogLevel.TRACE: '\033[90m',
-		EnumLogLevel.DEBUG: '\033[90m',
-		EnumLogLevel.NOTICE: '\033[90m',
-		EnumLogLevel.STDOUT: '\033[97m',
-		EnumLogLevel.INFO: '\033[37m',
-		EnumLogLevel.WARNING: '\033[93m',
-		EnumLogLevel.ERROR: '\033[91m',
-		EnumLogLevel.STDERR: '\033[91m',
-		EnumLogLevel.EXCEPTION: '\033[91m',
-		EnumLogLevel.SUCCESS: '\033[92m',
+		EnumLogLevel.TRACE: "\033[90m",
+		EnumLogLevel.DEBUG: "\033[90m",
+		EnumLogLevel.NOTICE: "\033[90m",
+		EnumLogLevel.STDOUT: "\033[97m",
+		EnumLogLevel.INFO: "\033[37m",
+		EnumLogLevel.WARNING: "\033[93m",
+		EnumLogLevel.ERROR: "\033[91m",
+		EnumLogLevel.STDERR: "\033[91m",
+		EnumLogLevel.EXCEPTION: "\033[91m",
+		EnumLogLevel.SUCCESS: "\033[92m",
 	}
 	#STACKTRACE_COLOR = "\033[38;2;204;102;0m"
 	#STACKTRACE_COLOR = "\033[93m"
 	STACKTRACE_COLOR = "\033[31m"
-	RESET_COLOR = '\033[0m'
+	RESET_COLOR = "\033[0m"
 
 
 
@@ -108,7 +108,7 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 			self.__indentBuffer += self.__fillChar
 		sIndent = self.__indentBuffer[0:indentationLevel]
 		sParentID = str(logEntryStruct[3]) if (logEntryStruct != None) else "-"
-		sTimeStamp = "[" + datetime.datetime.fromtimestamp(logEntryStruct[4]).strftime('%Y-%m-%d %H:%M:%S') + "]"
+		sTimeStamp = "[" + datetime.datetime.fromtimestamp(logEntryStruct[4]).strftime("%Y-%m-%d %H:%M:%S") + "]"
 		sLogType = AbstractLogMessageFormatter.LOG_LEVEL_TO_STR_MAP[logEntryStruct[5]]
 
 		if self.__includeIDs:
