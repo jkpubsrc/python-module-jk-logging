@@ -45,17 +45,29 @@ class LogStats(object):
 
 	@property
 	def hasAtLeastWarning(self) -> bool:
-		return self.__maxLogLevelSeen.value >= int(EnumLogLevel.WARNING)
+		_maxLogLevelSeen = self.maxLogLevelSeen
+		if _maxLogLevelSeen is None:
+			return False
+		else:
+			return int(_maxLogLevelSeen) >= int(EnumLogLevel.WARNING)
 	#
 
 	@property
 	def hasAtLeastError(self) -> bool:
-		return self.__maxLogLevelSeen.value >= int(EnumLogLevel.ERROR)
+		_maxLogLevelSeen = self.maxLogLevelSeen
+		if _maxLogLevelSeen is None:
+			return False
+		else:
+			return int(_maxLogLevelSeen) >= int(EnumLogLevel.ERROR)
 	#
 
 	@property
 	def hasAtLeastException(self) -> bool:
-		return self.__maxLogLevelSeen.value >= int(EnumLogLevel.EXCEPTION)
+		_maxLogLevelSeen = self.maxLogLevelSeen
+		if _maxLogLevelSeen is None:
+			return False
+		else:
+			return int(_maxLogLevelSeen) >= int(EnumLogLevel.EXCEPTION)
 	#
 
 	@property
