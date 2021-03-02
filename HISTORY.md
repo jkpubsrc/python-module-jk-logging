@@ -24,5 +24,6 @@ This file contains the approximate history of the changes this module has experi
 * 2021-01-14:
 	* Bug fixed in LogStats returning information about maximum log level
 
-
+* 2021-03-02:
+	* Added additional variables for building file paths
 

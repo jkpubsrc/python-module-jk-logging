@@ -112,7 +112,7 @@ class RollOverLogFile(object):
 
 
 
-	def __buildFilePath(self, filePath, timestamp):
+	def __buildFilePath(self, filePath:str, timestamp:datetime.datetime):
 		dataTriples = (
 			("Y", 4, timestamp.year),
 			("m", 2, timestamp.month),
