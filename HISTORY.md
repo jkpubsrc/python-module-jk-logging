@@ -27,3 +27,5 @@ This file contains the approximate history of the changes this module has experi
 * 2021-03-02:
 	* Added additional variables for building file paths
 
+* 2021-04-07:
+	* Extended the processing of log data

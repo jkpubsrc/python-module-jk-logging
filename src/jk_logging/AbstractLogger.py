@@ -131,15 +131,31 @@ class AbstractLogger(object):
 				[ (x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine) for x in exceptionObject.stackTrace ]
 			)
 
-		return (
-			"txt",
-			logEntryID,
-			indentation,
-			parentLogEntryID,
-			timeStamp,
-			logLevel,
-			textOrException.rstrip('\n')
-		)
+		elif isinstance(textOrException, jk_exceptionhelper.ExceptionObject):
+			exceptionObject = textOrException
+			return (
+				"ex",
+				logEntryID,
+				indentation,
+				parentLogEntryID,
+				timeStamp,
+				logLevel,
+				exceptionObject.exceptionClassName,
+				exceptionObject.exceptionTextHR,
+				[ (x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine) for x in exceptionObject.stackTrace ]
+			)
+
+		else:
+			textOrException = str(textOrException)
+			return (
+				"txt",
+				logEntryID,
+				indentation,
+				parentLogEntryID,
+				timeStamp,
+				logLevel,
+				textOrException.rstrip('\n')
+			)
 	#
 
 	#
