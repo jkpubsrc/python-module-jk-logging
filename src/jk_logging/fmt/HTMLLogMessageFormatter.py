@@ -1,12 +1,11 @@
 
 
 
-import datetime
-
 from enum import Enum
 
 from ..EnumLogLevel import EnumLogLevel
 from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
+from .DefaultTimeStampFormatter import DefaultTimeStampFormatter
 
 
 
@@ -50,12 +49,18 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 	## Constructor
 	################################################################################################################################
 
-	def __init__(self, bIncludeIDs = False, fillChar = "&nbsp;&nbsp;&nbsp;&nbsp;", bLinesWithBRTag = False):
+	def __init__(self, bIncludeIDs = False, fillChar = "&nbsp;&nbsp;&nbsp;&nbsp;", bLinesWithBRTag = False, timeStampFormatter = None):
 		self.__fillChar = fillChar
 		self.__indentBuffer = fillChar
 		self.__includeIDs = bIncludeIDs
 		self.__outputMode = HTMLLogMessageFormatter.EnumOutputMode.FULL
 		self.__bLinesWithBRTag = bLinesWithBRTag
+
+		if timeStampFormatter is None:
+			timeStampFormatter = DefaultTimeStampFormatter()
+		else:
+			assert callable(timeStampFormatter)
+		self.__timeStampFormatter = timeStampFormatter
 	#
 
 	################################################################################################################################
@@ -93,7 +98,7 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 			self.__indentBuffer += self.__fillChar
 		sIndent = self.__indentBuffer[0:indentationLevel*len(self.__fillChar)]
 		sParentID = str(logEntryStruct[3]) if (logEntryStruct != None) else "-"
-		sTimeStamp = "[" + datetime.datetime.fromtimestamp(logEntryStruct[4]).strftime('%Y-%m-%d %H:%M:%S') + "]"
+		sTimeStamp = "[" + self.__timeStampFormatter(logEntryStruct[4]) + "]"
 		sLogType = AbstractLogMessageFormatter.LOG_LEVEL_TO_STR_MAP[logEntryStruct[5]]
 
 		if self.__includeIDs:

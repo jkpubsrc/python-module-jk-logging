@@ -1,31 +1,25 @@
 
 
-
-import datetime
-import abc
-
-
-from ..EnumLogLevel import EnumLogLevel
-from ..impl.createLogMsgTypeStrMap import createLogMsgTypeStrMap
+import typing
 
 
 
 
 
 
-
-
-class AbstractLogMessageFormatter(object):
+class DebugTimeStampFormatter:
 
 	################################################################################################################################
 	## Constants
 	################################################################################################################################
 
-	LOG_LEVEL_TO_STR_MAP = createLogMsgTypeStrMap(True)
-
 	################################################################################################################################
 	## Constructor
 	################################################################################################################################
+
+	def __init__(self) -> None:
+		self.__nCounter = 0
+	#
 
 	################################################################################################################################
 	## Properties
@@ -39,22 +33,20 @@ class AbstractLogMessageFormatter(object):
 	## Public Methods
 	################################################################################################################################
 
+	def __call__(self, t:float) -> typing.Any:
+		s = "DEBUG TIMESTAMP " + str(self.__nCounter)
+		self.__nCounter += 1
+		return s
 	#
-	# Create and return a string representation of the specified log entry. Overwrite this method to implement a log message formatter.
-	#
-	# @param		list logEntryStruct			A log entry structure. See <c>AbstractLogger._logi()</c> for a detailed description.
-	# @return		str							Returns the string representation of the log message.
-	#
-	@abc.abstractmethod
-	def format(self, logEntryStruct):
-		pass
-	#
-
-	################################################################################################################################
-	## Static Methods
-	################################################################################################################################
 
 #
+
+
+
+
+
+
+
 
 
 

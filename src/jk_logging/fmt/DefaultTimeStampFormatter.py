@@ -1,27 +1,18 @@
 
 
-
+import typing
 import datetime
-import abc
-
-
-from ..EnumLogLevel import EnumLogLevel
-from ..impl.createLogMsgTypeStrMap import createLogMsgTypeStrMap
 
 
 
 
 
 
-
-
-class AbstractLogMessageFormatter(object):
+class DefaultTimeStampFormatter:
 
 	################################################################################################################################
 	## Constants
 	################################################################################################################################
-
-	LOG_LEVEL_TO_STR_MAP = createLogMsgTypeStrMap(True)
 
 	################################################################################################################################
 	## Constructor
@@ -39,22 +30,18 @@ class AbstractLogMessageFormatter(object):
 	## Public Methods
 	################################################################################################################################
 
+	def __call__(self, t:float) -> typing.Any:
+		return datetime.datetime.fromtimestamp(t).strftime("%Y-%m-%d %H:%M:%S")
 	#
-	# Create and return a string representation of the specified log entry. Overwrite this method to implement a log message formatter.
-	#
-	# @param		list logEntryStruct			A log entry structure. See <c>AbstractLogger._logi()</c> for a detailed description.
-	# @return		str							Returns the string representation of the log message.
-	#
-	@abc.abstractmethod
-	def format(self, logEntryStruct):
-		pass
-	#
-
-	################################################################################################################################
-	## Static Methods
-	################################################################################################################################
 
 #
+
+
+
+
+
+
+
 
 
 
