@@ -8,6 +8,10 @@ from ..EnumLogLevel import EnumLogLevel
 
 
 
+
+
+
+
 def createLogMsgTypeStrMap(bPrefixWithSpacesToSameLength = False):
 
 	def _getLogLevelStr(logLevel):

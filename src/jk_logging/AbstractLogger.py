@@ -16,42 +16,6 @@ from .impl.IDCounter import IDCounter
 
 
 
-def _getLogLevelStrMap(bPrefixWithSpacesToSameLength = False):
-	maxLogLevelLength = len("STACKTRACE")
-	for logLevel in EnumLogLevel:
-		s = _getLogLevelStr(logLevel)
-		if len(s) > maxLogLevelLength:
-			maxLogLevelLength = len(s)
-	logLevelToStrDict = {}
-	for logLevel in EnumLogLevel:
-		s = _getLogLevelStr(logLevel)
-		if bPrefixWithSpacesToSameLength:
-			while len(s) < maxLogLevelLength:
-				s = " " + s
-		logLevelToStrDict[logLevel] = s
-	return logLevelToStrDict
-#
-
-
-
-
-
-def _getLogLevelStr(logLevel):
-	s = str(logLevel)
-	pos = s.rfind(".")
-	if pos >= 0:
-		s = s[pos+1:]
-	return s
-#
-
-
-
-
-
-
-
-
-
 
 
 
@@ -59,8 +23,6 @@ def _getLogLevelStr(logLevel):
 class AbstractLogger(ILogger):
 
 	__metaclass__ = abc.ABCMeta
-
-	_logLevelToStrDict = _getLogLevelStrMap(True)
 
 	################################################################################################################################
 	## Constants
