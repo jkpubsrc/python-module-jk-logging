@@ -5,7 +5,7 @@
 	},
 	"meta": {
 		"name": "jk_logging",
-		"version": "0.2021.4.7",
+		"version": "0.2021.11.25",
 		"packageClass": "python-module",
 		"language": "python3",
 		"development_status": "stable",
@@ -44,7 +44,9 @@
 	],
 	"source": {
 		"packages": [
-			"jk_logging"
+			"jk_logging",
+			"jk_logging.fmt",
+			"jk_logging.impl",
 		],
 		"extra_data_files": [
 		]

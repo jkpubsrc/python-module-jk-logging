@@ -12,6 +12,7 @@ import re
 
 import jk_exceptionhelper
 
+from .ILogger import ILogger
 from .ExceptionInChildContextException import ExceptionInChildContextException
 from .EnumLogLevel import *
 from .IDCounter import IDCounter
@@ -60,7 +61,7 @@ def _getLogLevelStr(logLevel):
 
 
 
-class AbstractLogger(object):
+class AbstractLogger(ILogger):
 	__metaclass__ = abc.ABCMeta
 
 	_logLevelToStrDict = _getLogLevelStrMap(True)
@@ -84,7 +85,7 @@ class AbstractLogger(object):
 	################################################################################################################################
 
 	################################################################################################################################
-	## Protected Methods
+	## Helper Methods
 	################################################################################################################################
 
 	#
@@ -389,8 +390,10 @@ class AbstractLogger(object):
 	# If this logger has references to other loggers, such as a <c>FilterLogger</c>
 	# or a <c>MulticastLogger</c>
 	#
-	def clear(self):
-		pass
+	#def clear(self):
+	#	NOTE: This method has been removed as this can not be a general capability of loggers
+	#		See BufferLogger2.clear() for details
+	#	pass
 	#
 
 	#

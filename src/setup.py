@@ -38,8 +38,10 @@ setup(
 	name = "jk_logging",
 	packages = [
 		"jk_logging",
+		"jk_logging.fmt",
+		"jk_logging.impl",
 	],
-	version = "0.2021.4.7",
+	version = "0.2021.11.25",
 	zip_safe = False,
 	long_description = readme(),
 	long_description_content_type="text/markdown",

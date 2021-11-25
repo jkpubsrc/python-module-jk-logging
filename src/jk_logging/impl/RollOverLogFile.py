@@ -8,8 +8,8 @@ import sys
 import abc
 import datetime
 
-from .EnumLogLevel import *
-from .AbstractLogger import *
+from ..EnumLogLevel import *
+from ..AbstractLogger import *
 
 
 
@@ -19,6 +19,14 @@ from .AbstractLogger import *
 # This object represents a roll-over enabled log file on disk log messages can be written to. Data is encoded using utf-8.
 #
 class RollOverLogFile(object):
+
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
+
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
 
 	#
 	# Constructor method.
@@ -70,7 +78,13 @@ class RollOverLogFile(object):
 		self.__bIsDirty = False
 	#
 
+	################################################################################################################################
+	## Public Properties
+	################################################################################################################################
 
+	################################################################################################################################
+	## Helper Methods
+	################################################################################################################################
 
 	def __isRollOverRequired(self, now):
 		if self.__rollOverMode is None:
@@ -101,16 +115,12 @@ class RollOverLogFile(object):
 		return False
 	#
 
-
-
 	def __toStr(self, number, size):
 		s = str(number)
 		while len(s) < size:
 			s = "0" + s
 		return s
 	#
-
-
 
 	def __buildFilePath(self, filePath:str, timestamp:datetime.datetime):
 		dataTriples = (
@@ -144,7 +154,9 @@ class RollOverLogFile(object):
 		return ret
 	#
 
-
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
 
 	#
 	# Write one or more text lines to the log file.
@@ -189,8 +201,6 @@ class RollOverLogFile(object):
 			self.__bIsDirty = True
 	#
 
-
-
 	#
 	# Close the file.
 	#
@@ -199,8 +209,6 @@ class RollOverLogFile(object):
 			self.__f.flush()
 			self.__f.close()
 	#
-
-
 
 	#
 	# Checks if the file is closed.
@@ -212,8 +220,6 @@ class RollOverLogFile(object):
 		return self.__f.closed
 	#
 
-
-
 	#
 	# Checks if the file is closed.
 	#
@@ -223,8 +229,6 @@ class RollOverLogFile(object):
 	def closed(self):
 		return self.__f.closed
 	#
-
-
 
 #
 

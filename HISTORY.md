@@ -29,3 +29,9 @@ This file contains the approximate history of the changes this module has experi
 
 * 2021-04-07:
 	* Extended the processing of log data
+	* Added interface `ILogger`
+
+* 2021-11-25
+	* Beginning: Enhancements in log message buffering
+	* Refactoring
+

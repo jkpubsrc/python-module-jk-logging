@@ -4,8 +4,7 @@
 import time
 import typing
 
-from .EnumLogLevel import *
-from .AbstractLogger import *
+from ..EnumLogLevel import *
 
 
 

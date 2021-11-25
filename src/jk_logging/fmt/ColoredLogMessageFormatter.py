@@ -5,7 +5,7 @@ import datetime
 
 from enum import Enum
 
-from .EnumLogLevel import EnumLogLevel
+from ..EnumLogLevel import EnumLogLevel
 from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 
 
@@ -17,12 +17,19 @@ from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 #
 class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 
+	################################################################################################################################
+	## Nested Classes
+	################################################################################################################################
+
 	class EnumOutputMode(Enum):
 		VERY_SHORT = 0
 		SHORTED = 10
 		FULL = 20
 	#
 
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
 
 	#
 	# Color codes:
@@ -58,7 +65,6 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	# 	* 107 = white
 	# 
 
-
 	LOG_LEVEL_TO_COLOR_MAP = {
 		EnumLogLevel.TRACE: "\033[90m",
 		EnumLogLevel.DEBUG: "\033[90m",
@@ -76,7 +82,9 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	STACKTRACE_COLOR = "\033[31m"
 	RESET_COLOR = "\033[0m"
 
-
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
 
 	def __init__(self, bIncludeIDs = False, fillChar = "\t"):
 		self.__fillChar = fillChar
@@ -85,15 +93,23 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 		self.__outputMode = ColoredLogMessageFormatter.EnumOutputMode.FULL
 	#
 
+	################################################################################################################################
+	## Public Properties
+	################################################################################################################################
 
+	################################################################################################################################
+	## Helper Methods
+	################################################################################################################################
+
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
 
 	def setOutputMode(self, outputMode:EnumOutputMode):
 		if outputMode is None:
 			outputMode = ColoredLogMessageFormatter.EnumOutputMode.FULL
 		self.__outputMode = outputMode
 	#
-
-
 
 	#
 	# Create and return a string representation of the specified log entry.
@@ -148,8 +164,6 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	#
 
 #
-
-
 
 
 

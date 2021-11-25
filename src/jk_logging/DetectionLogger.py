@@ -57,10 +57,11 @@ class DetectionLogger(AbstractLogger):
 	#
 
 	################################################################################################################################
-	## Protected Methods
+	## Helper Methods
 	################################################################################################################################
 
 	def _descend(self, logEntryStruct):
+		self.__logStats.increment(logEntryStruct[5])
 		descendedLogger = self.__logger._descend(logEntryStruct)
 		return DetectionLogger(descendedLogger, self.__logStats)
 	#

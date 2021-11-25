@@ -5,7 +5,7 @@ import datetime
 
 from enum import Enum
 
-from .EnumLogLevel import EnumLogLevel
+from ..EnumLogLevel import EnumLogLevel
 from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 
 
@@ -16,13 +16,19 @@ from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 #
 class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 
+	################################################################################################################################
+	## Nested Classes
+	################################################################################################################################
+
 	class EnumOutputMode(Enum):
 		VERY_SHORT = 0
 		SHORTED = 10
 		FULL = 20
 	#
 
-
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
 
 	LOG_LEVEL_TO_COLOR_MAP = {
 		EnumLogLevel.TRACE: "#a0a0a0",
@@ -40,7 +46,9 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 	#STACKTRACE_COLOR = "#800000"
 	STACKTRACE_COLOR = "#700000"
 
-
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
 
 	def __init__(self, bIncludeIDs = False, fillChar = "&nbsp;&nbsp;&nbsp;&nbsp;", bLinesWithBRTag = False):
 		self.__fillChar = fillChar
@@ -50,15 +58,23 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 		self.__bLinesWithBRTag = bLinesWithBRTag
 	#
 
+	################################################################################################################################
+	## Public Properties
+	################################################################################################################################
 
+	################################################################################################################################
+	## Helper Methods
+	################################################################################################################################
+
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
 
 	def setOutputMode(self, outputMode:EnumOutputMode):
 		if outputMode is None:
 			outputMode = HTMLLogMessageFormatter.EnumOutputMode.FULL
 		self.__outputMode = outputMode
 	#
-
-
 
 	#
 	# Create and return a string representation of the specified log entry.
