@@ -10,7 +10,7 @@ import abc
 import datetime
 
 from .EnumLogLevel import EnumLogLevel
-from ..impl.LogStats import LogStats
+from .impl.LogStats import LogStats
 from .AbstractLogger import AbstractLogger
 
 
