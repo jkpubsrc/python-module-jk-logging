@@ -1,11 +1,12 @@
 
 
-
-from enum import Enum
+import typing
 
 from ..EnumLogLevel import EnumLogLevel
 from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 from .DefaultTimeStampFormatter import DefaultTimeStampFormatter
+from ..EnumExtensitivity import EnumExtensitivity
+
 
 
 
@@ -18,12 +19,6 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 	################################################################################################################################
 	## Nested Classes
 	################################################################################################################################
-
-	class EnumOutputMode(Enum):
-		VERY_SHORT = 0
-		SHORTED = 10
-		FULL = 20
-	#
 
 	################################################################################################################################
 	## Constants
@@ -49,11 +44,27 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 	## Constructor
 	################################################################################################################################
 
-	def __init__(self, bIncludeIDs = False, fillChar = "&nbsp;&nbsp;&nbsp;&nbsp;", bLinesWithBRTag = False, timeStampFormatter = None):
+	def __init__(self,
+			bIncludeIDs:bool = False,
+			fillChar:str = "&nbsp;&nbsp;&nbsp;&nbsp;",
+			bLinesWithBRTag:bool = False,
+			extensitivity:EnumExtensitivity = EnumExtensitivity.FULL,
+			timeStampFormatter = None
+		):
+
+		assert isinstance(bIncludeIDs, bool)
 		self.__fillChar = fillChar
+
+		assert isinstance(fillChar, str)
 		self.__indentBuffer = fillChar
+
+		assert isinstance(bIncludeIDs, bool)
 		self.__includeIDs = bIncludeIDs
-		self.__outputMode = HTMLLogMessageFormatter.EnumOutputMode.FULL
+
+		assert isinstance(extensitivity, EnumExtensitivity)
+		self.__outputMode = extensitivity
+
+		assert isinstance(bLinesWithBRTag, bool)
 		self.__bLinesWithBRTag = bLinesWithBRTag
 
 		if timeStampFormatter is None:
@@ -67,6 +78,11 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 	## Properties
 	################################################################################################################################
 
+	@property
+	def outputMode(self) -> EnumExtensitivity:
+		return self.__outputMode
+	#
+
 	################################################################################################################################
 	## Helper Methods
 	################################################################################################################################
@@ -75,10 +91,13 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 	## Public Methods
 	################################################################################################################################
 
-	def setOutputMode(self, outputMode:EnumOutputMode):
-		if outputMode is None:
-			outputMode = HTMLLogMessageFormatter.EnumOutputMode.FULL
-		self.__outputMode = outputMode
+	#
+	# REMOVED: Instances of this class must be read-only and must not be changable at runtime.
+	#
+	#def setOutputMode(self, outputMode:typing.Union[EnumExtensitivity,None]):
+	#	if outputMode is None:
+	#		outputMode = EnumExtensitivity.FULL
+	#	self.__outputMode = outputMode
 	#
 
 	#
@@ -118,10 +137,10 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 			sLogMsg = logEntryStruct[7]
 			ret = []
 			if logEntryStruct[8] != None:
-				if self.__outputMode == HTMLLogMessageFormatter.EnumOutputMode.FULL:
+				if self.__outputMode == EnumExtensitivity.FULL:
 					for (stPath, stLineNo, stModuleName, stLine) in logEntryStruct[8]:
 						ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + term)
-				elif self.__outputMode == HTMLLogMessageFormatter.EnumOutputMode.SHORTED:
+				elif self.__outputMode == EnumExtensitivity.SHORTED:
 					stPath, stLineNo, stModuleName, stLine = logEntryStruct[8][-1]
 					ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + term)
 			if sLogMsg is None:

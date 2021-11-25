@@ -1,11 +1,12 @@
 
 
 
-from enum import Enum
+import typing
 
 from ..EnumLogLevel import EnumLogLevel
 from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 from .DefaultTimeStampFormatter import DefaultTimeStampFormatter
+from ..EnumExtensitivity import EnumExtensitivity
 
 
 
@@ -20,12 +21,6 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	################################################################################################################################
 	## Nested Classes
 	################################################################################################################################
-
-	class EnumOutputMode(Enum):
-		VERY_SHORT = 0
-		SHORTED = 10
-		FULL = 20
-	#
 
 	################################################################################################################################
 	## Constants
@@ -86,11 +81,22 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	## Constructor
 	################################################################################################################################
 
-	def __init__(self, bIncludeIDs = False, fillChar = "\t", timeStampFormatter = None):
+	def __init__(self,
+			bIncludeIDs:bool = False,
+			fillChar:str = "\t",
+			extensitivity:EnumExtensitivity = EnumExtensitivity.FULL,
+			timeStampFormatter = None
+		):
+
+		assert isinstance(bIncludeIDs, bool)
+		self.__includeIDs = bIncludeIDs
+
+		assert isinstance(fillChar, str)
 		self.__fillChar = fillChar
 		self.__indentBuffer = fillChar
-		self.__includeIDs = bIncludeIDs
-		self.__outputMode = ColoredLogMessageFormatter.EnumOutputMode.FULL
+
+		assert isinstance(extensitivity, EnumExtensitivity)
+		self.__outputMode = extensitivity
 
 		if timeStampFormatter is None:
 			timeStampFormatter = DefaultTimeStampFormatter()
@@ -103,6 +109,11 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	## Properties
 	################################################################################################################################
 
+	@property
+	def outputMode(self) -> EnumExtensitivity:
+		return self.__outputMode
+	#
+
 	################################################################################################################################
 	## Helper Methods
 	################################################################################################################################
@@ -111,10 +122,13 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	## Public Methods
 	################################################################################################################################
 
-	def setOutputMode(self, outputMode:EnumOutputMode):
-		if outputMode is None:
-			outputMode = ColoredLogMessageFormatter.EnumOutputMode.FULL
-		self.__outputMode = outputMode
+	#
+	# REMOVED: Instances of this class must be read-only and must not be changable at runtime.
+	#
+	#def setOutputMode(self, outputMode:typing.Union[EnumExtensitivity,None]):
+	#	if outputMode is None:
+	#		outputMode = EnumExtensitivity.FULL
+	#	self.__outputMode = outputMode
 	#
 
 	#
@@ -150,10 +164,10 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 			sLogMsg = logEntryStruct[7]
 			ret = []
 			if logEntryStruct[8] != None:
-				if self.__outputMode == ColoredLogMessageFormatter.EnumOutputMode.FULL:
+				if self.__outputMode == EnumExtensitivity.FULL:
 					for (stPath, stLineNo, stModuleName, stLine) in logEntryStruct[8]:
 						ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + ColoredLogMessageFormatter.RESET_COLOR)
-				elif self.__outputMode == ColoredLogMessageFormatter.EnumOutputMode.SHORTED:
+				elif self.__outputMode == EnumExtensitivity.SHORTED:
 					stPath, stLineNo, stModuleName, stLine = logEntryStruct[8][-1]
 					ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + ColoredLogMessageFormatter.RESET_COLOR)
 			if sLogMsg is None:

@@ -40,6 +40,7 @@ setup(
 		"jk_logging",
 		"jk_logging.fmt",
 		"jk_logging.impl",
+		"jk_logging.debugging",
 	],
 	version = "0.2021.11.25",
 	zip_safe = False,

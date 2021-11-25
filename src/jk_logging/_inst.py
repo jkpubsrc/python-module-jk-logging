@@ -1,10 +1,14 @@
 
 
 
+from enum import Enum
+import typing
 import re
 import sys
 
-from .IDCounter import IDCounter
+from jk_logging.fmt.DefaultTimeStampFormatter import DefaultTimeStampFormatter
+
+from .impl.IDCounter import IDCounter
 
 from .EnumLogLevel import EnumLogLevel
 from .AbstractLogger import AbstractLogger
@@ -20,51 +24,151 @@ from .NullLogger import NullLogger
 from .FileLogger import FileLogger
 from .StringListLogger import StringListLogger
 from .JSONLogger import JSONLogger
+from .EnumExtensitivity import EnumExtensitivity
 
-from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
-from .LogMessageFormatter import LogMessageFormatter, DEFAULT_LOG_MESSAGE_FORMATTER
-from .ColoredLogMessageFormatter import ColoredLogMessageFormatter, COLOR_LOG_MESSAGE_FORMATTER
+from .fmt.AbstractLogMessageFormatter import AbstractLogMessageFormatter
+from .fmt.LogMessageFormatter import LogMessageFormatter
+from .fmt.ColoredLogMessageFormatter import ColoredLogMessageFormatter
+from .fmt.HTMLLogMessageFormatter import HTMLLogMessageFormatter
+from .fmt.DefaultTimeStampFormatter import DefaultTimeStampFormatter
+
+from .debugging.DebugTimeStampFormatter import DebugTimeStampFormatter
 
 
 
 
 
-def instantiateLogMsgFormatter(cfg):
-	if isinstance(cfg, dict):
-		logMsgFormatterType = cfg["type"]
-		if logMsgFormatterType == "default":
-			if "extensitivity" in cfg:
-				extensitivity = cfg["extensitivity"]
-				if extensitivity == "full":
-					DEFAULT_LOG_MESSAGE_FORMATTER.setOutputMode(DEFAULT_LOG_MESSAGE_FORMATTER.EnumOutputMode.FULL)
-				elif extensitivity in [ "short", "shorted", "shortened" ]:
-					DEFAULT_LOG_MESSAGE_FORMATTER.setOutputMode(DEFAULT_LOG_MESSAGE_FORMATTER.EnumOutputMode.SHORTED)
-				elif extensitivity == "veryShort":
-					DEFAULT_LOG_MESSAGE_FORMATTER.setOutputMode(DEFAULT_LOG_MESSAGE_FORMATTER.EnumOutputMode.VERY_SHORT)
-				else:
-					raise Exception("Unknown extensitivity: " + repr(extensitivity))
-			return DEFAULT_LOG_MESSAGE_FORMATTER
-		elif logMsgFormatterType == "color":
-			if "extensitivity" in cfg:
-				extensitivity = cfg["extensitivity"]
-				if extensitivity == "full":
-					COLOR_LOG_MESSAGE_FORMATTER.setOutputMode(COLOR_LOG_MESSAGE_FORMATTER.EnumOutputMode.FULL)
-				elif extensitivity in [ "short", "shorted", "shortened" ]:
-					COLOR_LOG_MESSAGE_FORMATTER.setOutputMode(COLOR_LOG_MESSAGE_FORMATTER.EnumOutputMode.SHORTED)
-				elif extensitivity == "veryShort":
-					COLOR_LOG_MESSAGE_FORMATTER.setOutputMode(COLOR_LOG_MESSAGE_FORMATTER.EnumOutputMode.VERY_SHORT)
-				else:
-					raise Exception("Unknown extensitivity: " + repr(extensitivity))
-			return COLOR_LOG_MESSAGE_FORMATTER
+
+class _Instantiator:
+
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
+
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
+
+	def __init__(self) -> None:
+		self.__logMsgFormatterCache = {}
+
+		#self.__logMsgFormatterCache[self.__createLogMsgFormatterSignature("color", COLOR_LOG_MESSAGE_FORMATTER.outputMode)] = COLOR_LOG_MESSAGE_FORMATTER
+		#self.__logMsgFormatterCache[self.__createLogMsgFormatterSignature("color", COLOR_LOG_MESSAGE_FORMATTER.outputMode)] = COLOR_LOG_MESSAGE_FORMATTER
+	#
+
+	################################################################################################################################
+	## Properties
+	################################################################################################################################
+
+	################################################################################################################################
+	## Helper Methods
+	################################################################################################################################
+
+	def __createLogMsgFormatterSignature(self,
+			sLogMsgFormatterType:str,
+			sExtensitivity:typing.Union[str,EnumExtensitivity,int],
+			sTimeStampFormatter:str,
+		) -> str:
+
+		assert isinstance(sLogMsgFormatterType, str)
+		assert sLogMsgFormatterType
+		assert isinstance(sExtensitivity, (str, int, EnumExtensitivity))
+		assert isinstance(sTimeStampFormatter, str)
+
+		sExtensitivity = str(EnumExtensitivity.parse(sExtensitivity))
+		return "FMTTR-{}-{}".format(sLogMsgFormatterType, sExtensitivity)
+	#
+
+	#
+	# @param		str logMsgFormatterType		The log message formatter type: "default", "color" or "html"
+	#
+	def __newLogMsgFormatter(self,
+			sLogMsgFormatterType:str,
+			sExtensitivity:typing.Union[str,None],
+			sTimeStampFormatter:typing.Union[str,None],
+		) -> AbstractLogMessageFormatter:
+
+		extensitivity = EnumExtensitivity.parse(sExtensitivity) if sExtensitivity else None
+
+		timeStampFormatter = None if sTimeStampFormatter is None else self.__newTimeStampFormatter(sTimeStampFormatter)
+
+		if sLogMsgFormatterType == "default":
+			# NOTE: ignore extensitivity for now as this feature is not yet fully implemented
+			return LogMessageFormatter(timeStampFormatter=timeStampFormatter)
+
+		elif sLogMsgFormatterType == "color":
+			return ColoredLogMessageFormatter(extensitivity=extensitivity, timeStampFormatter=timeStampFormatter)
+
+		elif sLogMsgFormatterType == "html":
+			return HTMLLogMessageFormatter(extensitivity=extensitivity, timeStampFormatter=timeStampFormatter)
+
 		else:
-			raise Exception("Unknown log message formatter: " + repr(cfg))
-	else:
-		if cfg == "default":
-			return DEFAULT_LOG_MESSAGE_FORMATTER
-		elif cfg == "color":
-			return COLOR_LOG_MESSAGE_FORMATTER
+			raise Exception("Unknown log message formatter: " + repr(sLogMsgFormatterType))
+	#
+
+	#
+	# @param		str sName		The timestamp formatter type: "default", "debug"
+	#
+	def __newTimeStampFormatter(self, sName:str) -> typing.Callable[[float],typing.Any]:
+		if sName == "default":
+			return DefaultTimeStampFormatter()
+
+		if sName == "debug":
+			return DebugTimeStampFormatter()
+
 		else:
-			raise Exception("Unknown log message formatter: " + repr(cfg))
+			raise Exception("Unknown timestamp formatter: " + repr(sName))
+	#
+
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
+
+	def instantiateLogMsgFormatter(self, cfg:typing.Union[str,dict]):
+		sExtensitivity = "full"
+		sTimeStampFormatter = "default"
+
+		if isinstance(cfg, dict):
+			sLogMsgFormatterType = cfg["type"]
+			sExtensitivity = cfg.get("extensitivity", "full")
+			sTimeStampFormatter = cfg.get("timeStampFormatter", "default")
+
+		elif isinstance(cfg, str):
+			sLogMsgFormatterType = cfg
+
+		else:
+			raise Exception("Invalid configuration data specified for creating a log message formatter!")
+
+		_signature = self.__createLogMsgFormatterSignature(sLogMsgFormatterType, sExtensitivity, sTimeStampFormatter)
+
+		if _signature not in self.__logMsgFormatterCache:
+			self.__logMsgFormatterCache[_signature] = self.__newLogMsgFormatter(sLogMsgFormatterType, sExtensitivity, sTimeStampFormatter)
+
+		return self.__logMsgFormatterCache[_signature]
+	#
+
+#
+
+_INSTANTIATOR = _Instantiator()
+
+
+
+
+
+
+
+
+#
+# @param		dict|str cfg			Information about the log message formatter required.
+#										If the specified value is "default", "color", "html", one of the default
+#										log message formatter instances is returned.
+#										If the specified value is a dictionary it can/must have the following key value pairs:
+#										* `str type` : The type of the log message formatter to created, either  "default", "color" or "html"
+#										* `str extensitivity` : How talkative should the formatter be? Specify either
+#											"full", "short" (alternatives: "shorted", shortened") or "veryShort".
+#
+def instantiateLogMsgFormatter(cfg:typing.Union[str,dict]):
+	return _INSTANTIATOR.instantiateLogMsgFormatter(cfg)
 #
 
 
@@ -82,17 +186,17 @@ def instantiate(cfg):
 		return ConsoleLogger.create(logMsgFormatter = logMsgFormatter)
 
 	elif loggerType == "DetectionLogger_v0":
-		return DetectionLogger_v0.create(instantiate(cfg["nested"]))
+		return DetectionLogger_v0.create(logger=instantiate(cfg["nested"]))
 
 	elif loggerType == "DetectionLogger":
-		return DetectionLogger.create(instantiate(cfg["nested"]))
+		return DetectionLogger.create(logger=instantiate(cfg["nested"]))
 
 	elif loggerType == "FilterLogger":
 		if "minLogLevel" in cfg:
 			logLevel = EnumLogLevel.parse(cfg["minLogLevel"])
 		else:
 			logLevel = EnumLogLevel.WARNING
-		return FilterLogger.create(instantiate(cfg["nested"]), minLogLevel = logLevel)
+		return FilterLogger.create(logger=instantiate(cfg["nested"]), minLogLevel = logLevel)
 
 	elif loggerType == "MulticastLogger":
 		loggers = []
@@ -110,23 +214,23 @@ def instantiate(cfg):
 		return NullLogger.create()
 
 	elif loggerType == "FileLogger":
-		mode = cfg.get("fileMode", None)
-		if mode != None:
-			if isinstance(mode, int):
-				mode = str(mode)
-			if isinstance(mode, str):
-				if re.match("^[0-7][0-7][0-7]$", mode):
-					mode = int(mode, 8)
+		fileMode = cfg.get("fileMode", None)
+		if fileMode != None:
+			if isinstance(fileMode, int):
+				fileMode = str(fileMode)
+			if isinstance(fileMode, str):
+				if re.match("^[0-7][0-7][0-7]$", fileMode):
+					fileMode = int(fileMode, 8)
 				else:
 					raise Exception("Invalid mode specified for file logger!")
 			else:
 				raise Exception("Invalid mode specified for file logger!")
 		return FileLogger.create(
-			cfg["filePath"],
-			cfg.get("rollOver", None),
-			cfg.get("bAppendToExistingFile", True),
-			cfg.get("bFlushAfterEveryLogMessage", True),
-			mode)
+			filePath=cfg["filePath"],
+			rollOver=cfg.get("rollOver", None),
+			bAppendToExistingFile=cfg.get("bAppendToExistingFile", cfg.get("appendToExistingFile", True)),
+			bFlushAfterEveryLogMessage=cfg.get("bFlushAfterEveryLogMessage", cfg.get("flushAfterEveryLogMessage", True)),
+			fileMode=fileMode)
 
 	elif loggerType == "StringListLogger":
 		return StringListLogger.create()

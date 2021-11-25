@@ -23,10 +23,18 @@ class LogMessageFormatter(AbstractLogMessageFormatter):
 	## Constructor
 	################################################################################################################################
 
-	def __init__(self, bIncludeIDs = False, fillChar = "\t", timeStampFormatter = None):
+	def __init__(self,
+			bIncludeIDs:bool = False,
+			fillChar:str = "\t",
+			timeStampFormatter = None
+		):
+
+		assert isinstance(bIncludeIDs, bool)
+		self.__includeIDs = bIncludeIDs
+
+		assert isinstance(fillChar, str)
 		self.__fillChar = fillChar
 		self.__indentBuffer = fillChar
-		self.__includeIDs = bIncludeIDs
 
 		if timeStampFormatter is None:
 			timeStampFormatter = DefaultTimeStampFormatter()

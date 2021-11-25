@@ -37,7 +37,7 @@
 			"devon_publish": false
 		},
 		{
-			"type": "pypy",
+			"type": "pypi",
 			"project": "jk_logging",
 			"devon_publish": false
 		}

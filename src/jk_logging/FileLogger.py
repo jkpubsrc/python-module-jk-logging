@@ -108,7 +108,7 @@ class FileLogger(AbstractLogger):
 	#																* %M - minute (f.e. 49)
 	#																* %S - second (f.e. 07)
 	#																All values used in the pattern elements are padded with zeros.
-	# @param		str rollOverMode								Either specify <c>None</c> if no roll-over should be used. Otherwise
+	# @param		str rollOver									Either specify <c>None</c> if no roll-over should be used. Otherwise
 	#																specify either "second", "minute", "hour", "day" or "month".
 	# @param		bool bAppendToExistingFile						If <c>True</c> a possibly already existing file will be reused, data will
 	#																be appended. If <c>False</c> the file will be recreated if it already exists.
@@ -117,7 +117,7 @@ class FileLogger(AbstractLogger):
 	# @param		AbstractLogMessageFormatter logMsgFormatter		A log message formatter. If <c>None</c> is specified the default one is used.
 	#
 	@staticmethod
-	def create(filePath, rollOver, bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = None,
+	def create(filePath:str, rollOver:str, bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = None,
 		logMsgFormatter = None):
 		assert isinstance(filePath, str)
 		if rollOver is not None:

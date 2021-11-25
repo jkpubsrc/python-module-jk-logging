@@ -11,18 +11,11 @@ from enum import Enum
 
 
 
-class EnumLogLevel(Enum):
+class EnumExtensitivity(Enum):
 
-	TRACE = 10, 'TRACE'
-	DEBUG = 20, 'DEBUG'
-	NOTICE = 30, 'NOTICE'
-	INFO = 40, 'INFO'
-	STDOUT = 41, 'STDOUT'
-	SUCCESS = 50, 'SUCCESS'
-	WARNING = 60, 'WARNING'
-	ERROR = 70, 'ERROR'
-	STDERR = 71, 'STDERR'
-	EXCEPTION = 80, 'EXCEPTION'
+	VERY_SHORT = 0, 'veryShort'
+	SHORTED = 10, 'shorted'
+	FULL = 20, 'full'
 
 	################################################################################################################################
 	## Constructor
@@ -73,17 +66,19 @@ class EnumLogLevel(Enum):
 	#
 	@staticmethod
 	def parse(data):
-		if isinstance(data, EnumLogLevel):
+		if isinstance(data, EnumExtensitivity):
 			return data
 
 		if isinstance(data, int):
-			return EnumLogLevel.__dict__["_value2member_map_"][data]
+			return EnumExtensitivity.__dict__["_value2member_map_"][data]
 
 		if isinstance(data, str):
-			if data in EnumLogLevel.__dict__["_member_names_"]:
-				return EnumLogLevel.__dict__[data]
+			if data in EnumExtensitivity.__dict__["_member_names_"]:
+				return EnumExtensitivity.__dict__[data]
+			if data in ( "shortened", "short" ):
+				return EnumExtensitivity.SHORTED
 
-		raise Exception("Unrecognized enumeration value: " + str(data))
+		raise Exception("Unknown extensitivity: " + repr(data))
 	#
 
 #
