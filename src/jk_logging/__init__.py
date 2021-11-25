@@ -7,10 +7,10 @@ __version__ = "0.2021.11.25"
 
 from .impl.IDCounter import IDCounter
 from .impl.RollOverLogFile import RollOverLogFile
+from .impl.LogStats import LogStats
 
 from .ExceptionInChildContextException import ExceptionInChildContextException
 from .EnumLogLevel import EnumLogLevel
-from .LogStats import LogStats
 
 from .ILogger import ILogger
 from .AbstractLogger import AbstractLogger
