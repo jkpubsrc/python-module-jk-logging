@@ -3,12 +3,13 @@
 import typing
 import datetime
 
+from .AbstractTimeStampFormatter import AbstractTimeStampFormatter
 
 
 
 
 
-class DefaultTimeStampFormatter:
+class DefaultTimeStampFormatter(AbstractTimeStampFormatter):
 
 	################################################################################################################################
 	## Constants

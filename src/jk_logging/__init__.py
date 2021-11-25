@@ -16,6 +16,7 @@ from .EnumLogLevel import EnumLogLevel
 
 
 
+from .fmt.AbstractTimeStampFormatter import AbstractTimeStampFormatter
 from .fmt.AbstractLogMessageFormatter import AbstractLogMessageFormatter
 
 from .fmt.DefaultTimeStampFormatter import DefaultTimeStampFormatter
@@ -41,7 +42,8 @@ from .NullLogger import NullLogger
 #from .SimpleFileLogger import SimpleFileLogger
 from .FileLogger import FileLogger
 from .StringListLogger import StringListLogger
-from .JSONLogger import JSONLogger
+from .JSONFileLogger import JSONFileLogger
+from .JSONListLogger import JSONListLogger
 
 from .LoggerInstanceManager import LoggerInstanceManager
 

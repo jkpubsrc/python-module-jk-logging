@@ -3,6 +3,7 @@
 import typing
 
 from ..EnumLogLevel import EnumLogLevel
+from .AbstractTimeStampFormatter import AbstractTimeStampFormatter
 from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 from .DefaultTimeStampFormatter import DefaultTimeStampFormatter
 from ..EnumExtensitivity import EnumExtensitivity
@@ -77,6 +78,11 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 	################################################################################################################################
 	## Properties
 	################################################################################################################################
+
+	@property
+	def timeStampFormatter(self) -> typing.Union[AbstractTimeStampFormatter,None]:
+		return self.__timeStampFormatter
+	#
 
 	@property
 	def outputMode(self) -> EnumExtensitivity:

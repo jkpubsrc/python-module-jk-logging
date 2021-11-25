@@ -1,16 +1,18 @@
 
 
+
 import typing
-
-from ..fmt.AbstractTimeStampFormatter import AbstractTimeStampFormatter
-
+import abc
 
 
 
 
 
 
-class DebugTimeStampFormatter(AbstractTimeStampFormatter):
+
+
+
+class AbstractTimeStampFormatter(object):
 
 	################################################################################################################################
 	## Constants
@@ -19,10 +21,6 @@ class DebugTimeStampFormatter(AbstractTimeStampFormatter):
 	################################################################################################################################
 	## Constructor
 	################################################################################################################################
-
-	def __init__(self) -> None:
-		self.__nCounter = 0
-	#
 
 	################################################################################################################################
 	## Properties
@@ -36,20 +34,16 @@ class DebugTimeStampFormatter(AbstractTimeStampFormatter):
 	## Public Methods
 	################################################################################################################################
 
+	@abc.abstractmethod
 	def __call__(self, t:float) -> typing.Any:
-		s = "DEBUG TIMESTAMP " + str(self.__nCounter)
-		self.__nCounter += 1
-		return s
+		raise NotImplementedError()
 	#
 
+	################################################################################################################################
+	## Static Methods
+	################################################################################################################################
+
 #
-
-
-
-
-
-
-
 
 
 

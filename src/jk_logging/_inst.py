@@ -23,7 +23,8 @@ from .NullLogger import NullLogger
 #from .SimpleFileLogger import SimpleFileLogger
 from .FileLogger import FileLogger
 from .StringListLogger import StringListLogger
-from .JSONLogger import JSONLogger
+from .JSONFileLogger import JSONFileLogger
+from .JSONListLogger import JSONListLogger
 from .EnumExtensitivity import EnumExtensitivity
 
 from .fmt.AbstractLogMessageFormatter import AbstractLogMessageFormatter
@@ -167,31 +168,42 @@ _INSTANTIATOR = _Instantiator()
 #										* `str extensitivity` : How talkative should the formatter be? Specify either
 #											"full", "short" (alternatives: "shorted", shortened") or "veryShort".
 #
-def instantiateLogMsgFormatter(cfg:typing.Union[str,dict]):
+def instantiateLogMsgFormatter(cfg:typing.Union[str,dict,None]):
+	if cfg is None:
+		return None
 	return _INSTANTIATOR.instantiateLogMsgFormatter(cfg)
 #
 
 
 
 def instantiate(cfg):
+	logMsgFormatter = instantiateLogMsgFormatter(cfg.get("logMsgFormatter"))
+
 	loggerType = cfg["type"]
 
 	if loggerType == "BufferLogger":
+		if logMsgFormatter:
+			raise Exception("Loggers of type BufferLogger do not have a log message formatter!")
 		return BufferLogger.create()
 
 	elif loggerType == "ConsoleLogger":
-		logMsgFormatter = None
-		if "logMsgFormatter" in cfg:
-			logMsgFormatter = instantiateLogMsgFormatter(cfg["logMsgFormatter"])
-		return ConsoleLogger.create(logMsgFormatter = logMsgFormatter)
+		return ConsoleLogger.create(
+			logMsgFormatter = logMsgFormatter
+		)
 
 	elif loggerType == "DetectionLogger_v0":
+		if logMsgFormatter:
+			raise Exception("Loggers of type DetectionLogger_v0 do not have a log message formatter!")
 		return DetectionLogger_v0.create(logger=instantiate(cfg["nested"]))
 
 	elif loggerType == "DetectionLogger":
+		if logMsgFormatter:
+			raise Exception("Loggers of type DetectionLogger do not have a log message formatter!")
 		return DetectionLogger.create(logger=instantiate(cfg["nested"]))
 
 	elif loggerType == "FilterLogger":
+		if logMsgFormatter:
+			raise Exception("Loggers of type FilterLogger do not have a log message formatter!")
 		if "minLogLevel" in cfg:
 			logLevel = EnumLogLevel.parse(cfg["minLogLevel"])
 		else:
@@ -199,19 +211,28 @@ def instantiate(cfg):
 		return FilterLogger.create(logger=instantiate(cfg["nested"]), minLogLevel = logLevel)
 
 	elif loggerType == "MulticastLogger":
+		if logMsgFormatter:
+			raise Exception("Loggers of type MulticastLogger do not have a log message formatter!")
 		loggers = []
 		for item in cfg["nested"]:
 			loggers.append(instantiate(item))
 		return MulticastLogger.create(*loggers)
 
 	elif loggerType == "NamedMulticastLogger":
+		if logMsgFormatter:
+			raise Exception("Loggers of type NamedMulticastLogger do not have a log message formatter!")
 		loggers = {}
 		for itemKey in cfg["nested"]:
 			loggers[itemKey] = instantiate(cfg["nested"][itemKey])
 		return NamedMulticastLogger.create(**loggers)
 
 	elif loggerType == "NullLogger":
+		if logMsgFormatter:
+			raise Exception("Loggers of type NullLogger do not have a log message formatter!")
 		return NullLogger.create()
+
+	elif loggerType == "SimpleFileLogger":
+		raise Exception("Not supported: SimpleFileLogger")
 
 	elif loggerType == "FileLogger":
 		fileMode = cfg.get("fileMode", None)
@@ -225,18 +246,30 @@ def instantiate(cfg):
 					raise Exception("Invalid mode specified for file logger!")
 			else:
 				raise Exception("Invalid mode specified for file logger!")
+
 		return FileLogger.create(
-			filePath=cfg["filePath"],
-			rollOver=cfg.get("rollOver", None),
-			bAppendToExistingFile=cfg.get("bAppendToExistingFile", cfg.get("appendToExistingFile", True)),
-			bFlushAfterEveryLogMessage=cfg.get("bFlushAfterEveryLogMessage", cfg.get("flushAfterEveryLogMessage", True)),
-			fileMode=fileMode)
+			filePath = cfg["filePath"],
+			rollOver = cfg.get("rollOver", None),
+			bAppendToExistingFile = cfg.get("bAppendToExistingFile", cfg.get("appendToExistingFile", True)),
+			bFlushAfterEveryLogMessage = cfg.get("bFlushAfterEveryLogMessage", cfg.get("flushAfterEveryLogMessage", True)),
+			fileMode = fileMode,
+			logMsgFormatter = logMsgFormatter,
+		)
 
 	elif loggerType == "StringListLogger":
-		return StringListLogger.create()
+		return StringListLogger.create(
+			logMsgFormatter = logMsgFormatter
+		)
 
-	elif loggerType == "JSONLogger":
-		return JSONLogger.create(cfg["filePath"])
+	elif loggerType == "JSONListLogger":
+		if logMsgFormatter:
+			raise Exception("Loggers of type JSONListLogger do not have a log message formatter!")
+		return JSONListLogger.create()
+
+	elif loggerType == "JSONFileLogger":
+		if logMsgFormatter:
+			raise Exception("Loggers of type JSONFileLogger do not have a log message formatter!")
+		return JSONFileLogger.create(cfg["filePath"])
 
 	else:
 		raise Exception("Unknown logger type: " + loggerType)

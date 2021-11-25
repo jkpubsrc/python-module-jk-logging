@@ -45,9 +45,9 @@ def doLogTest(log):
 
 
 print()
-print("-- JSONLogger --")
+print("-- JSONFileLogger --")
 
-jlog = jk_logging.JSONLogger.create("test6-log.json")
+jlog = jk_logging.JSONFileLogger.create("test6-log.json")
 doLogTest(jlog.descend("TEST"))
 
 print()
@@ -60,7 +60,7 @@ print()
 print("-- reconstructing and forwarding to ConsoleLogger --")
 
 clog = jk_logging.ConsoleLogger.create()
-jlog2 = jk_logging.JSONLogger.create("test6-log.json")
+jlog2 = jk_logging.JSONFileLogger.create("test6-log.json")
 jlog2.forwardTo(clog)
 
 

@@ -1,6 +1,8 @@
 
 
+import typing
 
+from .AbstractTimeStampFormatter import AbstractTimeStampFormatter
 from .AbstractLogMessageFormatter import AbstractLogMessageFormatter
 from .DefaultTimeStampFormatter import DefaultTimeStampFormatter
 
@@ -46,6 +48,11 @@ class LogMessageFormatter(AbstractLogMessageFormatter):
 	################################################################################################################################
 	## Properties
 	################################################################################################################################
+
+	@property
+	def timeStampFormatter(self) -> typing.Union[AbstractTimeStampFormatter,None]:
+		return self.__timeStampFormatter
+	#
 
 	################################################################################################################################
 	## Helper Methods

@@ -1,12 +1,13 @@
 
 
 
-import datetime
+import typing
 import abc
 
 
 from ..EnumLogLevel import EnumLogLevel
 from ..impl.createLogMsgTypeStrMap import createLogMsgTypeStrMap
+from .AbstractTimeStampFormatter import AbstractTimeStampFormatter
 
 
 
@@ -31,6 +32,11 @@ class AbstractLogMessageFormatter(object):
 	## Properties
 	################################################################################################################################
 
+	@property
+	def timeStampFormatter(self) -> typing.Union[AbstractTimeStampFormatter,None]:
+		return None
+	#
+
 	################################################################################################################################
 	## Helper Methods
 	################################################################################################################################
@@ -47,7 +53,7 @@ class AbstractLogMessageFormatter(object):
 	#
 	@abc.abstractmethod
 	def format(self, logEntryStruct):
-		pass
+		raise NotImplementedError()
 	#
 
 	################################################################################################################################

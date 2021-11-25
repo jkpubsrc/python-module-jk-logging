@@ -75,8 +75,12 @@ class EnumExtensitivity(Enum):
 		if isinstance(data, str):
 			if data in EnumExtensitivity.__dict__["_member_names_"]:
 				return EnumExtensitivity.__dict__[data]
+			if data in ( "full", ):
+				return EnumExtensitivity.FULL
 			if data in ( "shortened", "short" ):
 				return EnumExtensitivity.SHORTED
+			if data in ( "veryShort", ):
+				return EnumExtensitivity.VERY_SHORT
 
 		raise Exception("Unknown extensitivity: " + repr(data))
 	#
