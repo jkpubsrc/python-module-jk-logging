@@ -3,14 +3,10 @@
 
 
 import os
-import time
-import traceback
-import sys
-import abc
 
 from .EnumLogLevel import *
 from .AbstractLogger import *
-from .LogMessageFormatter import *
+from .fmt.LogMessageFormatter import *
 
 
 
@@ -21,7 +17,13 @@ from .LogMessageFormatter import *
 #
 class SimpleFileLogger(AbstractLogger):
 
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
 
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
 
 	def __init__(self, filePath, idCounter = None, parentID = None, indentationLevel = 0,
 		bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = 0o0600, logMsgFormatter = None):
@@ -45,20 +47,13 @@ class SimpleFileLogger(AbstractLogger):
 		self.__fileMode = fileMode
 	#
 
+	################################################################################################################################
+	## Properties
+	################################################################################################################################
 
-
-	@staticmethod
-	def create(filePath, bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = 0o0600, logMsgFormatter = None):
-		assert isinstance(filePath, str)
-		assert isinstance(bAppendToExistingFile, bool)
-		assert isinstance(bFlushAfterEveryLogMessage, bool)
-		assert isinstance(fileMode, int)
-		if logMsgFormatter != None:
-			assert isinstance(logMsgFormatter, AbstractLogMessageFormatter)
-		return SimpleFileLogger(filePath, None, None, 0, bAppendToExistingFile, bFlushAfterEveryLogMessage, fileMode, logMsgFormatter)
-	#
-
-
+	################################################################################################################################
+	## Helper Methods
+	################################################################################################################################
 
 	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
 		if self.__f.closed:
@@ -76,8 +71,6 @@ class SimpleFileLogger(AbstractLogger):
 		if self.__bFlushAfterEveryLogMessage:
 			self.__f.flush()
 	#
-
-
 
 	# TODO: provide a more efficient implementation. currently <c>_logi()</c> will be called through <c>_logiAll()</c> so that not single but multiple tests are performed if the logger is already closed and multiple flushes are performed.
 	def _logiAll(self, logEntryStructList, bNeedsIndentationLevelAdaption):
@@ -98,15 +91,15 @@ class SimpleFileLogger(AbstractLogger):
 		#	self.__f.flush()
 	#
 
-
-
 	def _descend(self, logEntryStruct):
 		nextID = logEntryStruct[1]
 		return SimpleFileLogger(self.__filePath, self._idCounter, nextID, self._indentationLevel + 1,
 			self.__bAppendToExistingFile, self.__bFlushAfterEveryLogMessage, self.__fileMode, self.__logMsgFormatter)
 	#
 
-
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
 
 	def close(self):
 		if not self.__f.closed:
@@ -114,7 +107,20 @@ class SimpleFileLogger(AbstractLogger):
 			self.__f.close()
 	#
 
+	################################################################################################################################
+	## Static Methods
+	################################################################################################################################
 
+	@staticmethod
+	def create(filePath, bAppendToExistingFile = True, bFlushAfterEveryLogMessage = True, fileMode = 0o0600, logMsgFormatter = None):
+		assert isinstance(filePath, str)
+		assert isinstance(bAppendToExistingFile, bool)
+		assert isinstance(bFlushAfterEveryLogMessage, bool)
+		assert isinstance(fileMode, int)
+		if logMsgFormatter != None:
+			assert isinstance(logMsgFormatter, AbstractLogMessageFormatter)
+		return SimpleFileLogger(filePath, None, None, 0, bAppendToExistingFile, bFlushAfterEveryLogMessage, fileMode, logMsgFormatter)
+	#
 
 #
 

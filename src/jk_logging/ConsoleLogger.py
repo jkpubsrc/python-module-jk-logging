@@ -2,15 +2,11 @@
 
 
 
-import os
-import time
-import traceback
 import sys
-import abc
 
 from .EnumLogLevel import *
 from .AbstractLogger import *
-from .LogMessageFormatter import *
+from .fmt.LogMessageFormatter import *
 
 
 
@@ -21,7 +17,13 @@ from .LogMessageFormatter import *
 #
 class ConsoleLogger(AbstractLogger):
 
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
 
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
 
 	def __init__(self, idCounter = None, parentID = None, indentationLevel = 0, printToStdErr = False, logMsgFormatter = None, printFunction = None):
 		super().__init__(idCounter)
@@ -36,20 +38,17 @@ class ConsoleLogger(AbstractLogger):
 		self.__printToStdErr = printToStdErr
 	#
 
+	################################################################################################################################
+	## Properties
+	################################################################################################################################
 
-
-	@staticmethod
-	def create(printToStdErr = False, logMsgFormatter = None, printFunction = None):
-		return ConsoleLogger(printToStdErr = printToStdErr, logMsgFormatter = logMsgFormatter, printFunction = printFunction)
-	#
-
-
+	################################################################################################################################
+	## Helper Methods
+	################################################################################################################################
 
 	def __eprint(self, *args, **kwargs):
 		print(*args, file=sys.stderr, **kwargs)
 	#
-
-
 
 	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
 		if bNeedsIndentationLevelAdaption:
@@ -63,26 +62,31 @@ class ConsoleLogger(AbstractLogger):
 				self.__print(line)
 	#
 
-
-
 	def _descend(self, logEntryStruct):
 		nextID = logEntryStruct[1]
 		return ConsoleLogger(self._idCounter, nextID, self._indentationLevel + 1, self.__printToStdErr, self.__logMsgFormatter, self.__printFunction)
 	#
 
-
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
 
 	def __str__(self):
 		return "<ConsoleLogger(" + hex(id(self)) + ", indent=" + str(self._indentationLevel) + ",parentID=" + str(self._parentLogEntryID) + ")>"
 	#
 
-
-
 	def __repr__(self):
 		return "<ConsoleLogger(" + hex(id(self)) + ", indent=" + str(self._indentationLevel) + ",parentID=" + str(self._parentLogEntryID) + ")>"
 	#
 
+	################################################################################################################################
+	## Static Methods
+	################################################################################################################################
 
+	@staticmethod
+	def create(printToStdErr = False, logMsgFormatter = None, printFunction = None):
+		return ConsoleLogger(printToStdErr = printToStdErr, logMsgFormatter = logMsgFormatter, printFunction = printFunction)
+	#
 
 #
 

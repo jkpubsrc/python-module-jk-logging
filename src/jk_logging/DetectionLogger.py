@@ -1,15 +1,9 @@
 ﻿
 
 
-import os
-import time
-import traceback
-import sys
-import typing
-
 from .EnumLogLevel import EnumLogLevel
 from .AbstractLogger import AbstractLogger
-from .LogStats import LogStats
+from .impl.LogStats import LogStats
 
 
 
@@ -24,6 +18,10 @@ from .LogStats import LogStats
 # NOTE: Be aware that all nested detection loggers will share the same (!!) LogStats object to count log messages.
 #
 class DetectionLogger(AbstractLogger):
+
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
 
 	################################################################################################################################
 	## Constructor
@@ -43,7 +41,7 @@ class DetectionLogger(AbstractLogger):
 	#
 
 	################################################################################################################################
-	## Public Properties
+	## Properties
 	################################################################################################################################
 
 	#

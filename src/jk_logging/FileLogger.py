@@ -1,16 +1,10 @@
 ﻿
 
-import os
-import time
-import traceback
-import sys
-import abc
-
 from .EnumLogLevel import *
 from .AbstractLogger import *
-from .AbstractLogMessageFormatter import *
-from .LogMessageFormatter import *
-from .RollOverLogFile import *
+from .fmt.AbstractLogMessageFormatter import *
+from .fmt.LogMessageFormatter import *
+from .impl.RollOverLogFile import *
 
 
 
@@ -21,6 +15,13 @@ from .RollOverLogFile import *
 #
 class FileLogger(AbstractLogger):
 
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
+
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
 
 	def __init__(self, idCounter = None, parentID = None, indentationLevel = None, f = None, prefix = None, logMsgFormatter = None):
 		super().__init__(idCounter)
@@ -40,7 +41,13 @@ class FileLogger(AbstractLogger):
 		self.__prefix = prefix
 	#
 
+	################################################################################################################################
+	## Properties
+	################################################################################################################################
 
+	################################################################################################################################
+	## Helper Methods
+	################################################################################################################################
 
 	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
 		if self.__f.isClosed:
@@ -53,8 +60,6 @@ class FileLogger(AbstractLogger):
 		self.__f.print(None, lineOrLines)
 	#
 
-
-
 	# TODO: provide a more efficient implementation. currently <c>_logi()</c> will be called through <c>_logiAll()</c> so that not single but multiple tests are performed if the logger is already closed.
 	def _logiAll(self, logEntryStructList, bNeedsIndentationLevelAdaption):
 		if self.__f.closed:
@@ -63,8 +68,6 @@ class FileLogger(AbstractLogger):
 		super()._logiAll(logEntryStructList, bNeedsIndentationLevelAdaption)
 	#
 
-
-
 	def _descend(self, logEntryStruct):
 		nextID = logEntryStruct[1]
 		return FileLogger(self._idCounter, nextID, self._indentationLevel + 1,
@@ -72,7 +75,25 @@ class FileLogger(AbstractLogger):
 
 	#
 
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
 
+	def close(self):
+		self.__f.close()
+	#
+
+	def closed(self):
+		return self.__f.isClosed
+	#
+
+	def isClosed(self):
+		return self.__f.isClosed
+	#
+
+	################################################################################################################################
+	## Static Methods
+	################################################################################################################################
 
 	#
 	# Create a new instance of this logger.
@@ -110,26 +131,6 @@ class FileLogger(AbstractLogger):
 		logFile = RollOverLogFile(filePath, rollOver, bAppendToExistingFile, bFlushAfterEveryLogMessage, fileMode)
 		return FileLogger(None, None, 0, logFile, None, logMsgFormatter)
 	#
-
-
-
-	def close(self):
-		self.__f.close()
-	#
-
-
-
-	def closed(self):
-		return self.__f.isClosed
-	#
-
-
-
-	def isClosed(self):
-		return self.__f.isClosed
-	#
-
-
 
 #
 

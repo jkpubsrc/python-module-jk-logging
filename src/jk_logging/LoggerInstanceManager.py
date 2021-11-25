@@ -2,7 +2,7 @@
 
 
 
-from ._inst import instantiateLogMsgFormatter, instantiate
+from ._inst import instantiate
 
 
 

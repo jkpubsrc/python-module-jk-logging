@@ -2,20 +2,15 @@
 
 
 
-import os
 import time
-import traceback
-import sys
 import abc
-import datetime
-import re
 
 import jk_exceptionhelper
 
 from .ILogger import ILogger
 from .ExceptionInChildContextException import ExceptionInChildContextException
 from .EnumLogLevel import *
-from .IDCounter import IDCounter
+from .impl.IDCounter import IDCounter
 
 
 
@@ -62,9 +57,14 @@ def _getLogLevelStr(logLevel):
 
 
 class AbstractLogger(ILogger):
+
 	__metaclass__ = abc.ABCMeta
 
 	_logLevelToStrDict = _getLogLevelStrMap(True)
+
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
 
 	################################################################################################################################
 	## Constructor
@@ -81,7 +81,7 @@ class AbstractLogger(ILogger):
 	#
 
 	################################################################################################################################
-	## Public Properties
+	## Properties
 	################################################################################################################################
 
 	################################################################################################################################

@@ -20,7 +20,13 @@ from .AbstractLogger import *
 #
 class NamedMulticastLogger(AbstractLogger):
 
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
 
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
 
 	def __init__(self, loggerMap = None, idCounter = None, indentationLevel = 0, parentLogEntryID = 0):
 		super().__init__(idCounter)
@@ -37,58 +43,23 @@ class NamedMulticastLogger(AbstractLogger):
 			self.__loggerMap = {}
 	#
 
-
+	################################################################################################################################
+	## Properties
+	################################################################################################################################
 
 	@property
 	def loggers(self) -> dict:
 		return dict(self.__loggerMap)
 	#
 
-
-
-	def getLogger(self, loggerName) -> AbstractLogger:
-		return self.__loggerMap.get(loggerName)
-	#
-
-
-
-	@staticmethod
-	def create(**kwargs):
-		return NamedMulticastLogger(loggerMap = kwargs)
-	#
-
-
-
-	def addLogger(self, loggerName:str, logger):
-		assert isinstance(loggerName, str)
-		assert isinstance(logger, AbstractLogger)
-		if self.__loggerMap.get(loggerName, None) is not None:
-			del self.__loggerMap[loggerName]
-		self.__loggerMap[loggerName] = logger
-	#
-
-
-
-	def removeLogger(self, loggerName:str):
-		assert isinstance(loggerName, str)
-		if self.__loggerMap.get(loggerName, None) is not None:
-			del self.__loggerMap[loggerName]
-	#
-
-
-
-	def removeAllLoggers(self):
-		self.__loggerMap = {}
-	#
-
-
+	################################################################################################################################
+	## Helper Methods
+	################################################################################################################################
 
 	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
 		for logger in self.__loggerMap.values():
 			logger._logi(logEntryStruct, True)
 	#
-
-
 
 	def _descend(self, logEntryStruct):
 		nextID = logEntryStruct[1]
@@ -99,20 +70,50 @@ class NamedMulticastLogger(AbstractLogger):
 		return NamedMulticastLogger(newMap, self._idCounter, self._indentationLevel + 1, nextID)
 	#
 
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
 
+	def getLogger(self, loggerName) -> AbstractLogger:
+		return self.__loggerMap.get(loggerName)
+	#
+
+	def addLogger(self, loggerName:str, logger):
+		assert isinstance(loggerName, str)
+		assert isinstance(logger, AbstractLogger)
+		if self.__loggerMap.get(loggerName, None) is not None:
+			del self.__loggerMap[loggerName]
+		self.__loggerMap[loggerName] = logger
+	#
+
+	def removeLogger(self, loggerName:str):
+		assert isinstance(loggerName, str)
+		if self.__loggerMap.get(loggerName, None) is not None:
+			del self.__loggerMap[loggerName]
+	#
+
+	def removeAllLoggers(self):
+		self.__loggerMap = {}
+	#
 
 	def clear(self):
 		for logger in self.__loggerMap.values():
 			logger.clear()
 	#
 
-
-
 	def close(self):
 		for logger in self.__loggerMap.values():
 			logger.close()
 	#
 
+	################################################################################################################################
+	## Static Methods
+	################################################################################################################################
+
+	@staticmethod
+	def create(**kwargs):
+		return NamedMulticastLogger(loggerMap = kwargs)
+	#
 
 #
 

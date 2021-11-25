@@ -1,10 +1,6 @@
 ﻿
 
 
-import os
-import time
-import traceback
-import sys
 import typing
 
 from .EnumLogLevel import *
@@ -36,7 +32,13 @@ class IntContainer(object):
 #
 class DetectionLogger_v0(AbstractLogger):
 
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
 
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
 
 	def __init__(self, logger, logLevelCounterMap:dict = None, maxLogLevelSeen:IntContainer = None):
 		super().__init__(None)
@@ -55,22 +57,18 @@ class DetectionLogger_v0(AbstractLogger):
 			self.__maxLogLevelSeen = maxLogLevelSeen
 	#
 
+	################################################################################################################################
+	## Properties
+	################################################################################################################################
 
-
-	@staticmethod
-	def create(logger:AbstractLogger):
-		assert isinstance(logger, AbstractLogger)
-		return DetectionLogger_v0(logger)
-	#
-
-
+	################################################################################################################################
+	## Helper Methods
+	################################################################################################################################
 
 	def _descend(self, logEntryStruct):
 		descendedLogger = self.__logger._descend(logEntryStruct)
 		return DetectionLogger_v0(descendedLogger, self.__logLevelCounterMap, self.__maxLogLevelSeen)
 	#
-
-
 
 	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption:bool):
 		nLogLevel = int(logEntryStruct[5])
@@ -80,7 +78,9 @@ class DetectionLogger_v0(AbstractLogger):
 		self.__logger._logi(logEntryStruct, bNeedsIndentationLevelAdaption)
 	#
 
-
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
 
 	#
 	# Returns the number of log messages issued.
@@ -88,8 +88,6 @@ class DetectionLogger_v0(AbstractLogger):
 	def getLogMsgCount(self, logLevel):
 		return self.__logLevelCounterMap.get(int(logLevel), 0)
 	#
-
-
 
 	#
 	# Returns the number of log messages issued. The returned data dictionary uses integers as keys.
@@ -109,8 +107,6 @@ class DetectionLogger_v0(AbstractLogger):
 		}
 	#
 
-
-
 	#
 	# Returns the number of log messages issued. The returned data dictionary uses strings as keys.
 	#
@@ -129,16 +125,12 @@ class DetectionLogger_v0(AbstractLogger):
 		}
 	#
 
-
-
 	#
 	# Indicates whether this logger has ever seen such a log message.
 	#
 	def hasLogMsg(self, logLevel):
 		return self.__logLevelCounterMap.get(int(logLevel), 0) > 0
 	#
-
-
 
 	def hasAtLeastWarning(self):
 		return self.__maxLogLevelSeen.value >= int(EnumLogLevel.WARNING)
@@ -184,13 +176,9 @@ class DetectionLogger_v0(AbstractLogger):
 		return self.hasLogMsg(EnumLogLevel.DEBUG)
 	#
 
-
-
 	def descend(self, text):
 		return DetectionLogger_v0(self.__logger.descend(text), self.__logLevelCounterMap, self.__maxLogLevelSeen)
 	#
-
-
 
 	#
 	# Clear the log message counters.
@@ -204,7 +192,15 @@ class DetectionLogger_v0(AbstractLogger):
 		self.__logger.clear()
 	#
 
+	################################################################################################################################
+	## Static Methods
+	################################################################################################################################
 
+	@staticmethod
+	def create(logger:AbstractLogger):
+		assert isinstance(logger, AbstractLogger)
+		return DetectionLogger_v0(logger)
+	#
 
 #
 

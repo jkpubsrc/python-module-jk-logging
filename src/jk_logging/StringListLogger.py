@@ -6,8 +6,8 @@ import typing
 
 from .EnumLogLevel import *
 from .AbstractLogger import *
-from .AbstractLogMessageFormatter import *
-from .LogMessageFormatter import *
+from .fmt.AbstractLogMessageFormatter import *
+from .fmt.LogMessageFormatter import *
 from .StringListBuffer import *
 
 
@@ -19,6 +19,13 @@ from .StringListBuffer import *
 #
 class StringListLogger(AbstractLogger):
 
+	################################################################################################################################
+	## Constants
+	################################################################################################################################
+
+	################################################################################################################################
+	## Constructor
+	################################################################################################################################
 
 	def __init__(self, idCounter = None, parentID = None, indentationLevel = None, f = None, prefix = None, logMsgFormatter = None):
 		super().__init__(idCounter)
@@ -38,13 +45,13 @@ class StringListLogger(AbstractLogger):
 		self.__prefix = prefix
 	#
 
+	################################################################################################################################
+	## Properties
+	################################################################################################################################
 
-
-	def hasData(self):
-		return self.__f.hasData()
-	#
-
-
+	################################################################################################################################
+	## Helper Methods
+	################################################################################################################################
 
 	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
 		if self.__f.isClosed:
@@ -57,8 +64,6 @@ class StringListLogger(AbstractLogger):
 		self.__f.print(None, lineOrLines)
 	#
 
-
-
 	# TODO: provide a more efficient implementation. currently <c>_logi()</c> will be called through <c>_logiAll()</c> so that not single but multiple tests are performed if the logger is already closed.
 	def _logiAll(self, logEntryStructList, bNeedsIndentationLevelAdaption):
 		if self.__f.closed:
@@ -67,15 +72,54 @@ class StringListLogger(AbstractLogger):
 		super()._logiAll(logEntryStructList, bNeedsIndentationLevelAdaption)
 	#
 
-
-
 	def _descend(self, logEntryStruct):
 		nextID = logEntryStruct[1]
 		return StringListLogger(self._idCounter, nextID, self._indentationLevel + 1,
 			self.__f, self.__prefix, self.__logMsgFormatter)
 	#
 
+	################################################################################################################################
+	## Public Methods
+	################################################################################################################################
 
+	def hasData(self):
+		return self.__f.hasData()
+	#
+
+	def close(self):
+		self.__f.close()
+	#
+
+	def closed(self):
+		return self.__f.isClosed
+	#
+
+	def isClosed(self):
+		return self.__f.isClosed
+	#
+
+	def clear(self):
+		return self.__f.clear()
+	#
+
+	def toStr(self):
+		return self.__f.getDataAsStr()
+	#
+
+	def __str__(self):
+		return self.__f.getDataAsStr()
+	#
+
+	#
+	# Returns the strings that are currently stored in the internal buffer
+	#
+	def toList(self) -> typing.List[str]:
+		return self.__f.getDataAsList()
+	#
+
+	################################################################################################################################
+	## Static Methods
+	################################################################################################################################
 
 	#
 	# Create a new instance of this logger.
@@ -87,53 +131,6 @@ class StringListLogger(AbstractLogger):
 		logFile = StringListBuffer(existingLogLines)
 		return StringListLogger(None, None, 0, logFile, None, logMsgFormatter)
 	#
-
-
-
-	def close(self):
-		self.__f.close()
-	#
-
-
-
-	def closed(self):
-		return self.__f.isClosed
-	#
-
-
-
-	def isClosed(self):
-		return self.__f.isClosed
-	#
-
-
-
-	def clear(self):
-		return self.__f.clear()
-	#
-
-
-
-	def toStr(self):
-		return self.__f.getDataAsStr()
-	#
-
-
-
-	def __str__(self):
-		return self.__f.getDataAsStr()
-	#
-
-
-
-	#
-	# Returns the strings that are currently stored in the internal buffer
-	#
-	def toList(self) -> typing.List[str]:
-		return self.__f.getDataAsList()
-	#
-
-
 
 #
 
