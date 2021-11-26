@@ -39,7 +39,7 @@ class Converter_prettyJSON_to_raw(object):
 			jStackTraceElement["file"],
 			jStackTraceElement["line"],
 			jStackTraceElement["module"],
-			jStackTraceElement["sourcecode"],
+			jStackTraceElement["sourceCode"],
 		)
 	#
 

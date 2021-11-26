@@ -48,7 +48,7 @@ class Converter_raw_to_prettyJSON(object):
 			"file": stackTraceItem[0],
 			"line": stackTraceItem[1],
 			"module": stackTraceItem[2],
-			"sourcecode": stackTraceItem[3],
+			"sourceCode": stackTraceItem[3],
 		}
 	#
 

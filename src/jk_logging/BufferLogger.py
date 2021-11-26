@@ -251,7 +251,7 @@ class BufferLogger(AbstractLogger):
 		#return self.__getPrettyJSONData(self.__list)
 		ret = {
 			"magic": {
-				"magic": "jk-logging-pretty",
+				"magic": "jk-logging-verbose",
 				"version": 1,
 			},
 			"logData": [
@@ -311,7 +311,7 @@ class BufferLogger(AbstractLogger):
 				appendData = jsonData
 
 			elif isinstance(jsonData, dict):
-				if jsonData["magic"]["magic"] == "jk-logging-pretty":
+				if jsonData["magic"]["magic"] == "jk-logging-verbose":
 					appendData = [
 						Converter.PRETTYJSON_TO_RAW.json_to_logEntry(x) for x in jsonData["logData"]
 					]
