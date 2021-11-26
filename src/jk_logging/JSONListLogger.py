@@ -13,6 +13,9 @@ from .BufferLogger import BufferLogger
 
 
 
+"""
+NOTE: This class is somehow the same as BufferLogger/BufferLogger2
+
 #
 # This logger will buffer log messages in an internal array. Later this data can be forwarded to
 # other loggers, f.e. in order to store them on disk.
@@ -100,7 +103,7 @@ class JSONListLogger(BufferLogger):
 	#
 
 #
-
+"""
 
 
 

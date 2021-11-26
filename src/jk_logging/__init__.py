@@ -43,7 +43,6 @@ from .NullLogger import NullLogger
 from .FileLogger import FileLogger
 from .StringListLogger import StringListLogger
 from .JSONFileLogger import JSONFileLogger
-from .JSONListLogger import JSONListLogger
 
 from .LoggerInstanceManager import LoggerInstanceManager
 

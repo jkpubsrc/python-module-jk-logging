@@ -203,14 +203,14 @@ class BufferLogger2(AbstractLogger):
 	#	self.__list = []
 	#
 
-	def getDataAsJSON(self):
+	def toJSON(self):
 		#return self.__getJSONData(self.__list)
 		return [
 			Converter.RAW_TO_COMPACTJSON.logEntry_to_json(x) for x in self.__list
 		]
 	#
 
-	def getDataAsPrettyJSON(self):
+	def toJSONPretty(self):
 		#return self.__getPrettyJSONData(self.__list)
 		return [
 			Converter.RAW_TO_PRETTYJSON.logEntry_to_json(x) for x in self.__list
@@ -249,22 +249,12 @@ class BufferLogger2(AbstractLogger):
 			ret.append(item)
 		return ret
 	#
+	"""
 
 	@staticmethod
-	def create(jsonRawData = None):
-		if jsonRawData != None:
-			outLogStats = {}
-			jsonRawData = BufferLogger2.__convertRawLogData(jsonRawData, outLogStats)
-			return BufferLogger2(
-					idCounter=None,
-					parentID=None,
-					indentLevel=0,
-					logItemList=jsonRawData,
-					logStats={}
-				)
+	def create():
 		return BufferLogger2()
 	#
-	"""
 
 #
 

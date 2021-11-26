@@ -68,14 +68,9 @@ jk_testing.Assert.isInstance(slog.logMsgFormatter.timeStampFormatter, jk_logging
 
 
 
-cfgJSON = {
-	"type": "JSONListLogger",
-}
-
-jlog = jk_logging.instantiate(cfgJSON)
-jk_testing.Assert.isInstance(jlog, jk_logging.JSONListLogger)
-jk_testing.Assert.isInstance(jlog.logMsgFormatter, jk_logging.fmt.LogMessageFormatter)
-jk_testing.Assert.isInstance(jlog.logMsgFormatter.timeStampFormatter, jk_logging.fmt.DefaultTimeStampFormatter)
+jlog = jk_logging.BufferLogger2.create()
+jk_testing.Assert.isInstance(jlog, jk_logging.BufferLogger2)
+jk_testing.Assert.isNone(jlog.logMsgFormatter)
 
 
 
@@ -123,7 +118,7 @@ with blog.descend("Descending ...") as blog2:
 
 
 
-mlog = MulticastLogger.create(slog, clog, jlog)
+mlog = jk_logging.MulticastLogger.create(slog, clog, jlog)
 
 mlog.info("First line, direct logging to MulticastLogger.")
 with mlog.descend("Now descending ...") as mlog2:
@@ -168,7 +163,8 @@ received = slog.toList()
 jk_testing.Assert.isEqual(EXPECTED, received)
 
 print()
-jk_json.prettyPrint(jlog.toJSON())
+jk_json.prettyPrint(jlog.toJSONPretty())
+#jk_json.prettyPrint(jlog.toJSON())
 print()
 
 

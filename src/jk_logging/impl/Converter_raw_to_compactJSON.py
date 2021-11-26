@@ -30,25 +30,26 @@ class Converter_raw_to_compactJSON(object):
 	################################################################################################################################
 
 	def logEntry_to_json(self, rawLogEntry:typing.Union[tuple,list]) -> list:
+		sType = rawLogEntry[0]
 		jsonLogEntry = list(rawLogEntry)
-		jsonLogEntry[5] = int(jsonLogEntry[5])		# log level
+		jsonLogEntry[5] = int(rawLogEntry[5])		# log level
 
-		if jsonLogEntry[0] == "txt":
+		if sType == "txt":
 			assert len(rawLogEntry) == 7
 			# nothing more to convert
 			pass
 
-		elif jsonLogEntry[0] == "ex":
+		elif sType == "ex":
 			assert len(rawLogEntry) == 9
 			# nothing more to convert
 			pass
 
-		elif jsonLogEntry[0] == "desc":
+		elif sType == "desc":
 			assert len(rawLogEntry) == 8
 			# convert list of nested elements
-			if jsonLogEntry[7] is not None:
+			if rawLogEntry[7] is not None:
 				jsonLogEntry[7] = [
-					self.logEntry_to_json(x) for x in jsonLogEntry[7]
+					self.logEntry_to_json(x) for x in rawLogEntry[7]
 				]
 
 		else:

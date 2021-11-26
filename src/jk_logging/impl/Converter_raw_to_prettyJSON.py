@@ -27,17 +27,17 @@ class Converter_raw_to_prettyJSON(object):
 
 	def __timeStamp_to_json(self, t:typing.Union[int,float]) -> dict:
 		assert isinstance(t, (int,float))
-		t = datetime.datetime.fromtimestamp(t)
+		dt = datetime.datetime.fromtimestamp(t)
 		return {
 			"t": t,
-			"year": t.year,
-			"month": t.month,
-			"day": t.day,
-			"hour": t.hour,
-			"minute": t.minute,
-			"second": t.second,
-			"ms": t.microsecond // 1000,
-			"us": t.microsecond % 1000,
+			"year": dt.year,
+			"month": dt.month,
+			"day": dt.day,
+			"hour": dt.hour,
+			"minute": dt.minute,
+			"second": dt.second,
+			"ms": dt.microsecond // 1000,
+			"us": dt.microsecond % 1000,
 		}
 	#
 
@@ -57,8 +57,9 @@ class Converter_raw_to_prettyJSON(object):
 	################################################################################################################################
 
 	def logEntry_to_json(self, rawLogEntry:typing.Union[tuple,list]) -> dict:
+		sType = rawLogEntry[0]
 		jsonLogEntry = {
-			"type": rawLogEntry[0],
+			"type": sType,
 			"id": rawLogEntry[1],
 			"indent": rawLogEntry[2],
 			"timestamp": self.__timeStamp_to_json(rawLogEntry[4]),
@@ -66,11 +67,11 @@ class Converter_raw_to_prettyJSON(object):
 			"logleveln": int(rawLogEntry[5]),
 		}
 
-		if rawLogEntry[0] == "txt":
+		if sType == "txt":
 			assert len(rawLogEntry) == 7
 			jsonLogEntry["text"] = rawLogEntry[6]
 
-		elif rawLogEntry[0] == "ex":
+		elif sType == "ex":
 			assert len(rawLogEntry) == 9
 			jsonLogEntry["exception"] = rawLogEntry[6]
 			jsonLogEntry["text"] = rawLogEntry[7]
@@ -79,7 +80,7 @@ class Converter_raw_to_prettyJSON(object):
 					self.__stackTraceElement_to_json(x) for x in rawLogEntry[8]
 				]
 
-		elif rawLogEntry[0] == "desc":
+		elif sType == "desc":
 			assert len(rawLogEntry) == 8
 			jsonLogEntry["text"] = rawLogEntry[6]
 			if rawLogEntry[7] is not None:

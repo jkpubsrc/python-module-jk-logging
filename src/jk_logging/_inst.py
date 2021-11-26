@@ -24,7 +24,6 @@ from .NullLogger import NullLogger
 from .FileLogger import FileLogger
 from .StringListLogger import StringListLogger
 from .JSONFileLogger import JSONFileLogger
-from .JSONListLogger import JSONListLogger
 from .EnumExtensitivity import EnumExtensitivity
 
 from .fmt.AbstractLogMessageFormatter import AbstractLogMessageFormatter
@@ -260,11 +259,6 @@ def instantiate(cfg):
 		return StringListLogger.create(
 			logMsgFormatter = logMsgFormatter
 		)
-
-	elif loggerType == "JSONListLogger":
-		if logMsgFormatter:
-			raise Exception("Loggers of type JSONListLogger do not have a log message formatter!")
-		return JSONListLogger.create()
 
 	elif loggerType == "JSONFileLogger":
 		if logMsgFormatter:
