@@ -359,7 +359,7 @@ class AbstractLogger(ILogger):
 	#
 	#def clear(self):
 	#	NOTE: This method has been removed as this can not be a general capability of loggers
-	#		See BufferLogger2.clear() for details
+	#		See BufferLogger.clear() for details
 	#	pass
 	#
 

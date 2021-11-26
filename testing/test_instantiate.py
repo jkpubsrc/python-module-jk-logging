@@ -73,11 +73,11 @@ slog2 = jk_logging.instantiate(cfgStringList)
 
 
 cfgBuffer = {
-	"type": "BufferLogger2",
+	"type": "BufferLogger",
 }
 
 blog = jk_logging.instantiate(cfgBuffer)
-jk_testing.Assert.isInstance(blog, jk_logging.BufferLogger2)
+jk_testing.Assert.isInstance(blog, jk_logging.BufferLogger)
 jk_testing.Assert.isNone(blog.logMsgFormatter)
 
 
@@ -122,7 +122,7 @@ print()
 # ----
 
 #jk_json.saveToFilePretty(blog.toJSON(), "out1.json")
-blog2 = jk_logging.BufferLogger2.create(blog.toJSON())
+blog2 = jk_logging.BufferLogger.create(blog.toJSON())
 #jk_json.saveToFilePretty(blog2.toJSON(), "out2.json")
 
 mlog2 = jk_logging.MulticastLogger.create(slog2, clog)

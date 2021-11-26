@@ -3,9 +3,15 @@
 
 
 import datetime
+import json
+from os import stat
 
-from .EnumLogLevel import *
-from .AbstractLogger import *
+from .EnumLogLevel import EnumLogLevel
+from .impl.LogStats import LogStats
+from .AbstractLogger import AbstractLogger
+from .impl.Converter import Converter
+from .impl.JSONDict import JSONDict
+
 
 
 
@@ -14,6 +20,8 @@ from .AbstractLogger import *
 #
 # This logger will buffer log messages in an internal array. Later this data can be forwarded to
 # other loggers, f.e. in order to store them on disk.
+#
+# NOTE: This is an enhanced version of BufferLogger that collects statistics while logging.
 #
 class BufferLogger(AbstractLogger):
 
@@ -25,7 +33,7 @@ class BufferLogger(AbstractLogger):
 	## Constructors
 	################################################################################################################################
 
-	def __init__(self, idCounter = None, parentID = None, indentLevel = 0, logItemList = None):
+	def __init__(self, idCounter = None, parentID:int = None, indentLevel:int = 0, logItemList = None, logStats:LogStats = None, extraProperties:JSONDict = None):
 		super().__init__(idCounter)
 		self._indentationLevel = indentLevel
 		if logItemList is None:
@@ -35,48 +43,60 @@ class BufferLogger(AbstractLogger):
 		if parentID is None:
 			parentID = self._idCounter.next()
 		self._parentLogEntryID = parentID
+		self.__logStats = LogStats() if (logStats == None) else logStats
+		self.__extraProperties = JSONDict() if extraProperties is None else extraProperties
 	#
 
 	################################################################################################################################
 	## Properties
 	################################################################################################################################
 
-	@staticmethod
-	def __convertRawLogData(items):
-		ret = []
-		for item in items:
-			item = list(item)
-			item[5] = EnumLogLevel.parse(item[5])
-			if item[0] == "txt":
-				pass
-			elif item[0] == "ex":
-				pass
-			elif item[0] == "desc":
-				item[7] = BufferLogger.__convertRawLogData(item[7])
-			else:
-				raise Exception("Implementation Error!")
-			ret.append(item)
-		return ret
+	@property
+	def stats(self) -> LogStats:
+		return self.__logStats
+	#
+
+	#
+	# These extra properties accessed via this property will be part of the serialization of the buffer.
+	# While this data has no relevance for logging itself this data will still be part of the JSON serialization results.
+	#
+	@property
+	def extraProperties(self) -> JSONDict:
+		return self.__extraProperties
 	#
 
 	################################################################################################################################
 	## Helper Methods
 	################################################################################################################################
 
-	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
+	def _logi(self, logEntryStruct:list, bNeedsIndentationLevelAdaption:bool) -> list:
+		self.__logStats.increment(logEntryStruct[5])
+
 		if bNeedsIndentationLevelAdaption:
 			logEntryStruct = list(logEntryStruct)
 			logEntryStruct[2] = self._indentationLevel
 		self.__list.append(logEntryStruct)
+
 		return logEntryStruct
 	#
 
-	def _descend(self, logEntryStruct):
+	def _descend(self, logEntryStruct:list) -> AbstractLogger:
+		self.__logStats.increment(logEntryStruct[5])
+
 		nextID = logEntryStruct[1]
 		newList = logEntryStruct[7]
-		return BufferLogger(self._idCounter, nextID, self._indentationLevel + 1, newList)
+
+		return BufferLogger(
+			idCounter=self._idCounter,
+			parentID=nextID,
+			indentLevel=self._indentationLevel + 1,
+			logItemList=newList,
+			logStats=self.__logStats,
+			extraProperties=self.__extraProperties,
+		)
 	#
 
+	"""
 	def __getJSONData(self, items):
 		ret = []
 		for item in items:
@@ -140,6 +160,7 @@ class BufferLogger(AbstractLogger):
 			ret.append(jsonLogEntry)
 		return ret
 	#
+	"""
 
 	################################################################################################################################
 	## Public Methods
@@ -188,20 +209,60 @@ class BufferLogger(AbstractLogger):
 			self.__list = []
 	#
 
+	#
+	# Forward the log data stored in this logger to another logger.
+	#
+	# @param		AbstractLogger logger			Another logger that will receive the log data.
+	# @param		str text						The title for the descend section to create.
+	# @param		bool bClear						Clear buffer after forwarding all log data.
+	#
 	def forwardToDescended(self, logger, text:str, bClear = False):
-		self.forwardTo(logger.descend(text), bClear)
+		assert isinstance(logger, AbstractLogger)
+		log2 = logger.descend(text)
+		log2._logiAll(self.__list, True)
+		if bClear:
+			self.__list = []
 	#
 
-	def clear(self):
-		self.__list = []
+	#def clear(self):
+	#	NOTE: This method has been removed as it is not possible to clear only part of a stats object
+	#	self.__list = []
 	#
 
-	def getDataAsJSON(self):
-		return self.__getJSONData(self.__list)
+	def toJSON(self):
+		#return self.__getJSONData(self.__list)
+		ret = {
+			"magic": {
+				"magic": "jk-logging-compact",
+				"version": 1,
+			},
+			"logData": [
+				Converter.RAW_TO_COMPACTJSON.logEntry_to_json(x) for x in self.__list
+			],
+		}
+
+		if self.__extraProperties:
+			ret["extraProperties"] = self.__extraProperties
+
+		return ret
 	#
 
-	def getDataAsPrettyJSON(self):
-		return self.__getPrettyJSONData(self.__list)
+	def toJSONPretty(self):
+		#return self.__getPrettyJSONData(self.__list)
+		ret = {
+			"magic": {
+				"magic": "jk-logging-pretty",
+				"version": 1,
+			},
+			"logData": [
+				Converter.RAW_TO_PRETTYJSON.logEntry_to_json(x) for x in self.__list
+			]
+		}
+
+		if self.__extraProperties:
+			ret["extraProperties"] = self.__extraProperties
+
+		return ret
 	#
 
 	def __str__(self):
@@ -216,12 +277,66 @@ class BufferLogger(AbstractLogger):
 	## Static Methods
 	################################################################################################################################
 
+	"""
 	@staticmethod
-	def create(jsonRawData = None):
-		if jsonRawData != None:
-			jsonRawData = BufferLogger.__convertRawLogData(jsonRawData)
-			return BufferLogger(None, None, 0, jsonRawData)
-		return BufferLogger()
+	def __convertRawLogData(items:list, outLogStats:dict):
+		ret = []
+		for item in items:
+			item = list(item)
+			item[5] = EnumLogLevel.parse(item[5])
+			iLogLevel = int(item[5])
+			outLogStats[iLogLevel] = outLogStats.get(iLogLevel, 0) + 1
+			if item[0] == "txt":
+				pass
+			elif item[0] == "ex":
+				pass
+			elif item[0] == "desc":
+				item[7] = BufferLogger.__convertRawLogData(item[7], outLogStats)
+			else:
+				raise Exception("Implementation Error!")
+			ret.append(item)
+		return ret
+	#
+	"""
+
+	@staticmethod
+	def create(jsonData = None):
+		appendData = None
+		extraProperties = None
+
+		if jsonData is not None:
+
+			if isinstance(jsonData, list):
+				# seems to be raw data
+				appendData = jsonData
+
+			elif isinstance(jsonData, dict):
+				if jsonData["magic"]["magic"] == "jk-logging-pretty":
+					appendData = [
+						Converter.PRETTYJSON_TO_RAW.json_to_logEntry(x) for x in jsonData["logData"]
+					]
+					extraProperties = jsonData.get("extraProperties")
+				elif jsonData["magic"]["magic"] == "jk-logging-compact":
+					appendData = [
+						Converter.COMPACTJSON_TO_RAW.json_to_logEntry(x) for x in jsonData["logData"]
+					]
+					extraProperties = jsonData.get("extraProperties")
+				else:
+					raise Exception("jsonData is of invalid format!")
+
+			else:
+				raise Exception("jsonData is invalid")
+
+		# ----
+
+		if extraProperties is not None:
+			extraProperties = JSONDict(**extraProperties)
+
+		logger = BufferLogger(extraProperties=extraProperties)
+		if appendData is not None:
+			logger._logiAll(appendData, True)
+
+		return logger
 	#
 
 #

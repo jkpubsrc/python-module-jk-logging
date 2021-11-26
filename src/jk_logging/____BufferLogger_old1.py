@@ -15,6 +15,7 @@ from .AbstractLogger import *
 
 
 
+"""
 #
 # This logger will buffer log messages in an array.
 #
@@ -111,7 +112,7 @@ class BufferLogger(AbstractLogger):
 
 	def clear(self):
 		self.__list = []
-
+"""
 
 
 

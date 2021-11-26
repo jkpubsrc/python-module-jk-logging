@@ -13,7 +13,6 @@ from .impl.IDCounter import IDCounter
 from .EnumLogLevel import EnumLogLevel
 from .AbstractLogger import AbstractLogger
 from .BufferLogger import BufferLogger
-from .BufferLogger2 import BufferLogger2
 from .ConsoleLogger import ConsoleLogger
 from .DetectionLogger_v0 import DetectionLogger_v0
 from .DetectionLogger import DetectionLogger
@@ -185,11 +184,6 @@ def instantiate(cfg):
 		if logMsgFormatter:
 			raise Exception("Loggers of type BufferLogger do not have a log message formatter!")
 		return BufferLogger.create()
-
-	elif loggerType == "BufferLogger2":
-		if logMsgFormatter:
-			raise Exception("Loggers of type BufferLogger2 do not have a log message formatter!")
-		return BufferLogger2.create()
 
 	elif loggerType == "ConsoleLogger":
 		return ConsoleLogger.create(

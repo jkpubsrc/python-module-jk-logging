@@ -34,4 +34,12 @@ This file contains the approximate history of the changes this module has experi
 * 2021-11-25
 	* Beginning: Enhancements in log message buffering
 	* Refactoring
+	* JSON serialization
+
+
+
+
+
+
+
 

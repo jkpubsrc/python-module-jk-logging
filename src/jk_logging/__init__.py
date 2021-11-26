@@ -31,7 +31,6 @@ from .fmt.LogMessageFormatter import LogMessageFormatter, DEFAULT_LOG_MESSAGE_FO
 from .ILogger import ILogger
 from .AbstractLogger import AbstractLogger
 from .BufferLogger import BufferLogger
-from .BufferLogger2 import BufferLogger2
 from .ConsoleLogger import ConsoleLogger
 from .DetectionLogger_v0 import DetectionLogger_v0
 from .DetectionLogger import DetectionLogger
