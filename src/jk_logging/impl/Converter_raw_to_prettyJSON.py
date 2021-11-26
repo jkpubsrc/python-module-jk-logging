@@ -60,11 +60,13 @@ class Converter_raw_to_prettyJSON(object):
 		sType = rawLogEntry[0]
 		jsonLogEntry = {
 			"type": sType,
-			"id": rawLogEntry[1],
-			"indent": rawLogEntry[2],
-			"timestamp": self.__timeStamp_to_json(rawLogEntry[4]),
-			"loglevel": str(rawLogEntry[5]),
-			"logleveln": int(rawLogEntry[5]),
+			#"id": rawLogEntry[1],
+			#"indent": rawLogEntry[2],
+			"timeStamp": self.__timeStamp_to_json(rawLogEntry[4]),
+			"logLevel": [
+				int(rawLogEntry[5]),
+				str(rawLogEntry[5]),
+			],
 		}
 
 		if sType == "txt":

@@ -15,6 +15,7 @@ import jk_logging.fmt
 import jk_logging.debugging
 
 import jk_testing
+import jk_testing.utils
 import jk_json
 
 
@@ -61,16 +62,7 @@ jk_testing.Assert.isInstance(slog, jk_logging.StringListLogger)
 jk_testing.Assert.isInstance(slog.logMsgFormatter, jk_logging.fmt.LogMessageFormatter)
 jk_testing.Assert.isInstance(slog.logMsgFormatter.timeStampFormatter, jk_logging.debugging.DebugTimeStampFormatter)
 
-
-
-# ----------------------------------------------------------------
-# instantiate JSON logger
-
-
-
-jlog = jk_logging.BufferLogger2.create()
-jk_testing.Assert.isInstance(jlog, jk_logging.BufferLogger2)
-jk_testing.Assert.isNone(jlog.logMsgFormatter)
+slog2 = jk_logging.instantiate(cfgStringList)
 
 
 
@@ -81,11 +73,11 @@ jk_testing.Assert.isNone(jlog.logMsgFormatter)
 
 
 cfgBuffer = {
-	"type": "BufferLogger",
+	"type": "BufferLogger2",
 }
 
 blog = jk_logging.instantiate(cfgBuffer)
-jk_testing.Assert.isInstance(blog, jk_logging.BufferLogger)
+jk_testing.Assert.isInstance(blog, jk_logging.BufferLogger2)
 jk_testing.Assert.isNone(blog.logMsgFormatter)
 
 
@@ -118,12 +110,29 @@ with blog.descend("Descending ...") as blog2:
 
 
 
-mlog = jk_logging.MulticastLogger.create(slog, clog, jlog)
+mlog = jk_logging.MulticastLogger.create(slog, clog)
 
+print()
 mlog.info("First line, direct logging to MulticastLogger.")
 with mlog.descend("Now descending ...") as mlog2:
 	blog.forwardTo(mlog2)
 mlog.info("Last line, direct logging to MulticastLogger.")
+print()
+
+# ----
+
+#jk_json.saveToFilePretty(blog.toJSON(), "out1.json")
+blog2 = jk_logging.BufferLogger2.create(blog.toJSON())
+#jk_json.saveToFilePretty(blog2.toJSON(), "out2.json")
+
+mlog2 = jk_logging.MulticastLogger.create(slog2, clog)
+
+print()
+mlog2.info("First line, direct logging to MulticastLogger.")
+with mlog2.descend("Now descending ...") as mlog22:
+	blog2.forwardTo(mlog22)
+mlog2.info("Last line, direct logging to MulticastLogger.")
+print()
 
 
 
@@ -132,7 +141,7 @@ mlog.info("Last line, direct logging to MulticastLogger.")
 
 
 
-EXPECTED = [
+EXPECTED = jk_testing.utils.StringList.fromSequenceWithTabs([
 	"[DEBUG TIMESTAMP 0]       INFO: First line, direct logging to MulticastLogger.",
 	"[DEBUG TIMESTAMP 1]       INFO: Now descending ...",
 	"	[DEBUG TIMESTAMP 2]      DEBUG: Log line to BufferLogger: debug",
@@ -156,15 +165,37 @@ EXPECTED = [
 	"			[DEBUG TIMESTAMP 20]      ERROR: Log line to BufferLogger: error",
 	"			[DEBUG TIMESTAMP 21]    SUCCESS: Log line to BufferLogger: success",
 	"[DEBUG TIMESTAMP 22]       INFO: Last line, direct logging to MulticastLogger.",
-]
+])
 
-received = slog.toList()
-
-jk_testing.Assert.isEqual(EXPECTED, received)
+received = jk_testing.utils.StringList.fromSequenceWithTabs(slog.toList())
 
 print()
-jk_json.prettyPrint(jlog.toJSONPretty())
-#jk_json.prettyPrint(jlog.toJSON())
+if EXPECTED == received:
+	print(">> slog: as expected")
+else:
+	print(">> slog: differs from expected!")
+jk_testing.utils.StringListDiff(
+	"expected",
+	EXPECTED,
+	"encountered",
+	received,
+).dump()
+print()
+
+
+received2 = jk_testing.utils.StringList.fromSequenceWithTabs(slog2.toList())
+
+print()
+if EXPECTED == received:
+	print(">> slog2: as expected")
+else:
+	print(">> slog2: differs from expected!")
+jk_testing.utils.StringListDiff(
+	"expected",
+	EXPECTED,
+	"encountered",
+	received,
+).dump()
 print()
 
 

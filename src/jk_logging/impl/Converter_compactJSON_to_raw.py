@@ -34,21 +34,38 @@ class Converter_compactJSON_to_raw(object):
 	def json_to_logEntry(self, jsonLogEntry:list) -> list:
 		assert isinstance(jsonLogEntry, list)
 
-		rawLogEntry = list(jsonLogEntry)
-		rawLogEntry[5] = EnumLogLevel.parse(jsonLogEntry[5])		# log level
+		sType = jsonLogEntry[0]
+		rawLogEntry = [
+			sType,
+			0,										# logEntryID
+			0,										# indentationLevel
+			0,										# parentLogEntryID
+			jsonLogEntry[1],						# timeStamp
+			EnumLogLevel.parse(jsonLogEntry[2]),	# logLevel
+		]
 
 		if rawLogEntry[0] == "txt":
 			# nothing more to convert
-			pass
+			rawLogEntry.append(jsonLogEntry[3])
+			assert len(rawLogEntry) == 7
+
 		elif rawLogEntry[0] == "ex":
 			# nothing more to convert
-			pass
+			rawLogEntry.append(jsonLogEntry[3])
+			rawLogEntry.append(jsonLogEntry[4])
+			rawLogEntry.append(jsonLogEntry[5])
+			assert len(rawLogEntry) == 9
+
 		elif rawLogEntry[0] == "desc":
 			# convert list of nested elements
-			if rawLogEntry[7] is not None:
-				rawLogEntry[7] = [
-					self.json_to_logEntry(x) for x in rawLogEntry[7]
+			rawLogEntry.append(jsonLogEntry[3])
+			nested = []
+			if jsonLogEntry[4] is not None:
+				nested = [
+					self.json_to_logEntry(x) for x in jsonLogEntry[4]
 				]
+			rawLogEntry.append(nested)
+
 		else:
 			raise Exception("Implementation Error!")
 

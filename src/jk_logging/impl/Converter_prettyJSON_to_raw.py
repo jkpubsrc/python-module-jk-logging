@@ -53,10 +53,10 @@ class Converter_prettyJSON_to_raw(object):
 		sType = jLogEntry["type"]
 		rawLogEntry = [
 			sType,
-			jLogEntry["id"],
+			0,										# jLogEntry["id"],
 			jLogEntry["indent"],
-			self.__json_to_timeStamp(jLogEntry["timestamp"]),
-			EnumLogLevel.parse(jLogEntry["logleveln"]),
+			self.__json_to_timeStamp(jLogEntry["timeStamp"]),
+			EnumLogLevel.parse(jLogEntry["logLevel"][0]),
 		]
 
 		if sType == "txt":

@@ -3,6 +3,8 @@
 
 
 import datetime
+import json
+from os import stat
 
 from .EnumLogLevel import EnumLogLevel
 from .impl.LogStats import LogStats
@@ -194,8 +196,19 @@ class BufferLogger2(AbstractLogger):
 			self.__list = []
 	#
 
+	#
+	# Forward the log data stored in this logger to another logger.
+	#
+	# @param		AbstractLogger logger			Another logger that will receive the log data.
+	# @param		str text						The title for the descend section to create.
+	# @param		bool bClear						Clear buffer after forwarding all log data.
+	#
 	def forwardToDescended(self, logger, text:str, bClear = False):
-		self.forwardTo(logger.descend(text), bClear)
+		assert isinstance(logger, AbstractLogger)
+		log2 = logger.descend(text)
+		log2._logiAll(self.__list, True)
+		if bClear:
+			self.__list = []
 	#
 
 	#def clear(self):
@@ -205,16 +218,28 @@ class BufferLogger2(AbstractLogger):
 
 	def toJSON(self):
 		#return self.__getJSONData(self.__list)
-		return [
-			Converter.RAW_TO_COMPACTJSON.logEntry_to_json(x) for x in self.__list
-		]
+		return {
+			"magic": {
+				"magic": "jk-logging-compact",
+				"version": 1,
+			},
+			"logdata": [
+				Converter.RAW_TO_COMPACTJSON.logEntry_to_json(x) for x in self.__list
+			]
+		}
 	#
 
 	def toJSONPretty(self):
 		#return self.__getPrettyJSONData(self.__list)
-		return [
-			Converter.RAW_TO_PRETTYJSON.logEntry_to_json(x) for x in self.__list
-		]
+		return {
+			"magic": {
+				"magic": "jk-logging-pretty",
+				"version": 1,
+			},
+			"logdata": [
+				Converter.RAW_TO_PRETTYJSON.logEntry_to_json(x) for x in self.__list
+			]
+		}
 	#
 
 	def __str__(self):
@@ -252,8 +277,37 @@ class BufferLogger2(AbstractLogger):
 	"""
 
 	@staticmethod
-	def create():
-		return BufferLogger2()
+	def create(jsonData = None):
+		logger = BufferLogger2()
+
+		appendData = None
+		if jsonData is not None:
+
+			if isinstance(jsonData, list):
+				# seems to be raw data
+				appendData = jsonData
+
+			elif isinstance(jsonData, dict):
+				if jsonData["magic"]["magic"] == "jk-logging-pretty":
+					appendData = [
+						Converter.PRETTYJSON_TO_RAW.json_to_logEntry(x) for x in jsonData["logdata"]
+					]
+				elif jsonData["magic"]["magic"] == "jk-logging-compact":
+					appendData = [
+						Converter.COMPACTJSON_TO_RAW.json_to_logEntry(x) for x in jsonData["logdata"]
+					]
+				else:
+					raise Exception("jsonData is of invalid format!")
+
+			else:
+				raise Exception("jsonData is invalid")
+
+		# ----
+
+		if appendData is not None:
+			logger._logiAll(appendData, True)
+
+		return logger
 	#
 
 #

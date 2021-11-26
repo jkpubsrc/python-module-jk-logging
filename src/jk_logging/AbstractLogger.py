@@ -393,6 +393,7 @@ class AbstractLogger(ILogger):
 	## Static Methods
 	################################################################################################################################
 
+	"""
 	@staticmethod
 	def exceptionToJSON(ex):
 		exceptionObject = jk_exceptionhelper.analyseException(ex, ignoreJKTypingCheckFunctionSignatureFrames=True, ignoreJKTestingAssertFrames=True)
@@ -400,9 +401,12 @@ class AbstractLogger(ILogger):
 		return {
 			"exClass": exceptionObject.exceptionClassName,
 			"exText": exceptionObject.exceptionTextHR,
-			"exStack": [ [x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine] for x in exceptionObject.stackTrace ],
+			"exStack": [
+				[x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine] for x in exceptionObject.stackTrace
+			],
 		}
 	#
+	"""
 
 #
 
