@@ -7,6 +7,7 @@ import datetime
 from .EnumLogLevel import EnumLogLevel
 from .impl.LogStats import LogStats
 from .AbstractLogger import AbstractLogger
+from .impl.Converter import Converter
 
 
 
@@ -54,7 +55,7 @@ class BufferLogger2(AbstractLogger):
 	## Helper Methods
 	################################################################################################################################
 
-	def _logi(self, logEntryStruct, bNeedsIndentationLevelAdaption):
+	def _logi(self, logEntryStruct:list, bNeedsIndentationLevelAdaption:bool) -> list:
 		self.__logStats.increment(logEntryStruct[5])
 
 		if bNeedsIndentationLevelAdaption:
@@ -65,7 +66,7 @@ class BufferLogger2(AbstractLogger):
 		return logEntryStruct
 	#
 
-	def _descend(self, logEntryStruct):
+	def _descend(self, logEntryStruct:list) -> AbstractLogger:
 		self.__logStats.increment(logEntryStruct[5])
 
 		nextID = logEntryStruct[1]
@@ -80,6 +81,7 @@ class BufferLogger2(AbstractLogger):
 		)
 	#
 
+	"""
 	def __getJSONData(self, items):
 		ret = []
 		for item in items:
@@ -143,6 +145,7 @@ class BufferLogger2(AbstractLogger):
 			ret.append(jsonLogEntry)
 		return ret
 	#
+	"""
 
 	################################################################################################################################
 	## Public Methods
@@ -201,11 +204,17 @@ class BufferLogger2(AbstractLogger):
 	#
 
 	def getDataAsJSON(self):
-		return self.__getJSONData(self.__list)
+		#return self.__getJSONData(self.__list)
+		return [
+			Converter.RAW_TO_COMPACTJSON.logEntry_to_json(x) for x in self.__list
+		]
 	#
 
 	def getDataAsPrettyJSON(self):
-		return self.__getPrettyJSONData(self.__list)
+		#return self.__getPrettyJSONData(self.__list)
+		return [
+			Converter.RAW_TO_PRETTYJSON.logEntry_to_json(x) for x in self.__list
+		]
 	#
 
 	def __str__(self):
@@ -220,6 +229,7 @@ class BufferLogger2(AbstractLogger):
 	## Static Methods
 	################################################################################################################################
 
+	"""
 	@staticmethod
 	def __convertRawLogData(items:list, outLogStats:dict):
 		ret = []
@@ -254,6 +264,7 @@ class BufferLogger2(AbstractLogger):
 				)
 		return BufferLogger2()
 	#
+	"""
 
 #
 

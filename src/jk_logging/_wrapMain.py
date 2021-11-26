@@ -7,7 +7,7 @@ import sys
 from .ExceptionInChildContextException import ExceptionInChildContextException
 from .AbstractLogger import AbstractLogger
 from .ConsoleLogger import ConsoleLogger
-from .ColoredLogMessageFormatter import ColoredLogMessageFormatter, COLOR_LOG_MESSAGE_FORMATTER
+from .fmt.ColoredLogMessageFormatter import ColoredLogMessageFormatter, COLOR_LOG_MESSAGE_FORMATTER
 
 
 
