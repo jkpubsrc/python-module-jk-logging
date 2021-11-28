@@ -37,7 +37,7 @@ class Converter_raw_to_prettyJSON(object):
 			"minute": dt.minute,
 			"second": dt.second,
 			"ms": dt.microsecond // 1000,
-			"us": dt.microsecond % 1000,
+			# "us": dt.microsecond % 1000,			# Removed: too fine grained.
 		}
 	#
 
@@ -48,7 +48,7 @@ class Converter_raw_to_prettyJSON(object):
 			"file": stackTraceItem[0],
 			"line": stackTraceItem[1],
 			"module": stackTraceItem[2],
-			"sourceCode": stackTraceItem[3],
+			"code": stackTraceItem[3],
 		}
 	#
 

@@ -184,7 +184,6 @@ Time stamps in all entries are JSON object/dictionary entries and have the follo
 * `int minute` : Minute
 * `int second` : Seconds
 * `int ms` : Milliseconds
-* `int us` : Microseconds
 
 Please note that `t` is specified in UTC while all other time information is specified in local time for convenience.
 

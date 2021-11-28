@@ -82,7 +82,7 @@ class EnumExtensitivity(Enum):
 			if data in ( "veryShort", ):
 				return EnumExtensitivity.VERY_SHORT
 
-		raise Exception("Unknown extensitivity: " + repr(data))
+		raise Exception("Unrecognized extensitivity value: " + repr(data))
 	#
 
 #
