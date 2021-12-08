@@ -1,7 +1,7 @@
 ﻿
 
 
-__version__ = "0.2021.11.25"
+__version__ = "0.2021.12.8"
 
 
 
@@ -9,6 +9,4 @@ from .IDCounter import IDCounter
 from .createLogMsgTypeStrMap import createLogMsgTypeStrMap
 from .JSONDict import JSONDict
 from .ReadOnlyDict import ReadOnlyDict
-
-
 

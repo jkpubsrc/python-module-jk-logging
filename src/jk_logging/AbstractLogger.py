@@ -346,8 +346,13 @@ class AbstractLogger(ILogger):
 	# Create a nested logger. This new logger can than be used like the current logger, but all log messages will be delivered
 	# to an subordinate log structure (if supported by this logger).
 	#
-	def descend(self, text):
-		logEntryStruct = self._createDescendLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.INFO, text, [])
+	def descend(self, text, logLevel:EnumLogLevel = None):
+		if logLevel is None:
+			logLevel = EnumLogLevel.INFO
+		else:
+			assert logLevel in ( EnumLogLevel.INFO, EnumLogLevel.NOTICE )
+
+		logEntryStruct = self._createDescendLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, logLevel, text, [])
 		self._logi(logEntryStruct, False)
 		return self._descend(logEntryStruct)
 	#

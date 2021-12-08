@@ -1,7 +1,7 @@
 ﻿
 
 
-__version__ = "0.2021.11.25"
+__version__ = "0.2021.12.8"
 
 
 
@@ -49,6 +49,4 @@ from .annotation_logDescend import logDescend
 
 from ._inst import instantiateLogMsgFormatter, instantiate
 from ._wrapMain import wrapMain
-
-
 

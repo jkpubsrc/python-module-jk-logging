@@ -43,7 +43,7 @@ setup(
 		"jk_logging.debugging",
 		"jk_logging._prepared",
 	],
-	version = "0.2021.11.25",
+	version = "0.2021.12.8",
 	zip_safe = False,
 	long_description = readme(),
 	long_description_content_type="text/markdown",

@@ -37,7 +37,8 @@ This file contains the approximate history of the changes this module has experi
 	* JSON serialization
 	* Improved documentation
 
-
+* 2021-12-08:
+	* Added: descend() now supports log level NOTICE and INFO
 
 
 

@@ -332,7 +332,10 @@ class BufferLogger(AbstractLogger):
 		if extraProperties is not None:
 			extraProperties = JSONDict(**extraProperties)
 
+		# ----
+
 		logger = BufferLogger(extraProperties=extraProperties)
+
 		if appendData is not None:
 			logger._logiAll(appendData, True)
 
