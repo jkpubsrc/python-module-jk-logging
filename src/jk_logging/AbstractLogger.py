@@ -387,6 +387,8 @@ class AbstractLogger(ILogger):
 		if ex_type != None:
 			if isinstance(ex_value, ExceptionInChildContextException):
 				return False
+			if isinstance(ex_value, GeneratorExit):
+				return False
 			#e = ex_type(value)
 			#self.exception(e)
 			self.exception(ex_value)

@@ -1,7 +1,7 @@
 ﻿
 
 
-__version__ = "0.2021.12.8"
+__version__ = "0.2021.12.14"
 
 
 
@@ -14,4 +14,3 @@ from .ColoredLogMessageFormatter import ColoredLogMessageFormatter, COLOR_LOG_ME
 from .HTMLLogMessageFormatter import HTMLLogMessageFormatter, HTML_LOG_MESSAGE_FORMATTER
 from .JSONLogMessageFormatter import JSONLogMessageFormatter, JSON_LOG_MESSAGE_FORMATTER
 from .LogMessageFormatter import LogMessageFormatter, DEFAULT_LOG_MESSAGE_FORMATTER
-
