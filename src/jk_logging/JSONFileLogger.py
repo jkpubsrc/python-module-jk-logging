@@ -59,7 +59,8 @@ class JSONFileLogger(BufferLogger):
 
 	def _saveLogData(self):
 		with open(self.__filePathTmp, "w") as f:
-			json.dump(self.getDataAsJSON(), f)
+			#json.dump(self.getDataAsJSON(), f)
+			json.dump(self.toJSON(), f)
 		
 		if os.path.isfile(self.__filePath):
 			os.unlink(self.__filePath)

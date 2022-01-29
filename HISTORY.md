@@ -43,6 +43,9 @@ This file contains the approximate history of the changes this module has experi
 * 2021-12-14
 	* Improved: Interrupting generators
 
+* 2022-01-29
+	* Improved: descend() now using type hinting
+
 
 
 

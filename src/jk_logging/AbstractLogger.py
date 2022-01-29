@@ -1,6 +1,7 @@
 ﻿
 
 
+from __future__ import annotations 
 
 import time
 import abc
@@ -346,7 +347,7 @@ class AbstractLogger(ILogger):
 	# Create a nested logger. This new logger can than be used like the current logger, but all log messages will be delivered
 	# to an subordinate log structure (if supported by this logger).
 	#
-	def descend(self, text, logLevel:EnumLogLevel = None):
+	def descend(self, text, logLevel:EnumLogLevel = None) -> AbstractLogger:
 		if logLevel is None:
 			logLevel = EnumLogLevel.INFO
 		else:
