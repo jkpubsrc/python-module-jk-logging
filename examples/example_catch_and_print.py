@@ -3,6 +3,7 @@
 
 
 import jk_logging
+import jk_logging.fmt
 
 
 
@@ -34,7 +35,20 @@ with jk_logging.BufferLogger.create() as blog:
 
 
 print("-" * 120)
-savedLog.forwardTo(jk_logging.ConsoleLogger.create(logMsgFormatter=jk_logging.COLOR_LOG_MESSAGE_FORMATTER))
+savedLog.forwardTo(
+	jk_logging.ConsoleLogger.create(
+		logMsgFormatter=jk_logging.COLOR_LOG_MESSAGE_FORMATTER
+	)
+)
+print("-" * 120)
+savedLog.forwardTo(
+	jk_logging.ConsoleLogger.create(
+		logMsgFormatter=jk_logging.ColoredLogMessageFormatter(
+			timeStampFormatter=jk_logging.fmt.NoopTimeStampFormatter(),
+			bLogLevelRightAligned=False,
+		)
+	)
+)
 print("-" * 120)
 print(repr(savedException))
 print("-" * 120)

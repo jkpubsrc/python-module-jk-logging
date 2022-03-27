@@ -86,7 +86,8 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 			bIncludeIDs:bool = False,
 			fillChar:str = "\t",
 			extensitivity:EnumExtensitivity = EnumExtensitivity.FULL,
-			timeStampFormatter = None
+			timeStampFormatter = None,
+			bLogLevelRightAligned = True,
 		):
 
 		assert isinstance(bIncludeIDs, bool)
@@ -104,6 +105,9 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 		else:
 			assert callable(timeStampFormatter)
 		self.__timeStampFormatter = timeStampFormatter
+
+		self.__logLevelToStrMap = AbstractLogMessageFormatter.LOG_LEVEL_TO_STR_MAP__RIGHT_ALIGNED if bLogLevelRightAligned \
+			else AbstractLogMessageFormatter.LOG_LEVEL_TO_STR_MAP__LEFT_ALIGNED
 	#
 
 	################################################################################################################################
@@ -145,19 +149,30 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	#
 	def format(self, logEntryStruct):
 		sID = str(logEntryStruct[1]) if (logEntryStruct != None) else "-"
+
 		indentationLevel = logEntryStruct[2]
 		while indentationLevel > len(self.__indentBuffer):
 			self.__indentBuffer += self.__fillChar
 		sIndent = self.__indentBuffer[0:indentationLevel]
+
 		sParentID = str(logEntryStruct[3]) if (logEntryStruct != None) else "-"
-		sTimeStamp = "[" + self.__timeStampFormatter(logEntryStruct[4]) + "]"
-		sLogType = AbstractLogMessageFormatter.LOG_LEVEL_TO_STR_MAP[logEntryStruct[5]]
+
+		sTimeStamp = self.__timeStampFormatter(logEntryStruct[4])
+
+		sLogType = self.__logLevelToStrMap[logEntryStruct[5]]
+
+		# ----
 
 		if self.__includeIDs:
-			s3 = "(" + sParentID + "|" + sID + ") " + sTimeStamp + " "
+			s3 = "(" + sParentID + "|" + sID + ") "
 		else:
-			s3 = sTimeStamp + " "
+			s3 = ""
+
+		if sTimeStamp:
+			s3 += "[" + sTimeStamp + "] "
+
 		s1 = sIndent + ColoredLogMessageFormatter.LOG_LEVEL_TO_COLOR_MAP[logEntryStruct[5]] + s3
+
 		s2 = sIndent + ColoredLogMessageFormatter.STACKTRACE_COLOR + s3
 
 		if logEntryStruct[0] == "txt":
@@ -165,6 +180,7 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 			if sLogMsg is None:
 				sLogMsg = ""
 			return s1 + sLogType + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR
+
 		elif logEntryStruct[0] == "ex":
 			sExClass = logEntryStruct[6]
 			sLogMsg = logEntryStruct[7]
@@ -180,11 +196,13 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 				sLogMsg = ""
 			ret.append(s1 + sLogType + ": " + sExClass + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR)
 			return ret
+
 		elif logEntryStruct[0] == "desc":
 			sLogMsg = logEntryStruct[6]
 			if sLogMsg is None:
 				sLogMsg = ""
 			return s1 + sLogType + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR
+
 		else:
 			raise Exception()
 	#

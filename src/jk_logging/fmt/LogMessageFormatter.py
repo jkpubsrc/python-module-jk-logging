@@ -28,7 +28,8 @@ class LogMessageFormatter(AbstractLogMessageFormatter):
 	def __init__(self,
 			bIncludeIDs:bool = False,
 			fillChar:str = "\t",
-			timeStampFormatter = None
+			timeStampFormatter = None,
+			bLogLevelRightAligned:bool = True,
 		):
 
 		assert isinstance(bIncludeIDs, bool)
@@ -43,6 +44,9 @@ class LogMessageFormatter(AbstractLogMessageFormatter):
 		else:
 			assert callable(timeStampFormatter)
 		self.__timeStampFormatter = timeStampFormatter
+
+		self.__logLevelToStrMap = AbstractLogMessageFormatter.LOG_LEVEL_TO_STR_MAP__RIGHT_ALIGNED if bLogLevelRightAligned \
+			else AbstractLogMessageFormatter.LOG_LEVEL_TO_STR_MAP__LEFT_ALIGNED
 	#
 
 	################################################################################################################################
@@ -76,7 +80,7 @@ class LogMessageFormatter(AbstractLogMessageFormatter):
 		sIndent = self.__indentBuffer[0:indentationLevel]
 		sParentID = str(logEntryStruct[3]) if (logEntryStruct != None) else "-"
 		sTimeStamp = "[" + self.__timeStampFormatter(logEntryStruct[4]) + "]"
-		sLogType = AbstractLogMessageFormatter.LOG_LEVEL_TO_STR_MAP[logEntryStruct[5]]
+		sLogType = self.__logLevelToStrMap[logEntryStruct[5]]
 
 		s = sIndent
 		if self.__includeIDs:

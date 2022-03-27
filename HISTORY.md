@@ -48,5 +48,6 @@ This file contains the approximate history of the changes this module has experi
 
 * 2022-03-27
 	* Added: Example `example_catch_and_print.py`
+	* Improved: Log message formatting
 
 
