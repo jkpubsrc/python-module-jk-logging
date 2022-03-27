@@ -36,6 +36,10 @@ setup(
 	],
 	license = "Apache2",
 	name = "jk_logging",
+	package_data = {
+		"": [
+		],
+	},
 	packages = [
 		"jk_logging",
 		"jk_logging.fmt",
@@ -43,8 +47,10 @@ setup(
 		"jk_logging.debugging",
 		"jk_logging._prepared",
 	],
-	version = "0.2022.1.29",
+	scripts = [
+	],
+	version = "0.2022.3.27",
 	zip_safe = False,
 	long_description = readme(),
-	long_description_content_type="text/markdown",
+	long_description_content_type = "text/markdown",
 )
