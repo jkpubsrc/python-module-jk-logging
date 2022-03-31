@@ -176,8 +176,8 @@ class DetectionLogger_v0(AbstractLogger):
 		return self.hasLogMsg(EnumLogLevel.DEBUG)
 	#
 
-	def descend(self, text):
-		return DetectionLogger_v0(self.__logger.descend(text), self.__logLevelCounterMap, self.__maxLogLevelSeen)
+	def descend(self, text, logLevel:EnumLogLevel = None) -> AbstractLogger:
+		return DetectionLogger_v0(self.__logger.descend(text, logLevel), self.__logLevelCounterMap, self.__maxLogLevelSeen)
 	#
 
 	#

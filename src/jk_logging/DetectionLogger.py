@@ -73,8 +73,8 @@ class DetectionLogger(AbstractLogger):
 	## Public Methods
 	################################################################################################################################
 
-	def descend(self, text):
-		return DetectionLogger(self.__logger.descend(text), self.__logStats)
+	def descend(self, text, logLevel:EnumLogLevel = None) -> AbstractLogger:
+		return DetectionLogger(self.__logger.descend(text, logLevel), self.__logStats)
 	#
 
 	#

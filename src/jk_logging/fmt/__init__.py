@@ -1,4 +1,4 @@
-
+﻿
 
 
 from .AbstractTimeStampFormatter import AbstractTimeStampFormatter
@@ -11,4 +11,5 @@ from .ColoredLogMessageFormatter import ColoredLogMessageFormatter, COLOR_LOG_ME
 from .HTMLLogMessageFormatter import HTMLLogMessageFormatter, HTML_LOG_MESSAGE_FORMATTER
 from .JSONLogMessageFormatter import JSONLogMessageFormatter, JSON_LOG_MESSAGE_FORMATTER
 from .LogMessageFormatter import LogMessageFormatter, DEFAULT_LOG_MESSAGE_FORMATTER
+
 

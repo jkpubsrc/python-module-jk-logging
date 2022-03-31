@@ -1,4 +1,3 @@
-This file contains the approximate history of the changes this module has experienced. Unfortunately it is not complete but it provides enough information for developers to see where major changes occurred and how they affect their own software using `jk_logging`.
 
 * 2020-01-23
 	* Fixing bug in log message type detection (DetectionLogger);
@@ -49,5 +48,8 @@ This file contains the approximate history of the changes this module has experi
 * 2022-03-27
 	* Added: Example `example_catch_and_print.py`
 	* Improved: Log message formatting
+
+* 2022-03-31
+	* Fixed: Missing log level for descend()
 
 
