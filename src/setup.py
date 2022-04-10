@@ -49,7 +49,7 @@ setup(
 	],
 	scripts = [
 	],
-	version = '0.2022.3.31',
+	version = '0.2022.4.10',
 	zip_safe = False,
 	long_description = readme(),
 	long_description_content_type = "text/markdown",

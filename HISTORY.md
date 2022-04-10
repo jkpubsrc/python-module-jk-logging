@@ -52,4 +52,7 @@
 * 2022-03-31
 	* Fixed: Missing log level for descend()
 
+* 2022-04-10
+	* Added: Support for color in wrapMain()
+	* Fixed: imports in annotation_logDescend.py
 

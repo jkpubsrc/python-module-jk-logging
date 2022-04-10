@@ -1,64 +1,45 @@
 {
 	"magic": {
 		"magic": "packageinfo",
-		"version": 2,
+		"version": 2
 	},
 	"meta": {
-		"name": "jk_logging",
-		"version": "0.2022.3.31",
-		"packageClass": "python-module",
-		"language": "python3",
+		"authors": [
+			{
+				"email": "pubsrc@binary-overflow.de",
+				"name": "J\u00fcrgen Knauth"
+			}
+		],
+		"description": "This is a logging framework.",
 		"development_status": "stable",
-		"license": "Apache2",
 		"keywords": [
 			"debugging",
 			"logging"
 		],
-		"description": "This is a logging framework.",
-		"authors": [
-			{
-				"name": "Jürgen Knauth",
-				"email": "pubsrc@binary-overflow.de"
-			}
-		],
+		"language": "python3",
+		"license": "Apache2",
+		"name": "jk_logging",
+		"packageClass": "python-module",
+		"version": "0.2022.4.10"
 	},
-	"documentation": [
-		/*
-		"wiki": {
-			"page": "DevDocs:jk_logging"
-		}
-		*/
-	],
-	"repositories": [
-		{
-			"type": "github",
-			"user": "jkpubsrc",
-			"project": "python-module-jk-logging",
-			"devon_publish": false
-		},
-		{
-			"type": "pypi",
-			"project": "jk_logging",
-			"devon_publish": false
-		}
-	],
+	"requirements": {
+		"htmlcssjs_packages": [],
+		"python_packages": [
+			"jk_exceptionhelper"
+		],
+		"python_packages_dev": [],
+		"python_packages_recommended": [],
+		"system_apt_packages": []
+	},
 	"source": {
+		"extra_binary_files": [],
+		"extra_data_files": [],
 		"packages": [
 			"jk_logging",
 			"jk_logging.fmt",
 			"jk_logging.impl",
 			"jk_logging.debugging",
-			"jk_logging._prepared",
-		],
-		"extra_data_files": [
-		]
-	},
-	"requirements": {
-		"python_packages": [
-			"jk_exceptionhelper"
-		],
-		"python_packages_dev": [
+			"jk_logging._prepared"
 		]
 	}
 }
-

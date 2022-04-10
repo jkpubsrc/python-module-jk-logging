@@ -4,7 +4,7 @@
 import inspect
 import re
 
-import jk_logging
+from .AbstractLogger import AbstractLogger
 
 
 
@@ -67,7 +67,7 @@ def logDescend(logText, bWithFinalSuccessMsg:bool = False):
 				if log is None:
 					retVal = func(*args, **kwargs)
 					return retVal
-				elif isinstance(log, jk_logging.AbstractLogger):
+				elif isinstance(log, AbstractLogger):
 					with log.descend(s) as log2:
 						args2 = list(args)
 						args2[-1] = log2
@@ -81,7 +81,7 @@ def logDescend(logText, bWithFinalSuccessMsg:bool = False):
 					return retVal
 			elif "log" in kwargs:
 				log = kwargs["log"]
-				if isinstance(log, jk_logging.AbstractLogger):
+				if isinstance(log, AbstractLogger):
 					with log.descend(s) as log2:
 						kwargs2 = dict(kwargs)
 						kwargs2[log] = log2
