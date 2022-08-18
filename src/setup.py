@@ -45,7 +45,6 @@ setup(
 		"jk_logging.fmt",
 		"jk_logging.impl",
 		"jk_logging.debugging",
-		"jk_logging._prepared",
 	],
 	scripts = [
 	],
