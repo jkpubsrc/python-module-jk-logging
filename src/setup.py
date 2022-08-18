@@ -26,7 +26,7 @@ setup(
 		"Topic :: System :: Logging",
 	],
 	description = "This is a logging framework.",
-	include_package_data = False,
+	include_package_data = True,
 	install_requires = [
 		"jk_exceptionhelper",
 	],
@@ -49,7 +49,7 @@ setup(
 	],
 	scripts = [
 	],
-	version = '0.2022.4.10',
+	version = '0.2022.8.18',
 	zip_safe = False,
 	long_description = readme(),
 	long_description_content_type = "text/markdown",

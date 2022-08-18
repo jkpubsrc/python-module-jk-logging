@@ -2,7 +2,7 @@
 
 
 __author__ = "Jürgen Knauth"
-__version__ = "0.2022.4.10"
+__version__ = "0.2022.8.18"
 
 
 
@@ -43,6 +43,7 @@ from .NullLogger import NullLogger
 from .FileLogger import FileLogger
 from .StringListLogger import StringListLogger
 from .JSONFileLogger import JSONFileLogger
+from .WithholdingLogger import WithholdingLogger
 
 from .LoggerInstanceManager import LoggerInstanceManager
 
@@ -50,5 +51,13 @@ from .annotation_logDescend import logDescend
 
 from ._inst import instantiateLogMsgFormatter, instantiate
 from ._wrapMain import wrapMain
+
+
+
+
+
+
+
+
 
 

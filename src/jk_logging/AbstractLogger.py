@@ -1,10 +1,11 @@
 ﻿
 
 
-from __future__ import annotations 
+from __future__ import annotations
 
 import time
 import abc
+import typing
 
 import jk_exceptionhelper
 
@@ -33,11 +34,12 @@ class AbstractLogger(ILogger):
 	## Constructor
 	################################################################################################################################
 
-	def __init__(self, idCounter):
+	def __init__(self, idCounter:typing.Union[IDCounter,None]):
 		if idCounter is None:
 			idCounter = IDCounter()
 		else:
-			assert isinstance(idCounter, IDCounter)
+			if not isinstance(idCounter, IDCounter):
+				raise Exception("idCounter is invalid: " + repr(idCounter))
 		self._idCounter = idCounter
 		self._indentationLevel = 0
 		self._parentLogEntryID = None
@@ -192,14 +194,14 @@ class AbstractLogger(ILogger):
 			self._logi(logEntryStruct, bNeedsIndentationLevelAdaption)
 			if logEntryStruct[0] == "desc":
 				logEntryStructClone = (
-					logEntryStruct[0],
-					logEntryStruct[1],
-					logEntryStruct[2],
-					logEntryStruct[3],
-					logEntryStruct[4],
-					logEntryStruct[5],
-					logEntryStruct[6],
-					[]
+					logEntryStruct[0],		# str : sType				---- log entry type: "txt", "ex", "desc"
+					logEntryStruct[1],		# int : logEntryID			---- log entry ID
+					logEntryStruct[2],		# int : indentationLevel	---- indentation level
+					logEntryStruct[3],		# int : parentLogEntryID	---- ID of the parent log entry
+					logEntryStruct[4],		# float : timeStamp			---- time stamp in seconds since epoch
+					logEntryStruct[5],		# EnumLogLevel : logLevel	---- type of the log entry
+					logEntryStruct[6],		# str : logMsg				---- log message
+					[]						# list : nestedList			---- nested log elements
 				)
 				self._descend(logEntryStructClone)._logiAll(logEntryStruct[7], bNeedsIndentationLevelAdaption)
 	#
@@ -347,7 +349,7 @@ class AbstractLogger(ILogger):
 	# Create a nested logger. This new logger can than be used like the current logger, but all log messages will be delivered
 	# to an subordinate log structure (if supported by this logger).
 	#
-	def descend(self, text, logLevel:EnumLogLevel = None) -> AbstractLogger:
+	def descend(self, text, logLevel:EnumLogLevel = None, bWithhold:bool = False, bWithholdVerbose:bool = False) -> AbstractLogger:
 		if logLevel is None:
 			logLevel = EnumLogLevel.INFO
 		else:
@@ -355,7 +357,12 @@ class AbstractLogger(ILogger):
 
 		logEntryStruct = self._createDescendLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, logLevel, text, [])
 		self._logi(logEntryStruct, False)
-		return self._descend(logEntryStruct)
+
+		if bWithhold:
+			from . import WithholdingLogger			# NOTE: we avoid cyclic dependencies this way
+			return WithholdingLogger.create(self._descend(logEntryStruct), bVerbose=bWithholdVerbose)
+		else:
+			return self._descend(logEntryStruct)
 	#
 
 	#
@@ -384,7 +391,7 @@ class AbstractLogger(ILogger):
 		return self
 	#
 
-	def __exit__(self, ex_type, ex_value, ex_traceback):
+	def __exit__(self, ex_type:type, ex_value:Exception, ex_traceback):
 		if ex_type != None:
 			if isinstance(ex_value, ExceptionInChildContextException):
 				return False
@@ -394,6 +401,7 @@ class AbstractLogger(ILogger):
 			#self.exception(e)
 			self.exception(ex_value)
 			raise ExceptionInChildContextException(ex_value)
+
 		return False
 	#
 

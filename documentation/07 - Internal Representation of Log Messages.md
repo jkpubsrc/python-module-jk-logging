@@ -18,14 +18,14 @@ The raw log messages are represented as tuples in Python. There are three kinds 
 
 All log entries will contain the following fields in raw format:
 
-| Field index	| Data type			| Field name			| Description												|
-| ------------- | ----------------- | --------------------- | --------------------------------------------------------- |
-| 0				| `str`				| `sType`				| The type of the log entry: "txt", "ex", "desc"			|
-| 1				| `int`				| `logEntryID`			| The ID of the log entry or `None` if unused				|
-| 2				| `int`				| `indentationLevel`	| The indentation level										|
-| 3				| `str`				| `parentLogEntryID`	| The ID of the parent log entry or `None` if unused		|
-| 4				| `float`			| `timeStamp`			| The time stamp in seconds since epoch						|
-| 5				| `EnumLogLevel`	| `logLevel`			| The type of the log entry									|
+| Field index	| Data type					| Field name			| Description												|
+| ------------- | ------------------------- | --------------------- | --------------------------------------------------------- |
+| 0				| `str`						| `sType`				| The type of the log entry: "txt", "ex", "desc"			|
+| 1				| `int`, `str` (unclear)	| `logEntryID`			| The ID of the log entry or `None` if unused				|
+| 2				| `int`						| `indentationLevel`	| The indentation level										|
+| 3				| `int`, `str` (unclear)	| `parentLogEntryID`	| The ID of the parent log entry or `None` if unused		|
+| 4				| `float`					| `timeStamp`			| The time stamp in seconds since epoch						|
+| 5				| `EnumLogLevel`			| `logLevel`			| The type of the log entry									|
 
 There will be additional fields depending on the type of log entry.
 

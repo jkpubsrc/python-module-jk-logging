@@ -1,10 +1,9 @@
 ﻿
 
+import os
+import typing
 
-
-import datetime
-import json
-from os import stat
+from .impl.IDCounter import IDCounter
 
 from .EnumLogLevel import EnumLogLevel
 from .impl.LogStats import LogStats
@@ -33,8 +32,9 @@ class BufferLogger(AbstractLogger):
 	## Constructors
 	################################################################################################################################
 
-	def __init__(self, idCounter = None, parentID:int = None, indentLevel:int = 0, logItemList = None, logStats:LogStats = None, extraProperties:JSONDict = None):
+	def __init__(self, idCounter:IDCounter = None, parentID:int = None, indentLevel:int = 0, logItemList = None, logStats:LogStats = None, extraProperties:JSONDict = None):
 		super().__init__(idCounter)
+
 		self._indentationLevel = indentLevel
 		if logItemList is None:
 			self.__list = []
@@ -43,8 +43,8 @@ class BufferLogger(AbstractLogger):
 		if parentID is None:
 			parentID = self._idCounter.next()
 		self._parentLogEntryID = parentID
-		self.__logStats = LogStats() if (logStats == None) else logStats
-		self.__extraProperties = JSONDict() if extraProperties is None else extraProperties
+		self._logStats = LogStats() if (logStats == None) else logStats
+		self._extraProperties = JSONDict() if extraProperties is None else extraProperties
 	#
 
 	################################################################################################################################
@@ -53,7 +53,7 @@ class BufferLogger(AbstractLogger):
 
 	@property
 	def stats(self) -> LogStats:
-		return self.__logStats
+		return self._logStats
 	#
 
 	#
@@ -62,7 +62,7 @@ class BufferLogger(AbstractLogger):
 	#
 	@property
 	def extraProperties(self) -> JSONDict:
-		return self.__extraProperties
+		return self._extraProperties
 	#
 
 	################################################################################################################################
@@ -70,7 +70,7 @@ class BufferLogger(AbstractLogger):
 	################################################################################################################################
 
 	def _logi(self, logEntryStruct:list, bNeedsIndentationLevelAdaption:bool) -> list:
-		self.__logStats.increment(logEntryStruct[5])
+		self._logStats.increment(logEntryStruct[5])
 
 		if bNeedsIndentationLevelAdaption:
 			logEntryStruct = list(logEntryStruct)
@@ -81,7 +81,7 @@ class BufferLogger(AbstractLogger):
 	#
 
 	def _descend(self, logEntryStruct:list) -> AbstractLogger:
-		self.__logStats.increment(logEntryStruct[5])
+		self._logStats.increment(logEntryStruct[5])
 
 		nextID = logEntryStruct[1]
 		newList = logEntryStruct[7]
@@ -91,8 +91,8 @@ class BufferLogger(AbstractLogger):
 			parentID=nextID,
 			indentLevel=self._indentationLevel + 1,
 			logItemList=newList,
-			logStats=self.__logStats,
-			extraProperties=self.__extraProperties,
+			logStats=self._logStats,
+			extraProperties=self._extraProperties,
 		)
 	#
 
@@ -241,8 +241,8 @@ class BufferLogger(AbstractLogger):
 			],
 		}
 
-		if self.__extraProperties:
-			ret["extraProperties"] = self.__extraProperties
+		if self._extraProperties:
+			ret["extraProperties"] = self._extraProperties
 
 		return ret
 	#
@@ -259,18 +259,18 @@ class BufferLogger(AbstractLogger):
 			]
 		}
 
-		if self.__extraProperties:
-			ret["extraProperties"] = self.__extraProperties
+		if self._extraProperties:
+			ret["extraProperties"] = self._extraProperties
 
 		return ret
 	#
 
 	def __str__(self):
-		return "<BufferLogger(" + hex(id(self)) + ", indent=" + str(self._indentationLevel) + ",parentID=" + str(self._parentLogEntryID) + ")>"
+		return "<" + self.__class__.__name__ + "(" + hex(id(self)) + ", indent=" + str(self._indentationLevel) + ",parentID=" + str(self._parentLogEntryID) + ")>"
 	#
 
 	def __repr__(self):
-		return "<BufferLogger(" + hex(id(self)) + ", indent=" + str(self._indentationLevel) + ",parentID=" + str(self._parentLogEntryID) + ")>"
+		return "<" + self.__class__.__name__ + "(" + hex(id(self)) + ", indent=" + str(self._indentationLevel) + ",parentID=" + str(self._parentLogEntryID) + ")>"
 	#
 
 	################################################################################################################################
@@ -300,39 +300,49 @@ class BufferLogger(AbstractLogger):
 	"""
 
 	@staticmethod
-	def create(jsonData = None):
+	def _convertJSONToInternal(jsonData:typing.Union[list,dict,None]) -> typing.Tuple[typing.Union[list,None],typing.Union[JSONDict,None]]:
+		if jsonData is None:
+			return None, None
+
+		# ----
+
 		appendData = None
 		extraProperties = None
 
-		if jsonData is not None:
+		# ----
 
-			if isinstance(jsonData, list):
-				# seems to be raw data
-				appendData = jsonData
+		jExtraProperties = None
 
-			elif isinstance(jsonData, dict):
-				if jsonData["magic"]["magic"] == "jk-logging-verbose":
-					appendData = [
-						Converter.PRETTYJSON_TO_RAW.json_to_logEntry(x) for x in jsonData["logData"]
-					]
-					extraProperties = jsonData.get("extraProperties")
-				elif jsonData["magic"]["magic"] == "jk-logging-compact":
-					appendData = [
-						Converter.COMPACTJSON_TO_RAW.json_to_logEntry(x) for x in jsonData["logData"]
-					]
-					extraProperties = jsonData.get("extraProperties")
-				else:
-					raise Exception("jsonData is of invalid format!")
-
+		if isinstance(jsonData, list):
+			# seems to be raw data
+			appendData = jsonData
+		elif isinstance(jsonData, dict):
+			if jsonData["magic"]["magic"] == "jk-logging-verbose":
+				appendData = [
+					Converter.PRETTYJSON_TO_RAW.json_to_logEntry(x) for x in jsonData["logData"]
+				]
+				jExtraProperties = jsonData.get("extraProperties")
+			elif jsonData["magic"]["magic"] == "jk-logging-compact":
+				appendData = [
+					Converter.COMPACTJSON_TO_RAW.json_to_logEntry(x) for x in jsonData["logData"]
+				]
+				jExtraProperties = jsonData.get("extraProperties")
 			else:
-				raise Exception("jsonData is invalid")
+				raise Exception("jsonData is of invalid format!")
+		else:
+			raise Exception("jsonData is invalid")
+
+		if jExtraProperties is not None:
+			extraProperties = JSONDict(**jExtraProperties)
 
 		# ----
 
-		if extraProperties is not None:
-			extraProperties = JSONDict(**extraProperties)
+		return appendData, extraProperties
+	#
 
-		# ----
+	@staticmethod
+	def create(jsonData = None):
+		appendData, extraProperties = BufferLogger._convertJSONToInternal(jsonData)
 
 		logger = BufferLogger(extraProperties=extraProperties)
 

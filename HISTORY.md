@@ -56,3 +56,6 @@
 	* Added: Support for color in wrapMain()
 	* Fixed: imports in annotation_logDescend.py
 
+* 2022-08-18
+	* Added: WithholdingLogger
+
