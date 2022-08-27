@@ -8,7 +8,7 @@ This python module provides a logging infrastructure. It contains various classe
 
 Information about this module can be found here:
 
-* [github.org](https://github.com/jkpubsrc/python-module-jk-logging)
+* [github.com](https://github.com/jkpubsrc/python-module-jk-logging)
 * [pypi.python.org](https://pypi.python.org/pypi/jk_logging)
 
 How to use this module
