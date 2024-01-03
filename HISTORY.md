@@ -59,3 +59,10 @@
 * 2022-08-18
 	* Added: WithholdingLogger
 
+* 2023-08-20
+	* Removed: Restriction of descend() to INFO and NOTICE
+
+* 2024-01-03
+	* Migrated to TOML file
+	* Improved: Output
+

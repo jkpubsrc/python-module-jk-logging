@@ -43,6 +43,29 @@ class Converter_prettyJSON_to_raw(object):
 		)
 	#
 
+	def __json_to_nestedException(self, jData:dict) -> tuple:
+		assert isinstance(jData, dict)
+
+		stackTraceList = None
+		if "stacktrace" in jData:
+			stackTraceList = [
+				self.__json_to_stackTraceElement(x) for x in jData["stacktrace"]
+			]
+
+		nestedException = None
+		if "nested" in jData:
+			nestedException = [
+				self.__json_to_nestedException(jData["nested"])
+			]
+
+		return (
+			jData["exception"],
+			jData["text"],
+			stackTraceList,
+			nestedException,
+		)
+	#
+
 	################################################################################################################################
 	## Public Methods
 	################################################################################################################################
@@ -72,7 +95,13 @@ class Converter_prettyJSON_to_raw(object):
 					self.__json_to_stackTraceElement(x) for x in jLogEntry["stacktrace"]
 				]
 			rawLogEntry.append(stackTraceList)
-			assert len(rawLogEntry) == 9
+			nestedException = None
+			if "nested" in jLogEntry:
+				nestedException = [
+					self.__json_to_nestedException(jLogEntry["nested"])
+				]
+			rawLogEntry.append(nestedException)
+			assert len(rawLogEntry) == 10
 
 		elif sType == "desc":
 			rawLogEntry.append(jLogEntry["text"])

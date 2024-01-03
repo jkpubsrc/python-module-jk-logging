@@ -76,6 +76,28 @@ class AbstractLogger(ILogger):
 	#
 
 	#
+	# Converts an instance of <c>jk_exceptionhelper.ExceptionObject</c> to a tuple of the following structure:
+	#
+	# * 1) str: the exception class name
+	# * 2) str: the exception text
+	# * 3) list with tuples representing stack trace elements:
+	#		* 1) str: file path
+	#		* 2) int: line number
+	#		* 3) str: calling scope
+	#		* 4) str: source code line
+	# * 4) either None or a tuple representing a nested exception
+	#
+	def __exceptionObjToTuples(self, exceptionObject: jk_exceptionhelper.ExceptionObject) -> tuple:
+		return (
+			exceptionObject.exceptionClassName,
+			exceptionObject.exceptionTextHR,
+			[ (x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine) for x in exceptionObject.stackTrace ]
+				if exceptionObject.stackTrace else [],
+			self.__exceptionObjToTuples(exceptionObject.nestedException) if exceptionObject.nestedException else None,
+		)
+	#
+
+	#
 	# Creates a log entry data record.
 	#
 	# @param		int logEntryID			The ID of this log entry or <c>None</c> if not applicable.
@@ -85,11 +107,18 @@ class AbstractLogger(ILogger):
 	# @param		EnumLogLevel logLevel	A singleton that represents the log level.
 	# @param		obj textOrException		Either an exception object or a text
 	#
-	def _createNormalLogEntryStruct(self, logEntryID, indentation, parentLogEntryID, logLevel, textOrException):
+	def _createNormalLogEntryStruct(self,
+			logEntryID:int,
+			indentation:int,
+			parentLogEntryID:int,
+			logLevel:EnumLogLevel,
+			textOrException:typing.Union[BaseException,jk_exceptionhelper.ExceptionObject,str]
+	):
 		timeStamp = time.time()
 
 		if isinstance(textOrException, BaseException):
-			exceptionObject = jk_exceptionhelper.analyseException(textOrException, ignoreJKTypingCheckFunctionSignatureFrames=True, ignoreJKTestingAssertFrames=True)
+			_e = jk_exceptionhelper.ExceptionObject.fromException(textOrException, ignoreJKTypingCheckFunctionSignatureFrames=True, ignoreJKTestingAssertFrames=True, ignoreJKLoggingFrames=True)
+			_t = self.__exceptionObjToTuples(_e)
 			return (
 				"ex",
 				logEntryID,
@@ -97,13 +126,14 @@ class AbstractLogger(ILogger):
 				parentLogEntryID,
 				timeStamp,
 				logLevel,
-				exceptionObject.exceptionClassName,
-				exceptionObject.exceptionTextHR,
-				[ (x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine) for x in exceptionObject.stackTrace ]
+				_t[0],
+				_t[1],
+				_t[2],
+				_t[3],
 			)
 
 		elif isinstance(textOrException, jk_exceptionhelper.ExceptionObject):
-			exceptionObject = textOrException
+			_t = self.__exceptionObjToTuples(textOrException)
 			return (
 				"ex",
 				logEntryID,
@@ -111,9 +141,10 @@ class AbstractLogger(ILogger):
 				parentLogEntryID,
 				timeStamp,
 				logLevel,
-				exceptionObject.exceptionClassName,
-				exceptionObject.exceptionTextHR,
-				[ (x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine) for x in exceptionObject.stackTrace ]
+				_t[0],
+				_t[1],
+				_t[2],
+				_t[3],
 			)
 
 		else:
@@ -159,6 +190,7 @@ class AbstractLogger(ILogger):
 	#														6) <c>str</c> ---- The exception class name
 	#														7) <c>str</c> ---- The exception text
 	#														8) <c>list</c> ---- A list of stack trace elements or <c>None</c>
+	#														9) <c>list</c> ---- If there is a nested exception: A four element list with exception class name, exception text, stack trace, and nested exception
 	#														Each stack trace element has the following structure:
 	#														0) <c>str</c> ---- The source code file path
 	#														1) <c>int</c> ---- The source code line number
@@ -352,8 +384,10 @@ class AbstractLogger(ILogger):
 	def descend(self, text, logLevel:EnumLogLevel = None, bWithhold:bool = False, bWithholdVerbose:bool = False) -> AbstractLogger:
 		if logLevel is None:
 			logLevel = EnumLogLevel.INFO
-		else:
-			assert logLevel in ( EnumLogLevel.INFO, EnumLogLevel.NOTICE )
+
+		# NOTE: let's no longer use this restriction.
+		# else:
+		# 	assert logLevel in ( EnumLogLevel.INFO, EnumLogLevel.NOTICE )
 
 		logEntryStruct = self._createDescendLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, logLevel, text, [])
 		self._logi(logEntryStruct, False)
@@ -393,14 +427,19 @@ class AbstractLogger(ILogger):
 
 	def __exit__(self, ex_type:type, ex_value:Exception, ex_traceback):
 		if ex_type != None:
+			exObj = jk_exceptionhelper.ExceptionObject.fromException(ex_value, ignoreJKTypingCheckFunctionSignatureFrames=True, ignoreJKTestingAssertFrames=True, ignoreJKLoggingFrames=True)
+			#exObj.dump("##\t")
+			#import sys
+			#import traceback
+			#traceback.print_stack(file=sys.stdout)
+
 			if isinstance(ex_value, ExceptionInChildContextException):
 				return False
 			if isinstance(ex_value, GeneratorExit):
 				return False
-			#e = ex_type(value)
-			#self.exception(e)
-			self.exception(ex_value)
-			raise ExceptionInChildContextException(ex_value)
+
+			self.exception(exObj)
+			raise ExceptionInChildContextException(ex_value, exObj)
 
 		return False
 	#
@@ -412,7 +451,7 @@ class AbstractLogger(ILogger):
 	"""
 	@staticmethod
 	def exceptionToJSON(ex):
-		exceptionObject = jk_exceptionhelper.analyseException(ex, ignoreJKTypingCheckFunctionSignatureFrames=True, ignoreJKTestingAssertFrames=True)
+		exceptionObject = jk_exceptionhelper.analyseException(ex, ignoreJKTypingCheckFunctionSignatureFrames=True, ignoreJKTestingAssertFrames=True, ignoreJKLoggingFrames=True)
 
 		return {
 			"exClass": exceptionObject.exceptionClassName,

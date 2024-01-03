@@ -25,6 +25,22 @@ class Converter_raw_to_compactJSON(object):
 	## Helper Methods
 	################################################################################################################################
 
+	def __nestedException_to_json(self, nestedException:typing.Union[list,tuple]) -> list:
+		assert isinstance(nestedException, (list,tuple))
+		assert len(nestedException) == 4
+
+		jNested = None
+		if nestedException[3] is not None:
+			jNested = self.__nestedException_to_json(nestedException[3])
+
+		return [
+			nestedException[0],
+			nestedException[1],
+			nestedException[2],
+			jNested,
+		]
+	#
+
 	################################################################################################################################
 	## Public Methods
 	################################################################################################################################
@@ -46,11 +62,16 @@ class Converter_raw_to_compactJSON(object):
 			jsonLogEntry.append(rawLogEntry[6])		# logMsg
 
 		elif sType == "ex":
-			assert len(rawLogEntry) == 9
+			assert len(rawLogEntry) == 10
 			# nothing more to convert
 			jsonLogEntry.append(rawLogEntry[6])		# exClass
 			jsonLogEntry.append(rawLogEntry[7])		# exMsg
 			jsonLogEntry.append(rawLogEntry[8])		# exStackTrace
+			jsonLogEntry.append(
+				self.__nestedException_to_json(rawLogEntry[9])
+				if rawLogEntry[9]
+				else None
+			)										# exNestedException
 
 		elif sType == "desc":
 			assert len(rawLogEntry) == 8

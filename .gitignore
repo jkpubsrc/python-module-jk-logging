@@ -8,3 +8,4 @@ examples/__pycache__/
 examples/*.log
 src/build/
 *.bak
+**/*.OLD

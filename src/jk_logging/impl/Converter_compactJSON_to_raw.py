@@ -27,6 +27,23 @@ class Converter_compactJSON_to_raw(object):
 	## Helper Methods
 	################################################################################################################################
 
+	def __json_to_nestedException(self, jData:dict) -> tuple:
+		assert isinstance(jData, dict)
+
+		nestedException = None
+		if "nested" in jData:
+			nestedException = [
+				self.__json_to_nestedException(jData["nested"])
+			]
+
+		return [
+			jData["exception"],
+			jData["text"],
+			jData["stacktrace"],
+			nestedException,
+		]
+	#
+
 	################################################################################################################################
 	## Public Methods
 	################################################################################################################################
@@ -51,10 +68,15 @@ class Converter_compactJSON_to_raw(object):
 
 		elif rawLogEntry[0] == "ex":
 			# nothing more to convert
-			rawLogEntry.append(jsonLogEntry[3])
-			rawLogEntry.append(jsonLogEntry[4])
-			rawLogEntry.append(jsonLogEntry[5])
-			assert len(rawLogEntry) == 9
+			rawLogEntry.append(jsonLogEntry[3])		# exClass
+			rawLogEntry.append(jsonLogEntry[4])		# exMsg
+			rawLogEntry.append(jsonLogEntry[5])		# exStackTrace
+			rawLogEntry.append(
+				self.__json_to_nestedException(jsonLogEntry[6])
+		    	if jsonLogEntry[6]
+				else None
+			)										# exNestedException
+			assert len(rawLogEntry) == 10
 
 		elif rawLogEntry[0] == "desc":
 			# convert list of nested elements

@@ -128,18 +128,30 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	## Helper Methods
 	################################################################################################################################
 
+	def __formatException(self, prefixFirst:str, prefixMore:str, sExClass:str, sLogMsg:typing.Union[str,None], listStackTraceEntries:typing.Union[list,tuple], nestedException:typing.Union[list,tuple,None], ret:typing.List[str]):
+		if sLogMsg is None:
+			sLogMsg = ""
+
+		if sLogMsg:
+			ret.append(prefixFirst + sExClass + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR)
+		else:
+			ret.append(prefixFirst + sExClass + ColoredLogMessageFormatter.RESET_COLOR)
+
+		if listStackTraceEntries:
+			if self.__outputMode == EnumExtensitivity.FULL:
+				for (stPath, stLineNo, stModuleName, stLine) in reversed(listStackTraceEntries):
+					ret.append(prefixMore + "    | " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + ColoredLogMessageFormatter.RESET_COLOR)
+			elif self.__outputMode == EnumExtensitivity.SHORTED:
+				stPath, stLineNo, stModuleName, stLine = listStackTraceEntries[-1]
+				ret.append(prefixMore + "    | " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + ColoredLogMessageFormatter.RESET_COLOR)
+
+		if nestedException:
+			self.__formatException(prefixFirst + "    ", prefixMore + "    ", nestedException[0], nestedException[1], nestedException[2], nestedException[3], ret)
+	#
+
 	################################################################################################################################
 	## Public Methods
 	################################################################################################################################
-
-	#
-	# REMOVED: Instances of this class must be read-only and must not be changable at runtime.
-	#
-	#def setOutputMode(self, outputMode:typing.Union[EnumExtensitivity,None]):
-	#	if outputMode is None:
-	#		outputMode = EnumExtensitivity.FULL
-	#	self.__outputMode = outputMode
-	#
 
 	#
 	# Create and return a string representation of the specified log entry.
@@ -148,6 +160,8 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	# @return		str							Returns the string representation of the log message.
 	#
 	def format(self, logEntryStruct):
+		sStructType = logEntryStruct[0]
+
 		sID = str(logEntryStruct[1]) if (logEntryStruct != None) else "-"
 
 		indentationLevel = logEntryStruct[2]
@@ -175,29 +189,26 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 
 		s2 = sIndent + ColoredLogMessageFormatter.STACKTRACE_COLOR + s3
 
-		if logEntryStruct[0] == "txt":
+		if sStructType == "txt":
 			sLogMsg = logEntryStruct[6]
 			if sLogMsg is None:
 				sLogMsg = ""
 			return s1 + sLogType + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR
 
-		elif logEntryStruct[0] == "ex":
+		elif sStructType == "ex":
 			sExClass = logEntryStruct[6]
 			sLogMsg = logEntryStruct[7]
-			ret = []
-			if logEntryStruct[8] != None:
-				if self.__outputMode == EnumExtensitivity.FULL:
-					for (stPath, stLineNo, stModuleName, stLine) in logEntryStruct[8]:
-						ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + ColoredLogMessageFormatter.RESET_COLOR)
-				elif self.__outputMode == EnumExtensitivity.SHORTED:
-					stPath, stLineNo, stModuleName, stLine = logEntryStruct[8][-1]
-					ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + ColoredLogMessageFormatter.RESET_COLOR)
 			if sLogMsg is None:
 				sLogMsg = ""
-			ret.append(s1 + sLogType + ": " + sExClass + ": " + sLogMsg + ColoredLogMessageFormatter.RESET_COLOR)
+			listStackTraceEntries = logEntryStruct[8]
+			nestedException = logEntryStruct[9]
+
+			ret = []
+			self.__formatException(s1 + sLogType + ": ", s2 + sLogType + ": ", sExClass, sLogMsg, listStackTraceEntries, nestedException, ret)
+
 			return ret
 
-		elif logEntryStruct[0] == "desc":
+		elif sStructType == "desc":
 			sLogMsg = logEntryStruct[6]
 			if sLogMsg is None:
 				sLogMsg = ""

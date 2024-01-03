@@ -20,7 +20,7 @@
 		"license": "Apache2",
 		"name": "jk_logging",
 		"packageClass": "python-module",
-		"version": "0.2022.8.18"
+		"version": "0.2024.1.3"
 	},
 	"requirements": {
 		"htmlcssjs_packages": [],
@@ -38,7 +38,7 @@
 			"jk_logging",
 			"jk_logging.fmt",
 			"jk_logging.impl",
-			"jk_logging.debugging",
+			"jk_logging.debugging"
 		]
 	}
 }

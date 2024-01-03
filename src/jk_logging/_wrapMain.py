@@ -42,10 +42,10 @@ def wrapMain(log:AbstractLogger = None, bColor:bool = True):
 	#
 
 	if log is None:
-            if bColor:
-                log = ConsoleLogger.create(logMsgFormatter=COLOR_LOG_MESSAGE_FORMATTER)
-            else:
-                log = ConsoleLogger.create(logMsgFormatter=DEFAULT_LOG_MESSAGE_FORMATTER)
+		if bColor:
+			log = ConsoleLogger.create(logMsgFormatter=COLOR_LOG_MESSAGE_FORMATTER)
+		else:
+			log = ConsoleLogger.create(logMsgFormatter=DEFAULT_LOG_MESSAGE_FORMATTER)
 	else:
 		assert isinstance(log, AbstractLogger)
 

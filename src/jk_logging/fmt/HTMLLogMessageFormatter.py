@@ -123,13 +123,13 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 			self.__indentBuffer += self.__fillChar
 		sIndent = self.__indentBuffer[0:indentationLevel*len(self.__fillChar)]
 		sParentID = str(logEntryStruct[3]) if (logEntryStruct != None) else "-"
-		sTimeStamp = "[" + self.__timeStampFormatter(logEntryStruct[4]) + "]"
+		sTimeStamp = self.__timeStampFormatter(logEntryStruct[4])
 		sLogType = AbstractLogMessageFormatter.LOG_LEVEL_TO_STR_MAP__LEFT_ALIGNED[logEntryStruct[5]]
 
 		if self.__includeIDs:
 			s3 = "(" + sParentID + "|" + sID + ") " + sTimeStamp + " "
 		else:
-			s3 = sTimeStamp + " "
+			s3 = "[" + sTimeStamp + "] "
 		s1 = sIndent + "<span style=\"color:" + HTMLLogMessageFormatter.LOG_LEVEL_TO_COLOR_MAP[logEntryStruct[5]] + "\">" + s3
 		s2 = sIndent + "<span style=\"color:" + HTMLLogMessageFormatter.STACKTRACE_COLOR + "\">" + s3
 

@@ -52,6 +52,28 @@ class Converter_raw_to_prettyJSON(object):
 		}
 	#
 
+	def __nestedException_to_json(self, nestedException:typing.Union[list,tuple]) -> dict:
+		assert isinstance(nestedException, (list,tuple))
+		assert len(nestedException) == 4
+
+		jStacktrace = None
+		if nestedException[2] is not None:
+			jStacktrace = [
+				self.__stackTraceElement_to_json(x) for x in nestedException[3]
+			]
+
+		jNested = None
+		if nestedException[3] is not None:
+			jNested = self.__nestedException_to_json(nestedException[3])
+
+		return {
+			"exception": nestedException[0],
+			"text": nestedException[1],
+			"stacktrace": jStacktrace,
+			"nested": jNested,
+		}
+	#
+
 	################################################################################################################################
 	## Public Methods
 	################################################################################################################################
@@ -81,6 +103,8 @@ class Converter_raw_to_prettyJSON(object):
 				jsonLogEntry["stacktrace"] = [
 					self.__stackTraceElement_to_json(x) for x in rawLogEntry[8]
 				]
+			if rawLogEntry[9] is not None:
+				jsonLogEntry["nested"] = self.__nestedException_to_json(rawLogEntry[9])
 
 		elif sType == "desc":
 			assert len(rawLogEntry) == 8

@@ -2,7 +2,7 @@
 
 
 __author__ = "Jürgen Knauth"
-__version__ = "0.2022.8.18"
+__version__ = "0.2024.1.3"
 
 
 
@@ -50,6 +50,7 @@ from .LoggerInstanceManager import LoggerInstanceManager
 from .annotation_logDescend import logDescend
 
 from ._inst import instantiateLogMsgFormatter, instantiate
+from ._nestEx import nestEx
 from ._wrapMain import wrapMain
 
 
