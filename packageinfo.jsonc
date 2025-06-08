@@ -25,7 +25,7 @@
 	"requirements": {
 		"htmlcssjs_packages": [],
 		"python_packages": [
-			"jk_exceptionhelper"
+			"jk_exceptionhelper >= 0.2025.5.17",
 		],
 		"python_packages_dev": [],
 		"python_packages_recommended": [],

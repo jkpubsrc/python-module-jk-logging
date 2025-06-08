@@ -16,6 +16,7 @@ testing/*.sh
 **/*.old
 **/*.bak
 **/*.DEACTIVATED
+**/*.OBSOLETE
 **/*.SAVED
 OLD
 *_old
@@ -24,6 +25,7 @@ OLD
 *.old
 *.bak
 *.DEACTIVATED
+*.OBSOLETE
 *.SAVED
 
 **/*.sh

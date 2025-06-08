@@ -68,4 +68,5 @@
 
 * 2025-05-17:
 	* Added: Support for extra key value pairs via 'extraValues'
+	* Fixed: Dependencies
 
