@@ -103,6 +103,24 @@ class Converter_prettyJSON_to_raw(object):
 			rawLogEntry.append(nestedException)
 			assert len(rawLogEntry) == 10
 
+		elif sType == "ex2":
+			rawLogEntry.append(jLogEntry["exception"])
+			rawLogEntry.append(jLogEntry["text"])
+			stackTraceList = None
+			if "stacktrace" in jLogEntry:
+				stackTraceList = [
+					self.__json_to_stackTraceElement(x) for x in jLogEntry["stacktrace"]
+				]
+			rawLogEntry.append(stackTraceList)
+			rawLogEntry.append(jLogEntry["extraValues"])
+			nestedException = None
+			if "nested" in jLogEntry:
+				nestedException = [
+					self.__json_to_nestedException(jLogEntry["nested"])
+				]
+			rawLogEntry.append(nestedException)
+			assert len(rawLogEntry) == 11
+
 		elif sType == "desc":
 			rawLogEntry.append(jLogEntry["text"])
 			children = None

@@ -69,7 +69,9 @@ class ConsoleLogger(AbstractLogger):
 
 	def _descend(self, logEntryStruct):
 		nextID = logEntryStruct[1]
-		return ConsoleLogger(self._idCounter, nextID, self._indentationLevel + 1, self.__printToStdErr, self.__logMsgFormatter, self.__printFunction)
+		ret = ConsoleLogger(self._idCounter, nextID, self._indentationLevel + 1, self.__printToStdErr, self.__logMsgFormatter, self.__printFunction)
+		ret._stackTraceProcessor = self._stackTraceProcessor
+		return ret
 	#
 
 	################################################################################################################################
@@ -88,9 +90,22 @@ class ConsoleLogger(AbstractLogger):
 	## Static Methods
 	################################################################################################################################
 
+	#
+	# param		stackTraceProcessor		(optional) 	A stack trace processor that can return a modified version of the stack trace (e.g. a shortened one).
+	#									The stack is listed from the bottom: The trace item at position <c>0</c> is the lowest stack trace item,
+	#									the item at position <c>length-1</c> is the top most item.
+	#
 	@staticmethod
-	def create(printToStdErr = False, logMsgFormatter = None, printFunction = None):
-		return ConsoleLogger(printToStdErr = printToStdErr, logMsgFormatter = logMsgFormatter, printFunction = printFunction)
+	def create(
+			printToStdErr = False,
+			logMsgFormatter = None,
+			printFunction = None,
+			stackTraceProcessor:typing.Union[jk_exceptionhelper.StackTraceProcessor,None] = None,
+		):
+
+		ret = ConsoleLogger(printToStdErr = printToStdErr, logMsgFormatter = logMsgFormatter, printFunction = printFunction)
+		ret._stackTraceProcessor = stackTraceProcessor
+		return ret
 	#
 
 #

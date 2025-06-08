@@ -1,6 +1,7 @@
 
 
 
+import json
 import typing
 
 from ..EnumLogLevel import EnumLogLevel
@@ -128,7 +129,17 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 	## Helper Methods
 	################################################################################################################################
 
-	def __formatException(self, prefixFirst:str, prefixMore:str, sExClass:str, sLogMsg:typing.Union[str,None], listStackTraceEntries:typing.Union[list,tuple], nestedException:typing.Union[list,tuple,None], ret:typing.List[str]):
+	def __formatException(self,
+			prefixFirst:str,
+			prefixMore:str,
+			sExClass:str,
+			sLogMsg:typing.Union[str,None],
+			listStackTraceEntries:typing.Union[list,tuple],
+			extraValues:typing.Union[typing.Dict[str,typing.Any],None],
+			nestedException:typing.Union[list,tuple,None],
+			ret:typing.List[str],
+		):
+
 		if sLogMsg is None:
 			sLogMsg = ""
 
@@ -145,8 +156,45 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 				stPath, stLineNo, stModuleName, stLine = listStackTraceEntries[-1]
 				ret.append(prefixMore + "    | " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + ColoredLogMessageFormatter.RESET_COLOR)
 
+		if extraValues:
+			i = 0
+			_iMax = len(extraValues) - 1
+			ret.append(prefixMore + f"    Variables:" + ColoredLogMessageFormatter.RESET_COLOR)
+			for k, v in extraValues.items():
+				bIsMax = i == _iMax
+				i += 1
+				lines = json.dumps(v).split("\n")
+				part1 = f"    | {k} = "
+				part2 = " " * len(part1)
+				for i, line in enumerate(lines):
+					_part = part1 if i == 0 else part2
+					ret.append(f"{prefixMore}{_part}{line}" + ColoredLogMessageFormatter.RESET_COLOR)
+
 		if nestedException:
-			self.__formatException(prefixFirst + "    ", prefixMore + "    ", nestedException[0], nestedException[1], nestedException[2], nestedException[3], ret)
+			if len(nestedException) == 4:
+				self.__formatException(
+					prefixFirst + "    ",	# prefixFirst
+					prefixMore + "    ",	# prefixMore
+					nestedException[0],		# sExClass
+					nestedException[1],		# sLogMsg
+					nestedException[2],		# listStackTraceEntries
+					None,					# extraValues
+					nestedException[3],		# nestedException
+					ret,					# ret
+				)
+			elif len(nestedException) == 5:
+				self.__formatException(
+					prefixFirst + "    ",	# prefixFirst
+					prefixMore + "    ",	# prefixMore
+					nestedException[0],		# sExClass
+					nestedException[1],		# sLogMsg
+					nestedException[2],		# listStackTraceEntries
+					nestedException[3],		# extraValues
+					nestedException[4],		# nestedException
+					ret,					# ret
+				)
+			else:
+				raise Exception()
 	#
 
 	################################################################################################################################
@@ -204,7 +252,21 @@ class ColoredLogMessageFormatter(AbstractLogMessageFormatter):
 			nestedException = logEntryStruct[9]
 
 			ret = []
-			self.__formatException(s1 + sLogType + ": ", s2 + sLogType + ": ", sExClass, sLogMsg, listStackTraceEntries, nestedException, ret)
+			self.__formatException(s1 + sLogType + ": ", s2 + sLogType + ": ", sExClass, sLogMsg, listStackTraceEntries, None, nestedException, ret)
+
+			return ret
+
+		elif sStructType == "ex2":
+			sExClass = logEntryStruct[6]
+			sLogMsg = logEntryStruct[7]
+			if sLogMsg is None:
+				sLogMsg = ""
+			listStackTraceEntries = logEntryStruct[8]
+			extraValues = logEntryStruct[9]
+			nestedException = logEntryStruct[10]
+
+			ret = []
+			self.__formatException(s1 + sLogType + ": ", s2 + sLogType + ": ", sExClass, sLogMsg, listStackTraceEntries, extraValues, nestedException, ret)
 
 			return ret
 

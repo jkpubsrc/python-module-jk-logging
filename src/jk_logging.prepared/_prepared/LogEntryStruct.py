@@ -18,7 +18,7 @@ from .StackTraceStructList import StackTraceStructList
 class LogEntryStruct:
 
 	__slots__ = (
-		"_sType",					# str "desc", "txt", "ex"
+		"_sType",					# str "desc", "txt", "ex", "ex2"
 		"_logEntryID",				# int
 		"_indentationLevel",		# int
 		"_parentLogEntryID",		# int|None
@@ -28,6 +28,7 @@ class LogEntryStruct:
 		"_exClass",					# str
 		"_exMsg",					# str
 		"_exStackTrace",			# StackTraceStructList
+		"_extraValues",				# dict[str,any]
 		"_nestedList",				# LogEntryStructList
 	)
 
@@ -50,6 +51,7 @@ class LogEntryStruct:
 			exClass:str,
 			exMsg:str,
 			exStackTrace:StackTraceStructList,
+			extraValues:typing.Union[typing.Dict[str,typing.Any],None],
 			nestedList:list,		# LogEntryStructList
 		):
 
@@ -63,6 +65,7 @@ class LogEntryStruct:
 		self._exClass = exClass
 		self._exMsg = exMsg
 		self._exStackTrace = exStackTrace
+		self._extraValues = extraValues
 		self._nestedList = nestedList
 	#
 
@@ -118,6 +121,11 @@ class LogEntryStruct:
 	@property
 	def exStackTrace(self) -> StackTraceStructList:
 		return self._exStackTrace
+	#
+
+	@property
+	def extraValues(self) -> typing.Union[typing.Dict[str,typing.Any],None]:
+		return self._extraValues
 	#
 
 	@property
@@ -186,6 +194,11 @@ class LogEntryStruct:
 			ret["exception"] = self._exClass
 			ret["text"] = self._exMsg
 			ret["stacktrace"] = self._exStackTrace.toJSONPretty() if self._exStackTrace else None
+		elif self._sType == "ex2":
+			ret["exception"] = self._exClass
+			ret["text"] = self._exMsg
+			ret["stacktrace"] = self._exStackTrace.toJSONPretty() if self._exStackTrace else None
+			ret["extraValues"] = self._extraValues
 		elif self._sType == "desc":
 			ret["text"] = self._logMsg
 			ret["children"] = self._nestedList.toJSONPretty()
@@ -219,6 +232,19 @@ class LogEntryStruct:
 				self._exClass,
 				self._exMsg,
 				self._exStackTrace.toJSON(),
+			]
+		elif self._sType == "ex2":
+			return [
+				"ex2",
+				self._logEntryID,
+				self._indentationLevel,
+				self._parentLogEntryID,
+				self._timeStamp,
+				int(self._logLevel),
+				self._exClass,
+				self._exMsg,
+				self._exStackTrace.toJSON(),
+				self._extraValues,
 			]
 		elif self._sType == "desc":
 			return [
@@ -259,6 +285,7 @@ class LogEntryStruct:
 					exClass = None,
 					exMsg = None,
 					exStackTrace = None,
+					extraValues = None,
 					nestedList = None,
 				)
 			elif sType == "ex":
@@ -274,6 +301,23 @@ class LogEntryStruct:
 					exClass = data["exception"],
 					exMsg = data["text"],
 					exStackTrace = StackTraceStructList.fromJSONAny(data["stacktrace"]),
+					extraValues = None,
+					nestedList = None,
+				)
+			elif sType == "ex2":
+				# 10 entries
+				return LogEntryStruct(
+					sType = data["type"],
+					logEntryID = data["id"],
+					indentationLevel = data["indent"],
+					parentLogEntryID = data["parentID"],
+					timeStamp = LogEntryStruct.__jsonToTimeStamp(data["timeStamp"]),
+					logLevel = data["logLevelN"],
+					logMsg = None,
+					exClass = data["exception"],
+					exMsg = data["text"],
+					exStackTrace = StackTraceStructList.fromJSONAny(data["stacktrace"]),
+					extraValues = data.get("extraValues"),
 					nestedList = None,
 				)
 			elif sType == "desc":
@@ -289,6 +333,7 @@ class LogEntryStruct:
 					exClass = None,
 					exMsg = None,
 					exStackTrace = None,
+					extraValues = None,
 					nestedList = LogEntryStructList.fromJSONAny(data["children"]),
 				)
 			else:
@@ -315,6 +360,7 @@ class LogEntryStruct:
 					exClass = None,
 					exMsg = None,
 					exStackTrace = None,
+					extraValues = None,
 					nestedList = None,
 				)
 			elif sType == "ex":
@@ -331,6 +377,24 @@ class LogEntryStruct:
 					exClass = data[6],
 					exMsg = data[7],
 					exStackTrace = StackTraceStructList.fromJSONAny(data[8]),
+					extraValues = None,
+					nestedList = None,
+				)
+			elif sType == "ex2":
+				assert len(data) == 10
+				# 9 entries
+				return LogEntryStruct(
+					sType = sType,
+					logEntryID = logEntryID,
+					indentationLevel = indent,
+					parentLogEntryID = parentID,
+					timeStamp = timeStamp,
+					logLevel = logLevelN,
+					logMsg = None,
+					exClass = data[6],
+					exMsg = data[7],
+					exStackTrace = StackTraceStructList.fromJSONAny(data[8]),
+					extraValues = data[9],
 					nestedList = None,
 				)
 			elif sType == "desc":
@@ -347,6 +411,7 @@ class LogEntryStruct:
 					exClass = None,
 					exMsg = None,
 					exStackTrace = None,
+					extraValues = None,
 					nestedList = LogEntryStructList.fromJSONAny(data[7]),
 				)
 			else:

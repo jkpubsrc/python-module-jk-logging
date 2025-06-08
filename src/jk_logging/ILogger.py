@@ -1,5 +1,10 @@
 ﻿
 
+import typing
+
+import jk_exceptionhelper
+
+
 
 
 #
@@ -32,7 +37,7 @@ class ILogger(object):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def error(self, text):
+	def error(self, textOrException:typing.Union[str,BaseException,jk_exceptionhelper.ExceptionObject]):
 		raise NotImplementedError()
 	#
 
@@ -41,7 +46,7 @@ class ILogger(object):
 	#
 	# @param	Exception exception		The exception to write to this logger.
 	#
-	def exception(self, exception):
+	def exception(self, exception:typing.Union[BaseException,jk_exceptionhelper.ExceptionObject]):
 		raise NotImplementedError()
 	#
 
@@ -50,7 +55,7 @@ class ILogger(object):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def success(self, text):
+	def success(self, text:str):
 		raise NotImplementedError()
 	#
 
@@ -59,7 +64,7 @@ class ILogger(object):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def warning(self, text):
+	def warning(self, text:str):
 		raise NotImplementedError()
 	#
 
@@ -68,7 +73,7 @@ class ILogger(object):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def warn(self, text):
+	def warn(self, text:str):
 		raise NotImplementedError()
 	#
 
@@ -77,7 +82,7 @@ class ILogger(object):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def info(self, text):
+	def info(self, text:str):
 		raise NotImplementedError()
 	#
 
@@ -86,7 +91,7 @@ class ILogger(object):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def notice(self, text):
+	def notice(self, text:str):
 		raise NotImplementedError()
 	#
 
@@ -95,7 +100,7 @@ class ILogger(object):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def debug(self, text):
+	def debug(self, text:str):
 		raise NotImplementedError()
 	#
 
@@ -104,7 +109,7 @@ class ILogger(object):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def trace(self, text):
+	def trace(self, text:str):
 		raise NotImplementedError()
 	#
 

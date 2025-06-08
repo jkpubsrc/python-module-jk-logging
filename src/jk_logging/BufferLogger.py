@@ -3,6 +3,8 @@
 import os
 import typing
 
+import jk_exceptionhelper
+
 from .impl.IDCounter import IDCounter
 
 from .EnumLogLevel import EnumLogLevel
@@ -32,7 +34,16 @@ class BufferLogger(AbstractLogger):
 	## Constructors
 	################################################################################################################################
 
-	def __init__(self, idCounter:IDCounter = None, parentID:int = None, indentLevel:int = 0, logItemList = None, logStats:LogStats = None, extraProperties:JSONDict = None):
+	def __init__(self,
+			idCounter:typing.Union[IDCounter,None] = None,
+			parentID:typing.Union[int,None] = None,
+			indentLevel:int = 0,
+			logItemList = None,
+			logStats:typing.Union[LogStats,None] = None,
+			extraProperties:typing.Union[JSONDict,None] = None,
+			stackTraceProcessor:typing.Union[jk_exceptionhelper.StackTraceProcessor,None] = None,
+		):
+
 		super().__init__(idCounter)
 
 		self._indentationLevel = indentLevel
@@ -86,7 +97,7 @@ class BufferLogger(AbstractLogger):
 		nextID = logEntryStruct[1]
 		newList = logEntryStruct[7]
 
-		return BufferLogger(
+		ret = BufferLogger(
 			idCounter=self._idCounter,
 			parentID=nextID,
 			indentLevel=self._indentationLevel + 1,
@@ -94,6 +105,8 @@ class BufferLogger(AbstractLogger):
 			logStats=self._logStats,
 			extraProperties=self._extraProperties,
 		)
+		ret._stackTraceProcessor = self._stackTraceProcessor
+		return ret
 	#
 
 	"""
@@ -340,11 +353,21 @@ class BufferLogger(AbstractLogger):
 		return appendData, extraProperties
 	#
 
+	#
+	# param		stackTraceProcessor		(optional) 	A stack trace processor that can return a modified version of the stack trace (e.g. a shortened one).
+	#									The stack is listed from the bottom: The trace item at position <c>0</c> is the lowest stack trace item,
+	#									the item at position <c>length-1</c> is the top most item.
+	#
 	@staticmethod
-	def create(jsonData = None):
+	def create(
+			jsonData = None,
+			stackTraceProcessor:typing.Union[jk_exceptionhelper.StackTraceProcessor,None] = None,
+		):
+
 		appendData, extraProperties = BufferLogger._convertJSONToInternal(jsonData)
 
 		logger = BufferLogger(extraProperties=extraProperties)
+		logger._stackTraceProcessor = stackTraceProcessor
 
 		if appendData is not None:
 			logger._logiAll(appendData, True)

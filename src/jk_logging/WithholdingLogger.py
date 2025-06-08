@@ -101,8 +101,12 @@ class WithholdingLogger(BufferLogger):
 				self.forwardTo(self.__mainLogger)
 			raise ExceptionInChildContextException(ex_value)
 
+		print("-- self.__mainLogger", self.__mainLogger)
 		if self.__mainLogger:
+			print("-- self.stats.hasAtLeastWarning", self.stats.hasAtLeastWarning)
+			print("-- self.__bVerbose", self.__bVerbose)
 			if self.stats.hasAtLeastWarning or self.__bVerbose:
+				print("-- forwarding ...")
 				self.forwardTo(self.__mainLogger)
 
 		return False

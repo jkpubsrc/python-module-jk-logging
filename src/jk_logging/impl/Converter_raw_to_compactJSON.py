@@ -73,6 +73,19 @@ class Converter_raw_to_compactJSON(object):
 				else None
 			)										# exNestedException
 
+		elif sType == "ex2":
+			assert len(rawLogEntry) == 11
+			# nothing more to convert
+			jsonLogEntry.append(rawLogEntry[6])		# exClass
+			jsonLogEntry.append(rawLogEntry[7])		# exMsg
+			jsonLogEntry.append(rawLogEntry[8])		# exStackTrace
+			jsonLogEntry.append(rawLogEntry[9])		# extraValues
+			jsonLogEntry.append(
+				self.__nestedException_to_json(rawLogEntry[10])
+				if rawLogEntry[10]
+				else None
+			)										# exNestedException
+
 		elif sType == "desc":
 			assert len(rawLogEntry) == 8
 			# convert list of nested elements

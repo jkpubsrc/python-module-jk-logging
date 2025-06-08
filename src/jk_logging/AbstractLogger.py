@@ -34,7 +34,10 @@ class AbstractLogger(ILogger):
 	## Constructor
 	################################################################################################################################
 
-	def __init__(self, idCounter:typing.Union[IDCounter,None]):
+	def __init__(self,
+			idCounter:typing.Union[IDCounter,None],
+		):
+
 		if idCounter is None:
 			idCounter = IDCounter()
 		else:
@@ -43,6 +46,7 @@ class AbstractLogger(ILogger):
 		self._idCounter = idCounter
 		self._indentationLevel = 0
 		self._parentLogEntryID = None
+		self._stackTraceProcessor:typing.Union[jk_exceptionhelper.StackTraceProcessor,None] = None
 	#
 
 	################################################################################################################################
@@ -87,13 +91,37 @@ class AbstractLogger(ILogger):
 	#		* 4) str: source code line
 	# * 4) either None or a tuple representing a nested exception
 	#
-	def __exceptionObjToTuples(self, exceptionObject: jk_exceptionhelper.ExceptionObject) -> tuple:
+	# def __exceptionObjToTuples(self, exceptionObject:jk_exceptionhelper.ExceptionObject) -> tuple:
+	# 	return (
+	# 		exceptionObject.exceptionClassName,
+	# 		exceptionObject.exceptionTextHR,
+	# 		[ (x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine) for x in exceptionObject.stackTrace ]
+	# 			if exceptionObject.stackTrace else [],
+	# 		self.__exceptionObjToTuples(exceptionObject.nestedException) if exceptionObject.nestedException else None,
+	# 	)
+	# #
+
+	#
+	# Converts an instance of <c>jk_exceptionhelper.ExceptionObject</c> to a tuple of the following structure:
+	#
+	# * 1) str: the exception class name.
+	# * 2) str: the exception text.
+	# * 3) list with tuples representing stack trace elements:
+	#		* 1) str: file path
+	#		* 2) int: line number
+	#		* 3) str: calling scope
+	#		* 4) str: source code line
+	# * 4) either None or a dictionary of key value pairs. The keys must be strings, the values must be JSON serializable.
+	# * 5) either None or a tuple representing a nested exception.
+	#
+	def __exceptionObjToTuples2(self, exceptionObject:jk_exceptionhelper.ExceptionObject) -> tuple:
 		return (
 			exceptionObject.exceptionClassName,
 			exceptionObject.exceptionTextHR,
 			[ (x.filePath, x.lineNo, x.callingScope, x.sourceCodeLine) for x in exceptionObject.stackTrace ]
 				if exceptionObject.stackTrace else [],
-			self.__exceptionObjToTuples(exceptionObject.nestedException) if exceptionObject.nestedException else None,
+			exceptionObject.extraValues,
+			self.__exceptionObjToTuples2(exceptionObject.nestedException) if exceptionObject.nestedException else None,
 		)
 	#
 
@@ -112,15 +140,21 @@ class AbstractLogger(ILogger):
 			indentation:int,
 			parentLogEntryID:int,
 			logLevel:EnumLogLevel,
-			textOrException:typing.Union[BaseException,jk_exceptionhelper.ExceptionObject,str]
-	):
+			textOrException:typing.Union[BaseException,jk_exceptionhelper.ExceptionObject,str],
+		):
 		timeStamp = time.time()
 
 		if isinstance(textOrException, BaseException):
-			_e = jk_exceptionhelper.ExceptionObject.fromException(textOrException, ignoreJKTypingCheckFunctionSignatureFrames=True, ignoreJKTestingAssertFrames=True, ignoreJKLoggingFrames=True)
-			_t = self.__exceptionObjToTuples(_e)
+			_e = jk_exceptionhelper.ExceptionObject.fromException(
+				textOrException,
+				ignoreJKTypingCheckFunctionSignatureFrames=True,
+				ignoreJKTestingAssertFrames=True,
+				ignoreJKLoggingFrames=True,
+				stackTraceProcessor=self._stackTraceProcessor,
+			)
+			_t = self.__exceptionObjToTuples2(_e)
 			return (
-				"ex",
+				"ex2",
 				logEntryID,
 				indentation,
 				parentLogEntryID,
@@ -130,12 +164,13 @@ class AbstractLogger(ILogger):
 				_t[1],
 				_t[2],
 				_t[3],
+				_t[4],
 			)
 
 		elif isinstance(textOrException, jk_exceptionhelper.ExceptionObject):
-			_t = self.__exceptionObjToTuples(textOrException)
+			_t = self.__exceptionObjToTuples2(textOrException)
 			return (
-				"ex",
+				"ex2",
 				logEntryID,
 				indentation,
 				parentLogEntryID,
@@ -145,6 +180,7 @@ class AbstractLogger(ILogger):
 				_t[1],
 				_t[2],
 				_t[3],
+				_t[4],
 			)
 
 		else:
@@ -156,7 +192,7 @@ class AbstractLogger(ILogger):
 				parentLogEntryID,
 				timeStamp,
 				logLevel,
-				textOrException.rstrip('\n')
+				textOrException.rstrip("\n")
 			)
 	#
 
@@ -175,7 +211,7 @@ class AbstractLogger(ILogger):
 	# Perform the log operation. This is the heart of each logger. Overwrite this method in subclasses.
 	#
 	# @param		list logEntryStruct						A log entry structure. Each entry consists of the following elements:
-	#														0) <c>str</c> ---- The type of the log entry: "txt", "ex", "desc"
+	#														0) <c>str</c> ---- The type of the log entry: "txt", "ex", "ex2", "desc"
 	#														1) <c>str</c> ---- The ID of the log entry or <c>None</c> if unused
 	#														2) <c>int</c> ---- The indentation level
 	#														3) <c>str</c> ---- The ID of the parent log entry or <c>None</c> if unused
@@ -186,11 +222,17 @@ class AbstractLogger(ILogger):
 	#														If the log entry is a descending entry:
 	#														6) <c>str</c> ---- The text of the log message
 	#														7) <c>list</c> ---- A list containing nested log items
-	#														If the log entry is an exception:
+	#														If the log entry is an exception of type "ex":
 	#														6) <c>str</c> ---- The exception class name
 	#														7) <c>str</c> ---- The exception text
 	#														8) <c>list</c> ---- A list of stack trace elements or <c>None</c>
 	#														9) <c>list</c> ---- If there is a nested exception: A four element list with exception class name, exception text, stack trace, and nested exception
+	#														If the log entry is an exception of type "ex2":
+	#														6) <c>str</c> ---- The exception class name
+	#														7) <c>str</c> ---- The exception text
+	#														8) <c>list</c> ---- A list of stack trace elements or <c>None</c>
+	#														9) <c>dict</c> ---- A JSON serializable dict of key value pairs or <c>None</c>
+	#														10) <c>list</c> ---- If there is a nested exception: A four element list with exception class name, exception text, stack trace, and nested exception
 	#														Each stack trace element has the following structure:
 	#														0) <c>str</c> ---- The source code file path
 	#														1) <c>int</c> ---- The source code line number
@@ -226,7 +268,7 @@ class AbstractLogger(ILogger):
 			self._logi(logEntryStruct, bNeedsIndentationLevelAdaption)
 			if logEntryStruct[0] == "desc":
 				logEntryStructClone = (
-					logEntryStruct[0],		# str : sType				---- log entry type: "txt", "ex", "desc"
+					logEntryStruct[0],		# str : sType				---- log entry type: "txt", "ex", "ex2", "desc"
 					logEntryStruct[1],		# int : logEntryID			---- log entry ID
 					logEntryStruct[2],		# int : indentationLevel	---- indentation level
 					logEntryStruct[3],		# int : parentLogEntryID	---- ID of the parent log entry
@@ -272,8 +314,8 @@ class AbstractLogger(ILogger):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def error(self, text):
-		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.ERROR, text), False)
+	def error(self, textOrException:typing.Union[str,BaseException,jk_exceptionhelper.ExceptionObject]):
+		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.ERROR, textOrException), False)
 	#
 
 	#
@@ -281,7 +323,7 @@ class AbstractLogger(ILogger):
 	#
 	# @param	Exception exception		The exception to write to this logger.
 	#
-	def exception(self, exception):
+	def exception(self, exception:typing.Union[BaseException,jk_exceptionhelper.ExceptionObject]):
 		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.EXCEPTION, exception), False)
 	#
 
@@ -291,8 +333,9 @@ class AbstractLogger(ILogger):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def stderr(self, text):
-		text = text.rstrip('\n')
+	def stderr(self, text:str):
+		assert isinstance(text, str)
+		text = text.rstrip("\n")
 		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.STDERR, text), False)
 	#
 
@@ -302,8 +345,9 @@ class AbstractLogger(ILogger):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def stdout(self, text):
-		text = text.rstrip('\n')
+	def stdout(self, text:str):
+		assert isinstance(text, str)
+		text = text.rstrip("\n")
 		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.STDOUT, text), False)
 	#
 
@@ -312,8 +356,9 @@ class AbstractLogger(ILogger):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def success(self, text):
-		text = text.rstrip('\n')
+	def success(self, text:str):
+		assert isinstance(text, str)
+		text = text.rstrip("\n")
 		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.SUCCESS, text), False)
 	#
 
@@ -322,8 +367,9 @@ class AbstractLogger(ILogger):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def warning(self, text):
-		text = text.rstrip('\n')
+	def warning(self, text:str):
+		assert isinstance(text, str)
+		text = text.rstrip("\n")
 		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.WARNING, text), False)
 	#
 
@@ -332,8 +378,9 @@ class AbstractLogger(ILogger):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def warn(self, text):
-		text = text.rstrip('\n')
+	def warn(self, text:str):
+		assert isinstance(text, str)
+		text = text.rstrip("\n")
 		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.WARNING, text), False)
 	#
 
@@ -342,8 +389,9 @@ class AbstractLogger(ILogger):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def info(self, text):
-		text = text.rstrip('\n')
+	def info(self, text:str):
+		assert isinstance(text, str)
+		text = text.rstrip("\n")
 		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.INFO, text), False)
 	#
 
@@ -352,8 +400,9 @@ class AbstractLogger(ILogger):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def notice(self, text):
-		text = text.rstrip('\n')
+	def notice(self, text:str):
+		assert isinstance(text, str)
+		text = text.rstrip("\n")
 		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.NOTICE, text), False)
 	#
 
@@ -362,8 +411,9 @@ class AbstractLogger(ILogger):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def debug(self, text):
-		text = text.rstrip('\n')
+	def debug(self, text:str):
+		assert isinstance(text, str)
+		text = text.rstrip("\n")
 		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.DEBUG, text), False)
 	#
 
@@ -372,8 +422,9 @@ class AbstractLogger(ILogger):
 	#
 	# @param	string text		The text to write to this logger.
 	#
-	def trace(self, text):
-		text = text.rstrip('\n')
+	def trace(self, text:str):
+		assert isinstance(text, str)
+		text = text.rstrip("\n")
 		self._logi(self._createNormalLogEntryStruct(self._idCounter.next(), self._indentationLevel, self._parentLogEntryID, EnumLogLevel.TRACE, text), False)
 	#
 
@@ -381,7 +432,9 @@ class AbstractLogger(ILogger):
 	# Create a nested logger. This new logger can than be used like the current logger, but all log messages will be delivered
 	# to an subordinate log structure (if supported by this logger).
 	#
-	def descend(self, text, logLevel:EnumLogLevel = None, bWithhold:bool = False, bWithholdVerbose:bool = False) -> AbstractLogger:
+	def descend(self, text:str, logLevel:EnumLogLevel = None, bWithhold:bool = False, bWithholdVerbose:bool = False) -> AbstractLogger:
+		assert isinstance(text, str)
+
 		if logLevel is None:
 			logLevel = EnumLogLevel.INFO
 

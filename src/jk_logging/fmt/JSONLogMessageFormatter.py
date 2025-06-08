@@ -71,6 +71,7 @@ class JSONLogMessageFormatter(AbstractLogMessageFormatter):
 		if logEntryStruct[0] == "txt":
 			sLogMsg = logEntryStruct[6]
 			return s + sLogType + ": " + sLogMsg
+
 		elif logEntryStruct[0] == "ex":
 			sExClass = logEntryStruct[6]
 			sLogMsg = logEntryStruct[7]
@@ -80,9 +81,23 @@ class JSONLogMessageFormatter(AbstractLogMessageFormatter):
 					ret.append(s + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine)
 			ret.append(s + " "  + sLogType + ": " + sExClass + ": " + sLogMsg)
 			return ret
+
+		elif logEntryStruct[0] == "ex2":
+			sExClass = logEntryStruct[6]
+			sLogMsg = logEntryStruct[7]
+			ret = []
+			if logEntryStruct[8] != None:
+				for (stPath, stLineNo, stModuleName, stLine) in logEntryStruct[8]:
+					ret.append(s + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine)
+			ret.append(s + " "  + sLogType + ": " + sExClass + ": " + sLogMsg)
+			extraValues = logEntryStruct[9]
+			# TODO: print extraValues
+			return ret
+
 		elif logEntryStruct[0] == "desc":
 			sLogMsg = logEntryStruct[6]
 			return s + sLogType + ": " + sLogMsg
+
 		else:
 			raise Exception()
 	#

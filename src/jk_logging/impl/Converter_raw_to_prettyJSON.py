@@ -106,6 +106,18 @@ class Converter_raw_to_prettyJSON(object):
 			if rawLogEntry[9] is not None:
 				jsonLogEntry["nested"] = self.__nestedException_to_json(rawLogEntry[9])
 
+		elif sType == "ex2":
+			assert len(rawLogEntry) == 9
+			jsonLogEntry["exception"] = rawLogEntry[6]
+			jsonLogEntry["text"] = rawLogEntry[7]
+			if rawLogEntry[8] is not None:
+				jsonLogEntry["stacktrace"] = [
+					self.__stackTraceElement_to_json(x) for x in rawLogEntry[8]
+				]
+			jsonLogEntry["extraValues"] = rawLogEntry[9]
+			if rawLogEntry[10] is not None:
+				jsonLogEntry["nested"] = self.__nestedException_to_json(rawLogEntry[10])
+
 		elif sType == "desc":
 			assert len(rawLogEntry) == 8
 			jsonLogEntry["text"] = rawLogEntry[6]

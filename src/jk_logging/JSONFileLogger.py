@@ -106,6 +106,8 @@ class JSONFileLogger(BufferLogger):
 				pass
 			elif item[0] == "ex":
 				pass
+			elif item[0] == "ex2":
+				pass
 			elif item[0] == "desc":
 				item[7] = JSONFileLogger.__convertRawLogData(item[7])
 			else:

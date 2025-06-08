@@ -138,6 +138,7 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 			if sLogMsg is None:
 				sLogMsg = ""
 			return s1 + sLogType + ": " + sLogMsg + term
+
 		elif logEntryStruct[0] == "ex":
 			sExClass = logEntryStruct[6]
 			sLogMsg = logEntryStruct[7]
@@ -153,11 +154,31 @@ class HTMLLogMessageFormatter(AbstractLogMessageFormatter):
 				sLogMsg = ""
 			ret.append(s1 + sLogType + ": " + sExClass + ": " + sLogMsg + term)
 			return ret
+
+		elif logEntryStruct[0] == "ex2":
+			sExClass = logEntryStruct[6]
+			sLogMsg = logEntryStruct[7]
+			ret = []
+			if logEntryStruct[8] != None:
+				if self.__outputMode == EnumExtensitivity.FULL:
+					for (stPath, stLineNo, stModuleName, stLine) in logEntryStruct[8]:
+						ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + term)
+				elif self.__outputMode == EnumExtensitivity.SHORTED:
+					stPath, stLineNo, stModuleName, stLine = logEntryStruct[8][-1]
+					ret.append(s2 + "STACKTRACE: " + stPath + ":" + str(stLineNo) + " " + stModuleName + "    # " + stLine + term)
+			extraValues = logEntryStruct[9]
+			# TODO: print extraValues
+			if sLogMsg is None:
+				sLogMsg = ""
+			ret.append(s1 + sLogType + ": " + sExClass + ": " + sLogMsg + term)
+			return ret
+
 		elif logEntryStruct[0] == "desc":
 			sLogMsg = logEntryStruct[6]
 			if sLogMsg is None:
 				sLogMsg = ""
 			return s1 + sLogType + ": " + sLogMsg + term
+
 		else:
 			raise Exception()
 	#
